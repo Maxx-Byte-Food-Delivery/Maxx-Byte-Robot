@@ -1,6 +1,7 @@
 import sqlite3
 import hashlib
 import getpass
+import os
 
 DB_PATH = 'db.sqlite3'
 
@@ -20,18 +21,17 @@ def setup():
         )
     ''')
     
-    # Check if admin exists
     cursor.execute("SELECT * FROM users WHERE username = 'admin'")
     if not cursor.fetchone():
         password = getpass.getpass("Enter admin password: ")
         password_hash = hash_password(password)
         cursor.execute("INSERT INTO users (username, password_hash) VALUES (?, ?)",
                        ('admin', password_hash))
-        print("✅ Admin user created")
+        print("Admin user created")
     
     conn.commit()
     conn.close()
-    print("✅ Users table ready")
+    print("Users table ready")
 
 if __name__ == '__main__':
     setup()
