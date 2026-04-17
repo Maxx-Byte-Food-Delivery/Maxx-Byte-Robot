@@ -1,10 +1,10 @@
 import pytest
-from django.contrib.auth.models import User
+from users.models import User
 
 @pytest.fixture
 #makes user
 def user(db):
-  user = User.objects.create_user(username="john doe", password ="psswrd123")
+  user = User(username="john doe", password ="psswrd123")
   user.save()
   return user
 #makes multiple users
