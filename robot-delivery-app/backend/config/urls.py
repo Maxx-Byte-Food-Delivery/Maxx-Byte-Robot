@@ -8,6 +8,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from apps.views import hello_world
 
 
+
 urlpatterns = [ 
     path('admin/', admin.site.urls),
 
