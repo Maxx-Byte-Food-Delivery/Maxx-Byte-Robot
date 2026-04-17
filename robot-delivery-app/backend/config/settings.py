@@ -162,6 +162,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'channels',
+    'users'
 ]
 
 DATABASES = {
