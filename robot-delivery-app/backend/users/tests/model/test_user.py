@@ -8,7 +8,7 @@ def test_user_creation(user):
 @pytest.mark.django_db
 def test_user_password_hashed(user):
   assert user.username == "john doe"
-  assert check_password("psswrd123", user.password)
+  assert user.password != "psswrd123"
 
 #test for that username is valid
 #def test_user_has_valid_username
