@@ -59,11 +59,11 @@ function App() {
    * and current quantity count.  Quantity must be above zero for a valid cart
    * entry.
    */
-  class CartEntry{
+  class CartEntry {
     name = ""
     price = 0;
     quantity = 0;
-    constructor(name, price, quantity){
+    constructor(name, price, quantity) {
       this.name = name;
       this.price = price;
       this.quantity = quantity;
@@ -74,13 +74,13 @@ function App() {
     addressLine1 = "";
     addressLine2 = "";
     city = "";
-    state = "";
+    state = "Alabama";
     zipCode = 0;
     constructor() {
       this.addressLine1 = "";
       this.addressLine2 = "";
       this.city = "";
-      this.state = "";
+      this.state = "Alabama";
       this.zipCode = 0;
     }
   }
@@ -96,6 +96,13 @@ function App() {
     new Product("Soda", 2.99, "Refreshing carbonated beverage")
   ];
 
+  const states = [
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois",
+    "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+    "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+    "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+  ]
+
   let [currentCart, setCurrentCart] = useState(emptyCart);
   let [productList, setProductList] = useState(dummyProducts); // This would be populated from the backend in a real application
   let [inputAddress, setInputAddress] = useState(emptyAddress); //Regulates the input fields for the address form
@@ -109,35 +116,35 @@ function App() {
     if (event.target.value >= 0 && event.target.value < productList.length) {
       setCurrentCart(prevCart => {
         const updatedCartEntries = new Map(prevCart.entries); //You must create a new map to ensure pure change of Maps.
-        if(updatedCartEntries.has(product.name)){ //If the product is already in the cart, update its quantity by 1.
+        if (updatedCartEntries.has(product.name)) { //If the product is already in the cart, update its quantity by 1.
           const quantity = prevCart.entries.get(product.name).quantity;
-          updatedCartEntries.set(product.name, new CartEntry(product.name, product.price, quantity+1));
+          updatedCartEntries.set(product.name, new CartEntry(product.name, product.price, quantity + 1));
         }
-        else{//Otherwise, add it to the cart's entries map with a starting quantity of 1.
+        else {//Otherwise, add it to the cart's entries map with a starting quantity of 1.
           updatedCartEntries.set(product.name, new CartEntry(product.name, product.price, 1));
         }
         const updatedTotalQty = prevCart.totalQty + 1;//Update grand total quantity.
         const updatedTotalCost = prevCart.totalCost + product.price;//Update grand total price.
-        return {entries: updatedCartEntries,  totalQty: updatedTotalQty, totalCost: updatedTotalCost };
+        return { entries: updatedCartEntries, totalQty: updatedTotalQty, totalCost: updatedTotalCost };
       });
     }
   }
 
   //Function for adding one more of an item in your cart.
-  function addMoreToCart(event){
-      setCurrentCart(prevCart => {
-        const updatedCartEntries = new Map(prevCart.entries);// You must create a new map to ensure pure change of Maps.
-        const product = updatedCartEntries.get(event.target.value);//Look up the product to add on to, is it in the Cart?
-        if(product != undefined){//If it's in the cart, proceed. 
-          //Create a new CartEntry with the quantity incremented.
-          updatedCartEntries.set(product.name, new CartEntry(product.name, product.price, product.quantity + 1)); 
-          const updatedTotalQty = prevCart.totalQty + 1;//Update grand total quantity.
-          const updatedTotalCost = prevCart.totalCost + product.price;//Update grand total price.
-          return {entries: updatedCartEntries,  totalQty: updatedTotalQty, totalCost: updatedTotalCost };
-        }
-        else //As a failsafe, if you're adding an item to what you think is in the cart, but isn't, gracefully abort the function.
-          return prevCart;        
-      });   
+  function addMoreToCart(event) {
+    setCurrentCart(prevCart => {
+      const updatedCartEntries = new Map(prevCart.entries);// You must create a new map to ensure pure change of Maps.
+      const product = updatedCartEntries.get(event.target.value);//Look up the product to add on to, is it in the Cart?
+      if (product != undefined) {//If it's in the cart, proceed. 
+        //Create a new CartEntry with the quantity incremented.
+        updatedCartEntries.set(product.name, new CartEntry(product.name, product.price, product.quantity + 1));
+        const updatedTotalQty = prevCart.totalQty + 1;//Update grand total quantity.
+        const updatedTotalCost = prevCart.totalCost + product.price;//Update grand total price.
+        return { entries: updatedCartEntries, totalQty: updatedTotalQty, totalCost: updatedTotalCost };
+      }
+      else //As a failsafe, if you're adding an item to what you think is in the cart, but isn't, gracefully abort the function.
+        return prevCart;
+    });
   }
 
   //Function for removing an item from the cart.  
@@ -146,32 +153,73 @@ function App() {
       const productName = event.target.value;
       const updatedCartEntries = new Map(prevCart.entries);// You must create a new map to ensure pure change of Maps.
       const productToRemove = updatedCartEntries.get(productName);//Look up the product to remove from, is it in the Cart?
-      if(productToRemove != undefined){//If it's in the cart, proceed. 
+      if (productToRemove != undefined) {//If it's in the cart, proceed. 
         const decQty = productToRemove.quantity - 1;//Decrease the quantity of the item to remove from.
-        if(decQty < 0)//If quantity is below zero, peg it to zero.  
+        if (decQty < 0)//If quantity is below zero, peg it to zero.  
           decQty = 0;
-        if(decQty > 0){//If the quantity is still 1 or higher, create a new CartEntry with the decremented quantity.  
+        if (decQty > 0) {//If the quantity is still 1 or higher, create a new CartEntry with the decremented quantity.  
           updatedCartEntries.set(productName, new CartEntry(productName, productToRemove.price, decQty));
         }
-        else{
+        else {
           updatedCartEntries.delete(productName);//If none remain, just delete the CartEntry.
         }
         const reducedQty = prevCart.totalQty - 1; //If reduced quantity is below zero, peg it to zero.  
         const updatedTotalQty = reducedQty < 0 ? 0 : reducedQty;//Update grand total quantity.
         const reducedPrice = prevCart.totalCost - productToRemove.price; //If reduced price is below zero, peg it to zero.
         const updatedTotalCost = reducedPrice < 0 ? 0 : reducedPrice;//Update grand total price.
-        return {entries: updatedCartEntries,  totalQty: updatedTotalQty, totalCost: updatedTotalCost };
+        return { entries: updatedCartEntries, totalQty: updatedTotalQty, totalCost: updatedTotalCost };
       }
       else //As a failsafe, if you're removing from item to what you think is in the cart, but isn't, gracefully abort the function.
-        return prevCart      
+        return prevCart
     });
+  }
+
+  //Functions for responding to changes to any part of the address input class.
+  function onChangeAddress1(event) {
+    setInputAddress({
+      ...inputAddress,
+      addressLine1: event.target.value
+    }
+    )
+  }
+
+  function onChangeAddress2(event) {
+    setInputAddress({
+      ...inputAddress,
+      addressLine2: event.target.value
+    }
+    )
+  }
+
+  function onChangeCity(event) {
+    setInputAddress({
+      ...inputAddress,
+      city: event.target.value
+    }
+    )
+  }
+
+  function onChangeState(event) {
+    setInputAddress({
+      ...inputAddress,
+      state: event.target.value
+    }
+    )
+  }
+
+  function onChangeZip(event) {
+    setInputAddress({
+      ...inputAddress,
+      zipCode: event.target.value
+    }
+    )
   }
 
   //Clear the cart.  Confirm with user before proceeding.
   function clearCart() {
     if (confirm("Do you want to clear your cart?")) {
       setCurrentCart(emptyCart);
-    } 
+    }
   }
 
   //Clear the address form.  Confirm with user before proceeding.
@@ -181,6 +229,7 @@ function App() {
     }
   }
 
+  //Switch the view between the products, cart and checkout.  
   function switchView(event) {
     setView(event.target.value);
   }
@@ -196,7 +245,7 @@ function App() {
           <tr>
             <td><button type="button" value="productList" onClick={switchView} disabled={view === "productList"} >🏪 PRODUCTS</button></td>
             <td><button type="button" value="cart" onClick={switchView} disabled={view === "cart"} >🛒 CART ({currentCart.totalQty})</button></td>
-            <td><button type="button" value="checkout" onClick={switchView} disabled={view === "checkout"} >💳 CHECKOUT</button></td>
+            <td><button type="button" value="checkout" onClick={switchView} disabled={view === "checkout" || currentCart.totalQty <= 0} >💳 CHECKOUT</button></td>
           </tr>
         </tbody>
       </table>
@@ -220,7 +269,7 @@ function App() {
                     productList.map((item, index) => (
                       <tr key={index}>
                         <td>{item.name}</td>
-                        <td>{item.price}</td>
+                        <td>${item.price}</td>
                         <td>{item.description}</td>
                         {/*The button to add the item to the cart.*/}
                         <td><button type="button" value={index} onClick={addToCart}>➕🛒 Add 1 to Cart</button></td>
@@ -252,33 +301,33 @@ function App() {
                 <tbody>
                   {
                     currentCart.totalQty > 0 ?
-                    (
-                      <>
-                      {/*If you have at least one item in the cart, display a table of unique products you've bought and their quantities.  Otherwise, indicate that the cart is empty.*/}
-                      {
-                        Array.from(currentCart.entries.values()).map((item, index) => (
-                          <tr key={index}>
-                            <td>{item.name}</td>
-                            <td>{item.price}</td>
-                            <td>{item.price * item.quantity}</td>
-                            {/*Buttons to remove or add to the current quantity of the item.*/}
-                            <td><button type="button" value={item.name} onClick={removeFromCart}>➖</button> {item.quantity} <button type="button" value={item.name} onClick={addMoreToCart}>➕</button></td>
+                      (
+                        <>
+                          {/*If you have at least one item in the cart, display a table of unique products you've bought and their quantities.  Otherwise, indicate that the cart is empty.*/}
+                          {
+                            Array.from(currentCart.entries.values()).map((item, index) => (
+                              <tr key={index}>
+                                <td>{item.name}</td>
+                                <td>${item.price}</td>
+                                <td>${item.price * item.quantity}</td>
+                                {/*Buttons to remove or add to the current quantity of the item.*/}
+                                <td><button type="button" value={item.name} onClick={removeFromCart}>➖</button> {item.quantity} <button type="button" value={item.name} onClick={addMoreToCart}>➕</button></td>
+                              </tr>
+                            ))
+                          }
+                          {/*A final row that shows your grand total of quantity and cost for your current order.*/}
+                          <tr key="FINAL_TOTAL">
+                            <td><b>TOTAL</b></td>
+                            <td>➡️</td>
+                            <td><b>${Math.trunc(currentCart.totalCost * 100) / 100}</b></td>
+                            <td><b>{currentCart.totalQty} items</b></td>
                           </tr>
-                        ))
-                      }
-                      {/*A final row that shows your grand total of quantity and cost for your current order.*/}
-                      <tr key="FINAL_TOTAL">
-                        <td><b>TOTAL</b></td>
-                        <td></td>
-                        <td><b>{Math.trunc(currentCart.totalCost * 100) / 100}</b></td>
-                        <td><b>{currentCart.totalQty} items</b></td>
-                      </tr>
-                      </>
-                    ) 
-                    :
-                    (
-                      <tr colSpan={CART_COLUMNS} key="NO_ITEMS"><td><i>Your cart is empty.</i></td></tr>
-                    )
+                        </>
+                      )
+                      :
+                      (
+                        <tr colSpan={CART_COLUMNS} key="NO_ITEMS"><td><i>Your cart is empty.</i></td></tr>
+                      )
                   }
                 </tbody>
               </table>
@@ -288,7 +337,60 @@ function App() {
           )
         }
       </div>
-
+      <div>
+        {
+          view === "checkout" && (
+            <>
+              {/*The checkout view.  Unlocked when there's at least 1 item in the cart.*/}
+              <h2>Checkout</h2>
+              <p>Confirm your order and where you want it delivered here.</p>
+              {/*Reproduce the cart table; but this time, it's not editable.*/}
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    Array.from(currentCart.entries.values()).map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.name}</td>
+                        <td>${item.price}</td>
+                        <td>{item.quantity}</td>
+                        <td>${item.price * item.quantity}</td>
+                      </tr>
+                    ))
+                  }
+                  <tr key="FINAL_TOTAL">
+                    <td><b>TOTAL</b></td>
+                    <td>➡️</td>
+                    <td><b>{currentCart.totalQty} items</b></td>
+                    <td><b>${Math.trunc(currentCart.totalCost * 100) / 100}</b></td>
+                  </tr>
+                </tbody>
+              </table>
+              {/*The address entry form.*/}
+              <div>Street Address 1: <input type="text" value={inputAddress.addressLine1} onChange={onChangeAddress1} /></div>
+              <div>Street Address 2: <input type="text" value={inputAddress.addressLine2} onChange={onChangeAddress2} /></div>
+              <div>City: <input type="text" value={inputAddress.city} onChange={onChangeCity} /></div>
+              <div>State:
+                <select value={inputAddress.state} onChange={onChangeState}>
+                  {states.map(state => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+                </select>
+              </div>
+              <div>Zip Code: <input type="text" maxLength="5" pattern="^[0-9]+$" value={inputAddress.zipCode} onChange={onChangeZip} /></div>
+              <button onClick={clearAddress}>❌ Clear Address</button>
+              <button>✔️ Submit Order</button>
+            </>
+          )
+        }
+      </div>
     </>
   )
 }
