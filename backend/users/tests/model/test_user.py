@@ -25,7 +25,6 @@ def test_user_password_cant_be_blank():
 def test_user_email_cant_be_blank():
  with pytest.raises(ValueError, match="Email must be set"):
   User.objects.create_user(username="johndoe", email="", first_name="john", last_name="doe", password="StrongPasswo312rd!")
-#test that user can't be created without email
 
 #test that user can't be created without first name
 @pytest.mark.django_db
