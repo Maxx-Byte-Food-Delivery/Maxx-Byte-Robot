@@ -3,7 +3,6 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from rest_framework import status
-from .orders import Order, OrderItem
 
 @api_view(['GET', 'POST'])
 
