@@ -125,6 +125,7 @@ function App() {
         }
         const updatedTotalQty = prevCart.totalQty + 1;//Update grand total quantity.
         const updatedTotalCost = prevCart.totalCost + product.price;//Update grand total price.
+        showToast("One "+product.name+" has been added to the cart!  You now have "+updatedCartEntries.get(product.name).quantity+".", true);
         return { entries: updatedCartEntries, totalQty: updatedTotalQty, totalCost: updatedTotalCost };
       });
     }
@@ -140,6 +141,7 @@ function App() {
         updatedCartEntries.set(product.name, new CartEntry(product.name, product.price, product.quantity + 1));
         const updatedTotalQty = prevCart.totalQty + 1;//Update grand total quantity.
         const updatedTotalCost = prevCart.totalCost + product.price;//Update grand total price.
+        showToast("One more "+product.name+" has been added to the cart!  You now have "+updatedCartEntries.get(product.name).quantity+".", true);
         return { entries: updatedCartEntries, totalQty: updatedTotalQty, totalCost: updatedTotalCost };
       }
       else //As a failsafe, if you're adding an item to what you think is in the cart, but isn't, gracefully abort the function.
@@ -159,19 +161,56 @@ function App() {
           decQty = 0;
         if (decQty > 0) {//If the quantity is still 1 or higher, create a new CartEntry with the decremented quantity.  
           updatedCartEntries.set(productName, new CartEntry(productName, productToRemove.price, decQty));
+          showToast("You removed one "+productName+" from the cart.  There are now "+updatedCartEntries.get(productName).quantity+" left.", false);
         }
         else {
           updatedCartEntries.delete(productName);//If none remain, just delete the CartEntry.
+          showToast("You removed "+productName+" from the cart.", false);
         }
-        const reducedQty = prevCart.totalQty - 1; //If reduced quantity is below zero, peg it to zero.  
-        const updatedTotalQty = reducedQty < 0 ? 0 : reducedQty;//Update grand total quantity.
-        const reducedPrice = prevCart.totalCost - productToRemove.price; //If reduced price is below zero, peg it to zero.
-        const updatedTotalCost = reducedPrice < 0 ? 0 : reducedPrice;//Update grand total price.
+        const reducedQty = prevCart.totalQty - 1; //Update grand total quantity.
+        const updatedTotalQty = reducedQty < 0 ? 0 : reducedQty; //If reduced quantity is below zero, peg it to zero.  
+        const reducedPrice = prevCart.totalCost - productToRemove.price; //Update grand total price.
+        const updatedTotalCost = reducedPrice < 0 ? 0 : reducedPrice; //If reduced price is below zero, peg it to zero.
         return { entries: updatedCartEntries, totalQty: updatedTotalQty, totalCost: updatedTotalCost };
       }
       else //As a failsafe, if you're removing from item to what you think is in the cart, but isn't, gracefully abort the function.
         return prevCart
     });
+  }
+
+  function removeCompletelyFromCart(event) {
+    if (confirm("Do you want to remove " + event.target.value + " altogether from your cart?")) {
+      setCurrentCart(prevCart => {
+        const productName = event.target.value;
+        const updatedCartEntries = new Map(prevCart.entries);// You must create a new map to ensure pure change of Maps.
+        const productToRemove = updatedCartEntries.get(productName);//Look up the product to remove from, is it in the Cart?
+        if (productToRemove != undefined) {//If it's in the cart, proceed. 
+          updatedCartEntries.delete(productName);//Remove the item from the cart entirely.
+          const reducedQty = prevCart.totalQty - productToRemove.quantity;  //Update grand total quantity.
+          const updatedTotalQty = reducedQty < 0 ? 0 : reducedQty; //If reduced quantity is below zero, peg it to zero.
+          const reducedPrice = prevCart.totalCost - (productToRemove.price * productToRemove.quantity); //Update grand total price.
+          const updatedTotalCost = reducedPrice < 0 ? 0 : reducedPrice; //If reduced price is below zero, peg it to zero.
+          showToast("You removed "+productName+" from the cart.", false);
+          return { entries: updatedCartEntries, totalQty: updatedTotalQty, totalCost: updatedTotalCost };
+        }
+        else //As a failsafe, if you're removing from item to what you think is in the cart, but isn't, gracefully abort the function.
+          return prevCart
+      });
+    }
+  }
+
+  function showToast(message, positive) {
+    const toast = document.createElement("div");
+    toast.id = positive ? "snackbar" : "neg_snackbar";
+    toast.className = "show";
+    toast.innerText = message;
+    document.body.appendChild(toast);
+
+    // Remove after 3 seconds
+    setTimeout(() => {
+      toast.className = toast.className.replace("show", "");
+      document.body.removeChild(toast);
+    }, 3000);
   }
 
   //Functions for responding to changes to any part of the address input class.
@@ -219,6 +258,7 @@ function App() {
   function clearCart() {
     if (confirm("Do you want to clear your cart?")) {
       setCurrentCart(emptyCart);
+      showToast("You have cleared the cart.", false);
     }
   }
 
@@ -311,7 +351,7 @@ function App() {
                                 <td>${item.price}</td>
                                 <td>${item.price * item.quantity}</td>
                                 {/*Buttons to remove or add to the current quantity of the item.*/}
-                                <td><button type="button" value={item.name} onClick={removeFromCart}>➖</button> {item.quantity} <button type="button" value={item.name} onClick={addMoreToCart}>➕</button></td>
+                                <td><button type="button" value={item.name} onClick={removeCompletelyFromCart}>🗑️</button><button type="button" value={item.name} onClick={removeFromCart}>➖</button> {item.quantity} <button type="button" value={item.name} onClick={addMoreToCart}>➕</button></td>
                               </tr>
                             ))
                           }
@@ -320,7 +360,7 @@ function App() {
                             <td><b>TOTAL</b></td>
                             <td>➡️</td>
                             <td><b>${Math.trunc(currentCart.totalCost * 100) / 100}</b></td>
-                            <td><b>{currentCart.totalQty} items</b></td>
+                            <td><b>{currentCart.totalQty} item(s)</b></td>
                           </tr>
                         </>
                       )
@@ -368,7 +408,7 @@ function App() {
                   <tr key="FINAL_TOTAL">
                     <td><b>TOTAL</b></td>
                     <td>➡️</td>
-                    <td><b>{currentCart.totalQty} items</b></td>
+                    <td><b>{currentCart.totalQty} item(s)</b></td>
                     <td><b>${Math.trunc(currentCart.totalCost * 100) / 100}</b></td>
                   </tr>
                 </tbody>
