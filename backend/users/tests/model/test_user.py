@@ -32,7 +32,21 @@ def test_weak_password_raises_error():
   with pytest.raises(ValidationError) as excinfo:
     validate_password("password")
   assert "Password must contain numbers and special characters" in str(excinfo.value)
-  
+
+#test that account with username already exists
+@pytest.mark.django_db
+def test_user_cant_be_created_if_username_already_exists(user):
+  with pytest.raises(IntegrityError) as excinfo:
+    User.objects.create_user(username="john doe", email="johndoe@email.com", password="StrongPasswo312rd!")
+  assert "username already exists" in str(excinfo.value)
+@pytest.mark.django_db
+
+#test that account with email already exists
+def test_user_cant_be_created_if_email_already_exists(user):
+  with pytest.raises(IntegrityError) as excinfo:
+    User.objects.create_user(username="john doe", email="johndoe@email.com", password="StrongPasswo312rd!")
+  assert "An account with this email is already registred" in str(excinfo.value)
+
 # @pytest.mark.django_db
 # def test_user_not_admin_by_default(user):
 #   assert user.username == "john doe"
