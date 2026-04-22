@@ -1,0 +1,11 @@
+class Product {
+    name = "item";
+    destination = "miles";
+    time = "minutes";
+
+    constructor(name, destination, time) {
+      this.name = name;
+      this.destination = destination;
+      this.time = time;
+    }
+  }
