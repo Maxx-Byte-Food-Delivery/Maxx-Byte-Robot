@@ -3,8 +3,10 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Login = () =>{
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -21,7 +23,11 @@ const Login = () =>{
                 password: password,
             }
         );
-        setMessage(response.data.message);
+        //setMessage(response.data.message);
+        
+        alert(response.data.message);
+        
+        navigate("/hello");
 
     }   catch (error) {
 

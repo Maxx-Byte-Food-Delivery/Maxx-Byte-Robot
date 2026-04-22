@@ -3,6 +3,9 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import Login from "./Login";
+import Hello from "./Hello";
+import {BrowserRouter, Routes,Route} from "react-router-dom";
 
 function App() {
   const [count, setCount] = useState(0)
@@ -19,12 +22,26 @@ function App() {
   }, []);
 
   return (
-    <>
-      <div>
-        <h1> {message} </h1>
-      </div>
-    </>
-  )
+
+    <BrowserRouter>
+
+      <Routes>
+
+        <Route
+          path="/"
+          element={<Login />}
+        />
+
+        <Route
+          path="/hello"
+          element={<Hello />}
+        />
+
+      </Routes>
+
+    </BrowserRouter>
+
+  );
 }
 
 export default App
