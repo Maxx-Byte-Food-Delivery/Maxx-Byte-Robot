@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 *.db
 *.sqlite
 *.sqlite3
@@ -11,3 +12,20 @@ Thumbs.db
 node_modules/
 node_modules/
 node_modules/
+=======
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+robot-delivery-app/backend/config/__pycache__/__init__.cpython-314.pyc
+/robot-delivery-app/backend/apps/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+robot-delivery-app/backend/config/__pycache__/wsgi.cpython-314.pyc
+robot-delivery-app/backend/config/__pycache__/urls.cpython-314.pyc
+robot-delivery-app/backend/apps/__pycache__/views.cpython-314.pyc
+robot-delivery-app/backend/config/__pycache__/__init__.cpython-314.pyc
+/robot-delivery-app/backend/config/__pycache__
+*.pyc
+*.pyc
+>>>>>>> 00c582d2b8896d1c6937973159b189cbbff2f252

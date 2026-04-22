@@ -67,7 +67,7 @@ daphne -p 8000 config.asgi:application
 <h3>Running test</h3>
 
 ```
-cd into backend
+cd backend
 ```
 to run tests:<br>
 run
