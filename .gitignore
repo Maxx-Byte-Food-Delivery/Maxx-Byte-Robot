@@ -10,3 +10,7 @@ Thumbs.db
 *.log
 agile/
 notes/
+.bashrc
+.bashrc_constructor/
+.sprint_data
+standup.log
