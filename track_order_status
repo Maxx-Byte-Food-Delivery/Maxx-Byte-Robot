@@ -9,3 +9,4 @@ class Product {
       this.time = time;
     }
   }
+import "real-time updates with timestamps and notifications";
