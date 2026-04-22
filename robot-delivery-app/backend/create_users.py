@@ -1,10 +1,13 @@
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'your_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+
 django.setup()
 
-from django.contrib.auth.models import User
+from apps.models import User
+from django.contrib.auth.hashers import make_password
+
 
 # 10 Test Users
 users = [
@@ -23,16 +26,16 @@ users = [
 created = 0
 for username, password, email, first, last in users:
     if not User.objects.filter(username=username).exists():
-        User.objects.create_user(
+        User.objects.create(
             username=username,
-            password=password,
+            password=make_password(password), #hashing
             email=email,
             first_name=first,
             last_name=last
         )
-        print(f"✅ Created: {username}")
+        print(f"Created: {username}")
         created += 1
     else:
-        print(f"⚠️ Exists: {username}")
+        print(f"Exists: {username}")
 
-print(f"\n🎉 {created} users created successfully!")
+print(f"{created} users created successfully!")

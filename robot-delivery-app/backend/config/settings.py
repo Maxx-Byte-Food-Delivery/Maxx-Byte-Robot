@@ -162,6 +162,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'channels',
+    'config',
+    'apps',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
