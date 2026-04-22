@@ -162,7 +162,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'channels',
+<<<<<<< HEAD:robot-delivery-app/backend/config/settings.py
+    'config',
+    'apps',
+=======
     'users'
+>>>>>>> refs/remotes/origin/Dev:backend/config/settings.py
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
