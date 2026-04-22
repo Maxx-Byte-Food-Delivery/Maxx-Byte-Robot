@@ -1,5 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
+from rest_framework.test import APIClient
 
 @pytest.fixture
 #makes user
@@ -16,3 +17,7 @@ def users(db):
   user2.save()
   user3.save()
   return users
+
+@pytest.fixture
+def api_client():
+  return APIClient()
