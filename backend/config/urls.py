@@ -8,6 +8,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from apps.views import hello_world
 from apps.views import LoginView
 from apps.views import get_all_products
+from backend.apps.views.views import hello_world
+from backend.apps.views.views import LoginView
+from backend.apps.views.views import get_all_products
 
 
 
