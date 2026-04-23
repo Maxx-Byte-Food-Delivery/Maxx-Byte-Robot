@@ -1,14 +1,11 @@
 import os
 import django
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-
 django.setup()
 
 from users.models import Staff, Student
 from django.contrib.auth.hashers import make_password
 
-# Staff Users - 8 staff members
 staff_users = [
     ("james_wilson", "Staff@123", "james.wilson@university.edu", "James", "Wilson", "Executive", "Executive Office", 1),
     ("maria_garcia", "Staff@456", "maria.garcia@university.edu", "Maria", "Garcia", "Operations Manager", "Operations", 2),
@@ -20,7 +17,6 @@ staff_users = [
     ("carlos_rodriguez", "Staff@505", "carlos.rodriguez@university.edu", "Carlos", "Rodriguez", "Kitchen Staff", "Food Services", 8),
 ]
 
-# Student Users - 10 students
 student_users = [
     ("alice_johnson", "Student@123", "alice.johnson@university.edu", "Alice", "Johnson", "S2024001", "Computer Science", 101),
     ("bob_smith", "Student@456", "bob.smith@university.edu", "Bob", "Smith", "S2024002", "Engineering", 102),
@@ -35,48 +31,19 @@ student_users = [
 ]
 
 print("\n" + "="*60)
-print("  STAFF USERS (8 Staff Members)")
+print("  STAFF USERS")
 print("="*60)
-
-created_staff = 0
-for username, password, email, first, last, role, dept, food_id in staff_users:
-    if not Staff.objects.filter(email=email).exists():
-        Staff.objects.create(
-            username=username,
-            password=make_password(password),
-            email=email,
-            first_name=first,
-            last_name=last,
-            role=role,
-            department=dept,
-            food_id=food_id
-        )
-        print(f"✅ Staff: {first} {last} - {role}")
-        created_staff += 1
+for u in staff_users:
+    if not Staff.objects.filter(email=u[2]).exists():
+        Staff.objects.create(username=u[0], password=make_password(u[1]), email=u[2], first_name=u[3], last_name=u[4], role=u[5], department=u[6], food_id=u[7])
+        print(f"✅ Staff: {u[3]} {u[4]}")
 
 print("\n" + "="*60)
-print("  STUDENT USERS (10 Students)")
+print("  STUDENT USERS")
 print("="*60)
+for u in student_users:
+    if not Student.objects.filter(email=u[2]).exists():
+        Student.objects.create(username=u[0], password=make_password(u[1]), email=u[2], first_name=u[3], last_name=u[4], student_id=u[5], major=u[6], food_id=u[7])
+        print(f"✅ Student: {u[3]} {u[4]}")
 
-created_students = 0
-for username, password, email, first, last, student_id, major, food_id in student_users:
-    if not Student.objects.filter(email=email).exists():
-        Student.objects.create(
-            username=username,
-            password=make_password(password),
-            email=email,
-            first_name=first,
-            last_name=last,
-            student_id=student_id,
-            major=major,
-            food_id=food_id
-        )
-        print(f"✅ Student: {first} {last} - {major}")
-        created_students += 1
-
-print("\n" + "="*60)
-print("  SUMMARY")
-print("="*60)
-print(f"Staff created: {created_staff}/8")
-print(f"Students created: {created_students}/10")
-print("="*60)
+print("\n✅ Done!")
