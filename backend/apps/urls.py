@@ -3,9 +3,6 @@ from apps.views import hello_world
 from apps.views import LoginView
 
 urlpatterns = [
-
-    path("login/", LoginView.as_view()),
-
+    path('login/', LoginView.as_view(), name='login'),
     path('hello/', hello_world)
-
 ]
