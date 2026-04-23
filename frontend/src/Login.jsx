@@ -27,7 +27,7 @@ const Login = () =>{
         
         alert(response.data.message);
         
-        navigate("/hello");
+        navigate("/page");
 
     }   catch (error) {
 
