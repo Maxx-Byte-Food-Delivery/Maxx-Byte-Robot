@@ -9,11 +9,22 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Order
 from django.contrib.auth.hashers import check_password
+from .models import Product
 
 @api_view(['GET', 'POST'])
-
 def hello_world(request):
     return Response({"message": "Hello World!"})
+
+@api_view(['GET'])
+def get_all_products(request):
+    return Response({"products": Product.objects.all().values()})
+
+@login_required
+def order_history(request):
+    # Filter orders for the logged-in user [3]
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    context = {'orders': orders}
+    return render(request, 'order_history.html', context)
 
 class LoginView(APIView):
 
@@ -49,12 +60,6 @@ class LoginView(APIView):
                     status=status.HTTP_401_UNAUTHORIZED
                 )
 
-@login_required
-def order_history(request):
-    # Filter orders for the logged-in user [3]
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    context = {'orders': orders}
-    return render(request, 'order_history.html', context)
         except User.DoesNotExist:
 
             print("USER NOT FOUND")
