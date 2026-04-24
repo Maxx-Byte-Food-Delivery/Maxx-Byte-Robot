@@ -1,16 +1,14 @@
 from django.urls import path
-<<<<<<< HEAD
-from backend.apps.views.views import hello_world
-from backend.apps.views.views import LoginView
-=======
-from backend.views.views import hello_world
-from backend.views.views import LoginView
->>>>>>> 52c8c5c9e76f7625dd5d1076624f41d611b138ad
+from views.hello_world import hello_world
+from views.login import LoginView
+from views.order_history import OrderHistory
 
 urlpatterns = [
 
     path("login/", LoginView.as_view()),
 
-    path('hello/', hello_world)
+    path('hello/', hello_world),
+
+    path('order_history/', OrderHistory.as_view())
 
 ]

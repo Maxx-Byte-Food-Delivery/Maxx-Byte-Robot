@@ -1,4 +1,4 @@
-from apps.models import User
+from backend.apps.models.users import User
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -7,17 +7,10 @@ from django.http import JsonResponse
 from rest_framework import status
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-<<<<<<<< HEAD:backend/apps/views/views.py
-from ..models import Order
-========
 from apps.orders import Order
->>>>>>>> 52c8c5c9e76f7625dd5d1076624f41d611b138ad:backend/views/views.py
 from django.contrib.auth.hashers import check_password
 
 @api_view(['GET', 'POST'])
-
-def hello_world(request):
-    return Response({"message": "Hello World!"})
 
 class LoginView(APIView):
 
@@ -60,13 +53,3 @@ class LoginView(APIView):
                 {"error": "User not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
-
-@login_required
-def order_history(request):
-    # Filter orders for the logged-in user [3]
-    orders = Order.objects.filter(user=request.user).order_by('-created_at')
-    context = {'orders': orders}
-    return render(request, 'order_history.html', context)
-        
-    
-    
