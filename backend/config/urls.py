@@ -12,7 +12,7 @@ from apps.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/', include("apps.urls")),
+    path('api/', include("apps.urls")),
 ]
 
 
