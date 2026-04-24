@@ -12,18 +12,19 @@ Maxx-Byte-Food-Delivery/
 │   ├── config/                Settings, URLs, ASGI/WSGI
 │   └── apps/
 │   │
-    └── users/
-        └──  tests/             contains tests
-                └── users/      tests for users
-                │
-                └── model/      contains tests for models     
-
- logic
-    └── views/
-        ├── views.py            contains api endpoints handling
+│    └── users/
+│        └──  tests/           contains tests
+│                └── users/    tests for users
+│                │
+│                └── model/    contains tests │for models     
+│
+│ logic
+│    └── views/
+│        ├── views.py    contains api endpoints handling
+│
 └── frontend/                  React 19 using Vite
     └── src/
-        └──                     Various files containg pages such as login
+        └──        Various files containg jsx pages such as login
 ```
 
 ---
