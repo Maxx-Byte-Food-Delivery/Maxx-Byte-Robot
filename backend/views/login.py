@@ -12,9 +12,6 @@ from django.contrib.auth.hashers import check_password
 
 @api_view(['GET', 'POST'])
 
-def hello_world(request):
-    return Response({"message": "Hello World!"})
-
 class LoginView(APIView):
 
     def post(self, request):
