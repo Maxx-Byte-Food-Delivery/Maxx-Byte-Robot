@@ -9,14 +9,12 @@ from views.hello_world import hello_world
 from views.login import LoginView
 from views.login import get_all_products
 
-
-
 urlpatterns = [ 
     path('admin/', admin.site.urls),
 
     path('api/', include("apps.urls")),
 
-    path('login/', LoginView),
+    path('login/', LoginView.as_view()),
 
     path('api/all_products/', get_all_products)
 ]

@@ -29,7 +29,6 @@ function App() {
   
   return(
     <BrowserRouter>
-
       <Routes>
 
         {/* Login page */}
