@@ -4,6 +4,16 @@ import Login from "./Login";
 function Page(){
     
     const [message, setMessage] = useState("");
+
+     useEffect(() => {
+        fetch("http://127.0.0.1:8000/api/all_products")
+        .then(res => res.json())
+        .then(data => {
+            console.log(data.products);
+            setProductList(data.products);
+        })
+        .catch(err => console.error(err));
+    }, []);
     
     //The product data structure used for listing products for sale.  
     class Product {

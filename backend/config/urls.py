@@ -1,13 +1,9 @@
 # """Root URL Configuration"""
 # from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from views.hello_world import hello_world
 from views.login import LoginView
-from views.login import get_all_products
+from views.products import get_all_products
 
 urlpatterns = [
     path('admin/', admin.site.urls),

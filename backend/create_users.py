@@ -5,7 +5,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
 django.setup()
 
-from apps.models.users import User
+from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 
 
