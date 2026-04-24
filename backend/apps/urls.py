@@ -3,6 +3,7 @@ from views.hello_world import hello_world
 from views.login import LoginView
 from views.order_history import OrderHistory
 
+
 urlpatterns = [
 
     path("login/", LoginView.as_view()),
