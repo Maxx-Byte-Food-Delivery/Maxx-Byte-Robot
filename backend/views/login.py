@@ -1,4 +1,4 @@
-from backend.apps.models.users import User
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -7,10 +7,8 @@ from django.http import JsonResponse
 from rest_framework import status
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from apps.orders import Order
+from apps.models.order import Order
 from django.contrib.auth.hashers import check_password
-
-@api_view(['GET', 'POST'])
 
 class LoginView(APIView):
 
@@ -44,12 +42,9 @@ class LoginView(APIView):
                 return Response(
                     {"error": "Wrong password"},
                     status=status.HTTP_401_UNAUTHORIZED
-                )
+                )   
         except User.DoesNotExist:
-
-            print("USER NOT FOUND")
-
             return Response(
-                {"error": "User not found"},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "Invalid credentials"},
+                status=status.HTTP_401_UNAUTHORIZED
             )
