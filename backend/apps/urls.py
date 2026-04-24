@@ -1,6 +1,6 @@
 from django.urls import path
-from backend.views.views import hello_world
-from backend.views.views import LoginView
+from views.views import hello_world
+from views.views import LoginView
 
 urlpatterns = [
 
