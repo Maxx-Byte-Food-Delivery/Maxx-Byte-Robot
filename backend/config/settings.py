@@ -164,7 +164,6 @@ INSTALLED_APPS = [
     'channels',
     'config',
     'apps',
-    'users',
     'views'
 ]
 
