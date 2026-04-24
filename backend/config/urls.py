@@ -5,12 +5,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from apps.views import hello_world
-from apps.views import LoginView
-from apps.views import get_all_products
-from backend.apps.views.views import hello_world
-from backend.apps.views.views import LoginView
-from backend.apps.views.views import get_all_products
+from views.hello_world import hello_world
+from views.login import LoginView
+from views.login import get_all_products
 
 
 

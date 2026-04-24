@@ -1,4 +1,4 @@
-from apps.models import User
+from backend.apps.models.users import User
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from ..models import Order
+from apps.orders import Order
 from django.contrib.auth.hashers import check_password
 from ..models import Product
 
@@ -68,6 +68,3 @@ class LoginView(APIView):
                 {"error": "User not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
-
-    
-    
