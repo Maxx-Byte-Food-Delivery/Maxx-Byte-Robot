@@ -1,7 +1,7 @@
 from django.urls import path
-from views.hello_world import hello_world
-from views.login import LoginView
-from views.order_history import OrderHistory
+from .views import hello_world
+from .views import LoginView
+from .views import order_history
 
 
 urlpatterns = [
@@ -10,6 +10,6 @@ urlpatterns = [
 
     path('hello/', hello_world),
 
-    path('order_history/', OrderHistory.as_view())
+    path('order_history/', order_history)
 
 ]
