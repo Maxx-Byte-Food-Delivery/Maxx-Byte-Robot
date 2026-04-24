@@ -13,3 +13,12 @@ def test_user_login_endpoint(api_client, user):
     print(response.data) 
 
   assert response.status_code == 200
+
+@pytest.mark.django_db
+def test_user_login_endpoint_wrong_password(api_client, user):
+  url = reverse('login')
+  data = {"username": "johndoe", "password": "wrongpassword"}
+  response = api_client.post(url, data, format='json')
+
+  assert response.status_code == 401
+  assert response.data['error'] == "Wrong password"
