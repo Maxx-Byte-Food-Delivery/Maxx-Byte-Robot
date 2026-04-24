@@ -164,7 +164,7 @@ INSTALLED_APPS = [
     'channels',
     'config',
     'apps',
-    'users'
+    'views'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

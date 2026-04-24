@@ -7,13 +7,8 @@ from django.http import JsonResponse
 from rest_framework import status
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from apps.orders import Order
+from apps.models.order import Order
 from django.contrib.auth.hashers import check_password
-
-@api_view(['GET', 'POST'])
-
-def hello_world(request):
-    return Response({"message": "Hello World!"})
 
 class LoginView(APIView):
 
