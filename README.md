@@ -11,7 +11,7 @@ Maxx-Byte-Food-Delivery/
 ├── backend/                   Django + DRF + Django Channels
 │   ├── config/                Settings, URLs, ASGI/WSGI
 │   └── apps/
-│   │
+│       ├── models/             contains models for db that include ordering, itmes, payment
 │    └── users/
 │        └──  tests/           contains tests
 │                └── users/    tests for users
@@ -20,7 +20,8 @@ Maxx-Byte-Food-Delivery/
 │
 │ logic
 │    └── views/
-│        ├── views.py    contains api endpoints handling
+│        ├── login.py          contains api endpoint handling for user login
+│        ├── order_history.py  contains api endpoint handling for user order history
 │
 └── frontend/                  React 19 using Vite
     └── src/
