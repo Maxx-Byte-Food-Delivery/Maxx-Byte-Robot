@@ -93,6 +93,8 @@ function Page(){
         new Product("Soda", 2.99, "Refreshing carbonated beverage")
     ];
 
+    const emptyProducts = [];
+
     const states = [
         "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois",
         "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
@@ -101,7 +103,7 @@ function Page(){
     ]
 
     let [currentCart, setCurrentCart] = useState(emptyCart);
-    let [productList, setProductList] = useState(dummyProducts); // This would be populated from the backend in a real application
+    let [productList, setProductList] = useState(emptyProducts); // This would be populated from the backend in a real application
     let [inputAddress, setInputAddress] = useState(emptyAddress); //Regulates the input fields for the address form
     let [view, setView] = useState("productList"); // Can be "productList", "cart", or "checkout"
     const CART_COLUMNS = 4;
