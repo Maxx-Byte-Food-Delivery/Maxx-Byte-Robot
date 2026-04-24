@@ -10,11 +10,9 @@ from views.login import LoginView
 
 
 
-urlpatterns = [ 
+urlpatterns = [
     path('admin/', admin.site.urls),
-
     path('api/', include("apps.urls")),
-
 ]
 
 
