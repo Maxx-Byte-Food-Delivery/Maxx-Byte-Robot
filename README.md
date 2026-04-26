@@ -111,4 +111,4 @@ npm run dev          #http://localhost:5173/
 
 | POST   | `/api/users/login/` |  User login endpoint <br>
 
-| POST   | `/api/users/login/` | User registration endpoint <br>
+| POST   | `/api/users/register/` | User registration endpoint <br>
