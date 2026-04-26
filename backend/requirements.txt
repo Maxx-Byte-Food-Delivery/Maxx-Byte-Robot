@@ -12,3 +12,5 @@ Pillow>=10.0
 python-decouple>=3.8
 pytest
 pytest-django
+stripe
+python-dotenv
