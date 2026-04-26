@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-*.db
-*.sqlite
-*.sqlite3
-__pycache__/
-*.pyc
-venv/
-.env
-.DS_Store
-Thumbs.db
-*.log
-node_modules/
-node_modules/
-node_modules/
-=======
 /robot-delivery-app/backend/config/__pycache__
 /robot-delivery-app/backend/config/__pycache__
 /robot-delivery-app/backend/config/__pycache__
@@ -28,4 +13,4 @@ robot-delivery-app/backend/config/__pycache__/__init__.cpython-314.pyc
 /robot-delivery-app/backend/config/__pycache__
 *.pyc
 *.pyc
->>>>>>> 00c582d2b8896d1c6937973159b189cbbff2f252
+/backend/.env
