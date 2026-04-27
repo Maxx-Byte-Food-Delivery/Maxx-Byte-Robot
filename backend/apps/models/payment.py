@@ -1,8 +1,7 @@
-from backend.apps.models import users
-from backend.apps.models import order
+from apps.models import order
+from django.db import models
 
-
-class Payment(users.Model):
+class Payment(models.Model):
 
     PAYMENT_METHODS = [
         ('card', 'Card'),
@@ -10,9 +9,9 @@ class Payment(users.Model):
         ('apple', 'Apple Pay')
     ]
 
-    order = users.OneToOneField(order.Order, on_delete=users.CASCADE)
-    method = users.CharField(max_length=10, choices=PAYMENT_METHODS)
-    amount = users.DecimalField(max_digits=8, decimal_places=2)
-    transaction_id = users.CharField(max_length=100)
-    status = users.CharField(max_length=20, default='pending')
-    created_at = users.DateTimeField(auto_now_add=True)
+    order = models.OneToOneField(order.Order, on_delete=models.CASCADE)
+    method = models.CharField(max_length=10, choices=PAYMENT_METHODS)
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    transaction_id = models.CharField(max_length=100)
+    status = models.CharField(max_length=20, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)

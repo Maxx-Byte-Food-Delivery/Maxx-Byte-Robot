@@ -1,15 +1,12 @@
 from django.urls import path
-from .views import hello_world
-from .views import LoginView
-from .views import order_history
+from apps.views.hello_world import hello_world
+from apps.views.login import LoginView
+from apps.views.payment import create_checkout_session, stripe_webhook
 
 
 urlpatterns = [
-
-    path("login/", LoginView.as_view()),
-
+    path('users/login/', LoginView.as_view(), name='login'),
     path('hello/', hello_world),
-
-    path('order_history/', order_history)
-
+    path('checkout/<int:order_id>/', create_checkout_session, name='create_checkout_session'),
+    path('stripe/webhook', stripe_webhook),
 ]
