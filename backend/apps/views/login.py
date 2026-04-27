@@ -16,35 +16,30 @@ class LoginView(APIView):
 
         username = request.data.get("username")
         password = request.data.get("password")
+        user_type = request.data.get("user_type")
+        user = authenticate(username=username, password=password)
 
         print("USERNAME:", username)
         print("PASSWORD:", password)
 
+        if user is None:
+            return Response({
+                "message": "Invalid credentials"
+            }, status=400)
 
-        try:
+        # Staff login check
+        if user_type == "staff" and not user.is_staff:
+            return Response({
+                "message": "Not a staff account"
+            }, status=403)
 
-            user = User.objects.get(
-                username=username
-            )
-            print("USER FOUND:", user.username)
+        # Student login check
+        if user_type == "student" and user.is_staff:
+            return Response({
+                "message": "Not a student account"
+            }, status=403)
 
-            if check_password(password,user.password):
-
-                return Response({
-                    "message": "Login successful",
-                    "username": user.username
-                })
-
-            else:
-
-                print("PASSWORD WRONG")
-
-                return Response(
-                    {"error": "Wrong password"},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )   
-        except User.DoesNotExist:
-            return Response(
-                {"error": "Invalid credentials"},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
+        return Response({
+            "message": "Login successful",
+            "user_type": "staff" if user.is_staff else "student"
+        })
