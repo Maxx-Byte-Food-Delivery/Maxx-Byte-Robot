@@ -1,8 +1,10 @@
 import stripe
+from django.conf import settings
 from django.http import JsonResponse, HttpResponse
-from backend.apps.models import Order
+from apps.models import order
+from apps.models.payment import Payment
 
-stripe_api_key = "sk_test_51TOiPRIlqypzYkQOgEYx78Gpo7XdtZKgjUOkjL4l1UlqSLNaYWxd6snUw0tjKZoPeOMwdRWeYoaPgq0JOhuEiN7z00jG5RdzGW"
+stripe_api_key = settings.STRIPE_API_KEY
 
 def create_checkout_session(request, order_id):
     order = Order.objects.get(id=order_id)
