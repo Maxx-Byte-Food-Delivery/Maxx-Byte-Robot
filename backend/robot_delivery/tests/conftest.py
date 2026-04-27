@@ -1,6 +1,9 @@
 import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
+from apps.models.order import Order
+from apps.models.payment import Payment
+from apps.models.order_item import OrderItem
 
 @pytest.fixture
 #makes user
@@ -16,7 +19,26 @@ def users(db):
   user1.save()
   user2.save()
   user3.save()
-  return users
+  return [user1, user2, user3]
+
+#creates order with user
+@pytest.fixture
+def create_order(db, user):
+  user_order = Order.objects.create(user=user, total_price=100.00)
+  user_order.save()
+  return user_order
+
+@pytest.fixture
+def create_payment(db, create_order):
+  payment = Payment.objects.create(order=create_order, method='card', amount=100.00, transaction_id='abc123', status='pending')
+  payment.save()
+  return payment
+
+@pytest.fixture
+def order_item(db, create_order):
+  order_item = OrderItem.objects.create(order=create_order, item_name="Test Product", quantity=2, price=50.00)
+  order_item.save()
+  return order_item
 
 @pytest.fixture
 def api_client():

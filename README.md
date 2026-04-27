@@ -89,7 +89,7 @@ cd backend
 ```
 run
 ```
-pytest users
+pytest robot_delivery
 ```
 ### Frontend
 
