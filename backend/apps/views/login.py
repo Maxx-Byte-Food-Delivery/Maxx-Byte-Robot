@@ -16,7 +16,6 @@ class LoginView(APIView):
 
         username = request.data.get("username")
         password = request.data.get("password")
-        user_type = request.data.get("user_type")
         user = authenticate(username=username, password=password)
 
         print("USERNAME:", username)
@@ -27,19 +26,13 @@ class LoginView(APIView):
                 "message": "Invalid credentials"
             }, status=400)
 
-        # Staff login check
-        if user_type == "staff" and not user.is_staff:
-            return Response({
-                "message": "Not a staff account"
-            }, status=403)
-
-        # Student login check
-        if user_type == "student" and user.is_staff:
-            return Response({
-                "message": "Not a student account"
-            }, status=403)
+        # Determine role automatically
+        if user.is_staff:
+            role = "staff"
+        else:
+            role = "student"
 
         return Response({
             "message": "Login successful",
-            "user_type": "staff" if user.is_staff else "student"
+            "role": role
         })
