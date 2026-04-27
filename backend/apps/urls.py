@@ -8,5 +8,5 @@ urlpatterns = [
     path('users/login/', LoginView.as_view(), name='login'),
     path('hello/', hello_world),
     path('checkout/<int:order_id>/', create_checkout_session, name='create_checkout_session'),
-    path('stripe/webhook', stripe_webhook),
+    path('stripe/webhook', stripe_webhook)
 ]
