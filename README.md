@@ -12,11 +12,11 @@ Maxx-Byte-Food-Delivery/
 │   ├── config/                Settings, URLs, ASGI/WSGI
 │   └── apps/
 │       ├── models/             contains models for db that include ordering, itmes, payment
-│    └── users/
+│    └── robot_delivery/
 │        └──  tests/           contains tests
 │                └── users/    tests for users
 │                │
-│                └── model/    contains tests │for models     
+│                └── model/    contains tests for models     
 │
 │ logic
 │    └── views/
