@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS =[]
 
 # # ---------------------------------------------------------------------------
 # # Apps
@@ -61,9 +61,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# ROOT_URLCONF = "config.urls"
+
 # WSGI_APPLICATION = "config.wsgi.application"
 # ASGI_APPLICATION = "config.asgi.application"   # For Django Channels
+
 
 # # ---------------------------------------------------------------------------
 # # Database
@@ -151,6 +152,7 @@ MIDDLEWARE = [
 #     "GEOFENCE_ENABLED": True,
 # }
 INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -161,7 +163,31 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'channels',
+    'View_History',
+    'django_bootstrap5',
 ]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+
+ROOT_URLCONF = "config.urls"
+
+#LOGIN_URL = '/accounts/login/'
+#LOGIN_REDIRECT_URL = '/View_History/'
 
 DATABASES = {
     'default': {
