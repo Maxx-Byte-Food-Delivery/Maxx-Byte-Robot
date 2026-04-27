@@ -169,6 +169,9 @@ INSTALLED_APPS = [
     'channels',
     'config',
     'apps',
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'two_factor',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
