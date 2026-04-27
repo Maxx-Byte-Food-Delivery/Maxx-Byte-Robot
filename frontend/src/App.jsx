@@ -38,6 +38,25 @@ function App() {
           element={<Login />}
         />
 
+        {/* MFA Verification */}
+        <Route
+          path="/verify-mfa"
+          element={<VerifyMFA />}
+        />
+
+        {/* Staff Dashboard */}
+        <Route
+          path="/staff"
+          element={<Staff />}
+        />
+
+        {/* Student Dashboard */}
+        <Route
+          path="/student"
+          element={<Student />}
+        />
+
+
         {/* Classes page */}
         <Route
           path="/page"

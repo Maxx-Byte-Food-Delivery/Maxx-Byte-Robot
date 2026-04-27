@@ -16,7 +16,7 @@ class LoginView(APIView):
 
         username = request.data.get("username")
         password = request.data.get("password")
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
 
         print("USERNAME:", username)
         print("PASSWORD:", password)
@@ -26,13 +26,27 @@ class LoginView(APIView):
                 "message": "Invalid credentials"
             }, status=400)
 
-        # Determine role automatically
-        if user.is_staff:
-            role = "staff"
-        else:
-            role = "student"
+        profile = user.profile
 
+        #Determine role automatically
+        # Staff → ALWAYS MFA
+        if user.is_staff:
+
+            return Response({
+                "mfa_required": True,
+                "role": "staff"
+            })
+
+        # Student → Only if enabled
+        if profile.mfa_enabled:
+
+            return Response({
+                "mfa_required": True,
+                "role": "student"
+            })
+
+        # No MFA needed
         return Response({
-            "message": "Login successful",
-            "role": role
+            "mfa_required": False,
+            "role": "student"
         })
