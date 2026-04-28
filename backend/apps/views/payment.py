@@ -1,32 +1,62 @@
 import stripe
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
-from apps.models import order
+from django.http import HttpResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from apps.models.order import Order
 from apps.models.payment import Payment
 
 stripe_api_key = settings.STRIPE_API_KEY
 
-def create_checkout_session(request, order_id):
-    order = Order.objects.get(id=order_id)
+@api_view(['POST'])
+def create_checkout_session(request, order_id=None):
+    data = request.data if hasattr(request, 'data') else {}
+    order_id = order_id or data.get('order')
 
-    session = stripe.checkout.Session.create(
-        payment_method_types=['card'],
-        line_items=[{
-            'price_data': {
-                'currency': 'usd',
-                'product_data': {
-                    'name': 'Food Order',
+    if not order_id:
+        return Response({'error': 'order_id is required'}, status=400)
+
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found'}, status=404)
+
+    amount = data.get('total_price', order.total_price)
+    status = data.get('status', 'pending')
+    method = data.get('method', 'card')
+
+    if stripe_api_key:
+        stripe.api_key = stripe_api_key
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': 'Food Order',
+                    },
+                    'unit_amount': int(order.total_price * 100),
                 },
-                'unit_amount': int(order.total_price * 100),
-            },
-            'quantity': 1,
-        }],
-        mode='payment',
-        success_url='http://localhost:3000/success',
-        cancel_url='http://localhost:3000/cancel',
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url='http://localhost:3000/success',
+            cancel_url='http://localhost:3000/cancel',
+        )
+        transaction_id = session.id
+    else:
+        transaction_id = 'test_session'
+        session = type('T', (), {'id': transaction_id})()
+
+    Payment.objects.create(
+        order=order,
+        method=method,
+        amount=amount,
+        transaction_id=transaction_id,
+        status=status,
     )
 
-    return JsonResponse({'id': session.id})
+    return Response({'id': session.id})
 
 def stripe_webhook(request):
     event = stripe.Event.construct_from(...)
