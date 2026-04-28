@@ -170,7 +170,6 @@ INSTALLED_APPS = [
     'config',
     'apps',
     'users',
-    'views'
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
