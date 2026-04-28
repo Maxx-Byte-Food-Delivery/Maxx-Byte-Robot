@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('apps', '0004_order_alter_user_email_alter_user_first_name_and_more'),
+        ('apps', '0002_orderitem'),
     ]
 
     operations = [
@@ -23,8 +23,5 @@ class Migration(migrations.Migration):
             model_name='order',
             name='status',
             field=models.CharField(choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')], default='pending', max_length=15),
-        ),
-        migrations.DeleteModel(
-            name='OrderItem',
         ),
     ]
