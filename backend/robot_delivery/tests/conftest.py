@@ -4,6 +4,7 @@ from rest_framework.test import APIClient
 from apps.models.order import Order
 from apps.models.payment import Payment
 from apps.models.order_item import OrderItem
+from apps.models.product import Product
 
 @pytest.fixture
 #makes user
@@ -39,6 +40,12 @@ def order_item(db, create_order):
   order_item = OrderItem.objects.create(order=create_order, item_name="Test Product", quantity=2, price=50.00)
   order_item.save()
   return order_item
+
+@pytest.fixture
+def create_products(db):
+  product1 = Product.objects.create(name="Test Product 1", description="Description for Test Product 1", price=19.99)
+  product2 = Product.objects.create(name="Test Product 2", description="Description for Test Product 2", price=29.99)
+  return [product1, product2]
 
 @pytest.fixture
 def api_client():
