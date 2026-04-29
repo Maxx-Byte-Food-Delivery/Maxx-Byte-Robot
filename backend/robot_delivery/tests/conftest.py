@@ -13,6 +13,7 @@ def user(db):
   user.save()
   return user
 #makes multiple users
+@pytest.fixture
 def users(db):
   user1 = User.objects.create_user(username="johndoe", email= "johndoe@email.com", first_name="john", last_name="doe", password ="psswrd123!")
   user2 = User.objects.create_user(username="janedoe", email= "janedoe@email.com", first_name="jane", last_name="doe", password ="SomeG00dPasswor!d")
@@ -36,8 +37,8 @@ def create_payment(db, create_order):
   return payment
 
 @pytest.fixture
-def order_item(db, create_order):
-  order_item = OrderItem.objects.create(order=create_order, item_name="Test Product", quantity=2, price=50.00)
+def order_item(db, create_order, create_products):
+  order_item = OrderItem.objects.create(order=create_order, product=create_products[0], quantity=2, price=50.00)
   order_item.save()
   return order_item
 
