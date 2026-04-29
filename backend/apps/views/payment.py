@@ -42,6 +42,7 @@ def create_checkout_session(request, order_id=None):
             mode='payment',
             success_url='http://localhost:3000/success',
             cancel_url='http://localhost:3000/cancel',
+            metadata={'order_id': str(order.id)},
         )
         transaction_id = session.id
     else:
@@ -59,7 +60,18 @@ def create_checkout_session(request, order_id=None):
     return Response({'id': session.id})
 
 def stripe_webhook(request):
-    event = stripe.Event.construct_from(...)
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = settings.STRIPE_API_KEY
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
 
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
