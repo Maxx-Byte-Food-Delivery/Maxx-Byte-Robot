@@ -1,56 +1,30 @@
-# Python
+*.db
+*.sqlite
+*.sqlite3
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-
-# Virtual environment
+*.pyc
 venv/
-.env/
-.venv/
-
-# Environment variables
 .env
-.env.*
-
-# Django stuff
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Static files (if collected)
-staticfiles/
-
-# Media uploads (optional depending on project)
-media/
-
-# Migrations (optional - depends on team workflow)
-# */migrations/
-# !*/migrations/__init__.py
-
-# IDEs / Editors
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-
-# OS files
 .DS_Store
 Thumbs.db
-
-# Testing / coverage
-.coverage
-htmlcov/
-.pytest_cache/
-
-# Node (if using frontend tools)
+*.log
 node_modules/
-
-# Build files
-dist/
-build/
-
-# Secrets
-*.pem
-*.key
+node_modules/
+node_modules/
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+robot-delivery-app/backend/config/__pycache__/__init__.cpython-314.pyc
+/robot-delivery-app/backend/apps/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+/robot-delivery-app/backend/config/__pycache__
+robot-delivery-app/backend/config/__pycache__/wsgi.cpython-314.pyc
+robot-delivery-app/backend/config/__pycache__/urls.cpython-314.pyc
+robot-delivery-app/backend/apps/__pycache__/views.cpython-314.pyc
+robot-delivery-app/backend/config/__pycache__/__init__.cpython-314.pyc
+/robot-delivery-app/backend/config/__pycache__
+*.pyc
+*.pyc
+frontend/package-lock.json
+frontend/package.json
