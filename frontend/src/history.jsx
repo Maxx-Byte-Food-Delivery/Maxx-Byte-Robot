@@ -1,47 +1,92 @@
-<!DOCTYPE html>
-<html>
-<body>
+import React, { useEffect, useState } from "react";
 
-<h1>View Order History</h1>
+function OrderHistory() {
+  const [orders, setOrders] = useState([]);
+  const [item, setItem] = useState("");
+  const [date, setDate] = useState("");
 
-<h2>Products</h2>
+  // Fetch orders
+  const fetchOrders = async () => {
+    let url = "http://127.0.0.1:8000/api/orders/";
 
-<ul>
-  <form method="get" style="margin-bottom: 20px;">
+    const params = new URLSearchParams();
+    if (item) params.append("item", item);
+    if (date) params.append("date", date);
 
-  <!-- Search by item -->
-  <input type="text" name="item" placeholder="Search by item name" value="{{request.GET.item}}">
+    if ([...params].length > 0) {
+      url += `?${params.toString()}`;
+    }
 
-  <!-- Filter by date -->
-  <input type="date" name="date" value="{{request.GET.item}}">
+    const res = await fetch(url);
+    const data = await res.json();
+    setOrders(data);
+  };
 
-  <button type="submit">Search</button>
+  useEffect(() => {
+    fetchOrders(); // load on page start
+  }, []);
 
-</form>
-  {% for order in orders %}
-  <div style = "margin-top: 10px;">
-    <strong>Date:</strong> {{ order.created_at|date:"M d, Y - H:i" }} </div>
-    <li style="margin-bottom: 15px;">
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchOrders();
+  };
 
-      <a href="{% url 'item' order.id %}">
-        View details
-      </a>
+  const handleReorder = async (orderId) => {
+    const res = await fetch("http://127.0.0.1:8000/api/reorder/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ order_id: orderId }),
+    });
 
-      
-      <form action="{% url 'reorder' %}" method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit">Reorder</button>
+    const data = await res.json();
+    alert(data.message);
+  };
+
+  return (
+    <div>
+      <h1>View Order History</h1>
+
+      <form onSubmit={handleSearch}>
+        <input
+          type="text"
+          placeholder="Search by item name"
+          value={item}
+          onChange={(e) => setItem(e.target.value)}
+        />
+
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+
+        <button type="submit">Search</button>
       </form>
 
-      <div style="margin-left: 20px; margin-top: 5px;">
-        {% for item in order.order_items.all %}
-          <div>• {{ item.product.name }}</div>
-        {% endfor %}
-      </div>
+      <ul>
+        {orders.map((order) => (
+          <li key={order.id}>
+            <div>
+              <strong>Date:</strong>{" "}
+              {new Date(order.created_at).toLocaleString()}
+            </div>
 
-    </li>
-  {% endfor %}
-</ul>
+            <button onClick={() => handleReorder(order.id)}>
+              Reorder
+            </button>
 
-</body>
-</html>
+            <div>
+              {order.order_items.map((item) => (
+                <div key={item.id}>• {item.product.name}</div>
+              ))}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default OrderHistory;
