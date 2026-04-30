@@ -11,6 +11,7 @@ import VerifySMS from "./VerifySMS";
 import VerifyTOTP from "./VerifyTOTP";
 import SetupTOTP from "./SetupTOTP";
 import ConfirmTOTP from "./ConfirmTOTP";
+import MFAOptions from "./MFAOptions"
 
 import {
   BrowserRouter,
@@ -37,6 +38,9 @@ function App() {
 
         {/* Login */}
         <Route path="/" element={<Login />} />
+
+        {/* 2FA Options*/}
+        <Route path="/mfa-options" element={<MFAOptions />} />
 
         {/* 2FA */}
         <Route path="/verify-sms" element={<VerifySMS />} />
