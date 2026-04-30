@@ -16,5 +16,5 @@ urlpatterns = [
     path('stripe/webhook', stripe_webhook),
     path('users/<int:user_id>/orders/view_history/', View_History, name='view_history'),
     path('users/<int:user_id>/orders/view_history/item/<int:id>/', item, name='view_history_item'),
-    path('users/<int:user_id>/orders/reorder/', reorder, name='reorder'),
+    path('users/<int:user_id>/orders/reorder/<int:id>/', reorder, name='reorder'),
 ]
