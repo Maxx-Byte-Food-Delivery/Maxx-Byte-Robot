@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
 @pytest.mark.django_db
-def test_user_login_endpoint(api_client, user):
+def test_user_login_endpoint(api_client, users):
   url = reverse('login')
   data = {"username": "johndoe", "password": "psswrd123!"}
   response = api_client.post(url, data, format='json')
@@ -15,7 +15,7 @@ def test_user_login_endpoint(api_client, user):
   assert response.status_code == 200
 
 @pytest.mark.django_db
-def test_user_login_endpoint_wrong_password(api_client, user):
+def test_user_login_endpoint_wrong_password(api_client, users):
   url = reverse('login')
   data = {"username": "johndoe", "password": "wrongpassword"}
   response = api_client.post(url, data, format='json')
