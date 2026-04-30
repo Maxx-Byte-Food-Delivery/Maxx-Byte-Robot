@@ -1,15 +1,9 @@
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
-from rest_framework import status
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from apps.models.order import Order
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth import authenticate
 from apps.utils.send_sms import send_mfa_code
+from apps.utils.twofa import generate_sms_code
 
 class LoginView(APIView):
 
@@ -17,43 +11,68 @@ class LoginView(APIView):
 
         username = request.data.get("username")
         password = request.data.get("password")
-        user = authenticate(request, username=username, password=password)
 
-        print("USERNAME:", username)
-        print("PASSWORD:", password)
+        user = authenticate(request, username=username, password=password)
 
         if user is None:
             return Response({
                 "message": "Invalid credentials"
             }, status=400)
-        
-        login(request, user)
 
         profile = user.profile
 
-        #Determine role automatically
-        # Staff → ALWAYS MFA
+        # 🔐 STORE USER IN SESSION (for verification step)
+        request.session['user_id'] = user.id
+
+        # ======================
+        # 👩‍💼 STAFF (MFA REQUIRED)
+        # ======================
         if user.is_staff:
 
-            send_mfa_code(user)
+            code = generate_sms_code()
+            request.session['sms_code'] = code
+
+            send_mfa_code(user)  # you already have this
 
             return Response({
-                "mfa_required": True,
+                "requires_2fa": True,
+                "method": "sms",
                 "role": "staff"
             })
 
-        # Student → Only if enabled
+        # ======================
+        # 👨‍🎓 STUDENT (2FA OPTIONAL)
+        # ======================
         if profile.mfa_enabled:
 
-            send_mfa_code(user)
+            # 📱 TOTP (Authenticator App)
+            if profile.mfa_method == "totp":
+                return Response({
+                    "requires_2fa": True,
+                    "method": "totp",
+                    "role": "student"
+                })
 
-            return Response({
-                "mfa_required": True,
-                "role": "student"
-            })
+            # 📩 SMS
+            if profile.mfa_method == "sms":
+                code = generate_sms_code()
+                request.session['sms_code'] = code
 
-        # No MFA needed
+                send_mfa_code(user)
+
+                return Response({
+                    "requires_2fa": True,
+                    "method": "sms",
+                    "role": "student"
+                })
+
+        # ======================
+        # ✅ NO 2FA → LOGIN
+        # ======================
+        from django.contrib.auth import login
+        login(request, user)
+
         return Response({
-            "mfa_required": False,
+            "requires_2fa": False,
             "role": "student"
         })

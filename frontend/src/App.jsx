@@ -9,6 +9,10 @@ import VerifyMFA from "./VerifyMFA";
 import Staff from "./Staff";
 import Student from "./Student";
 import Settings from "./Settings";
+import VerifySMS from "./pages/VerifySMS";
+import VerifyTOTP from "./pages/VerifyTOTP";
+import SetupTOTP from "./pages/SetupTOTP";
+import ConfirmTOTP from "./pages/ConfirmTOTP";
 
 import {
   BrowserRouter,
