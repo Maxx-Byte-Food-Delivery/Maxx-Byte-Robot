@@ -15,6 +15,13 @@ class Profile(models.Model):
         null=True
     )
 
+    mfa_method = models.CharField(
+        max_length=10,
+        choices=[('totp', 'TOTP'), ('sms', 'SMS')],
+        null=True,
+        blank=True
+    )
+
     mfa_code = models.CharField(
         max_length=6,
         blank=True,

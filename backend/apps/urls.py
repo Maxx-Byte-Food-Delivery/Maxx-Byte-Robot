@@ -7,6 +7,10 @@ from apps.views.logout import logout_view
 from apps.views.payment import create_checkout_session, stripe_webhook
 from apps.views.verify_2fa import Verify2FAView
 from apps.views.setup_totp import SetupTOTPView
+from apps.views.enable_sms_2fa import EnableSMS2FAView
+from apps.views.disable_2fa import Disable2FAView
+
+
 
 urlpatterns = [
     path('users/login/', LoginView.as_view(), name='login'),
@@ -19,4 +23,6 @@ urlpatterns = [
     path('stripe-webhook/', stripe_webhook),
     path('verify-2fa/', Verify2FAView.as_view()),
     path('setup-totp/', SetupTOTPView.as_view()),
+    path('enable-sms-2fa/', EnableSMS2FAView.as_view()),
+    path('disable-2fa/', Disable2FAView.as_view()),
 ]

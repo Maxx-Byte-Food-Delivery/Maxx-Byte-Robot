@@ -13,3 +13,5 @@ def get_provisioning_uri(user, secret):
         name=user.username,
         issuer_name="MaxxByte"
     )
+def generate_sms_code():
+    return str(random.randint(100000, 999999))

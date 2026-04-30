@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import login
-from apps.models import User
+from django.contrib.auth.models import User
 from apps.utils.twofa import get_totp
 
 class Verify2FAView(APIView):
