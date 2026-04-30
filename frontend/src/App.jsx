@@ -5,6 +5,7 @@ import heroImg from './assets/hero.png'
 import './App.css'
 import Login from "./Login";
 import Page from "./Page";
+import OrderHistory from "./history";
 
 import {
   BrowserRouter,
@@ -42,7 +43,7 @@ function App() {
           path="/page"
           element={<Page />}
         />
-
+        <Route path="/orders" element={<OrderHistory />} />
       </Routes>
 
     </BrowserRouter>
