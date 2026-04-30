@@ -29,14 +29,14 @@ def create_orders(db, users):
   return [order1, order2, order3]
 
 @pytest.fixture
-def create_payment(db, create_order):
-  payment = Payment.objects.create(order=create_order, method='card', amount=100.00, transaction_id='abc123', status='pending')
+def create_payment(db, create_orders):
+  payment = Payment.objects.create(order=create_orders[0], method='card', amount=100.00, transaction_id='abc123', status='pending')
   payment.save()
   return payment
 
 @pytest.fixture
-def order_item(db, create_order, create_products):
-  order_item = OrderItem.objects.create(order=create_order, product=create_products[0], quantity=2, price=50.00)
+def order_item(db, create_orders, create_products):
+  order_item = OrderItem.objects.create(order=create_orders[0], product=create_products[0], quantity=2, price=50.00)
   order_item.save()
   return order_item
 
