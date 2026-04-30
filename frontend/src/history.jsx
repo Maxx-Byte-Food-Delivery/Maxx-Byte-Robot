@@ -6,9 +6,12 @@ function OrderHistory() {
   const [item, setItem] = useState("");
   const [date, setDate] = useState("");
 
+  const userId = localStorage.getItem('user_id');
+  const accessToken = localStorage.getItem('access_token');
+
   // Fetch orders
   const fetchOrders = async () => {
-    let url = `http://127.0.0.1:8000/api/users/1/orders/view_history/`;
+    let url = `http://127.0.0.1:8000/api/users/${userId}/orders/view_history/`;
 
     const params = new URLSearchParams();
     if (item) params.append("item", item);
@@ -18,7 +21,12 @@ function OrderHistory() {
       url += `?${params.toString()}`;
     }
 
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
     const data = await res.json();
     setOrders(data);
   };
@@ -33,10 +41,11 @@ function OrderHistory() {
   };
 
   const handleReorder = async (orderId) => {
-    const res = await fetch(`http://127.0.0.1:8000/api/users/1/orders/reorder/${orderId}/`, {
+    const res = await fetch(`http://127.0.0.1:8000/api/users/${userId}/orders/reorder/${orderId}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ order_id: orderId }),
     });

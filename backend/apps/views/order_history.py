@@ -64,7 +64,11 @@ def item(request, user_id, id):
     })
 
 
+@api_view(['POST'])
 def reorder(request, user_id, id):
+    if request.user.id != user_id:
+        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+    
     try:
         old_Order = Order.objects.get(id=id, user_id=user_id)
     except Order.DoesNotExist:
@@ -75,4 +79,4 @@ def reorder(request, user_id, id):
     for item in old_Order.order_items.all():
         OrderItem.objects.create(order=new_Order, product=item.product, quantity=item.quantity)
 
-    return redirect('view_history_item', id=new_Order.id)
+    return Response({'message': 'Order reordered successfully', 'new_order_id': new_Order.id})
