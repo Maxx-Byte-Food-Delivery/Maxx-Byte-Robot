@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import './App.css';
+
 import Login from "./Login";
 import Page from "./Page";
-import VerifyMFA from "./VerifyMFA";
 import Staff from "./Staff";
 import Student from "./Student";
 import Settings from "./Settings";
-import VerifySMS from "./pages/VerifySMS";
-import VerifyTOTP from "./pages/VerifyTOTP";
-import SetupTOTP from "./pages/SetupTOTP";
-import ConfirmTOTP from "./pages/ConfirmTOTP";
+
+import VerifySMS from "./VerifySMS";
+import VerifyTOTP from "./VerifyTOTP";
+import SetupTOTP from "./SetupTOTP";
+import ConfirmTOTP from "./ConfirmTOTP";
 
 import {
   BrowserRouter,
@@ -20,9 +18,7 @@ import {
   Route
 } from "react-router-dom";
 
-
 function App() {
-  const [count, setCount] = useState(0)
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -34,53 +30,35 @@ function App() {
       })
       .catch(err => console.error(err));
   }, []);
-  
-  return(
-    <BrowserRouter>
 
+  return (
+    <BrowserRouter>
       <Routes>
 
-        {/* Login page */}
-        <Route
-          path="/"
-          element={<Login />}
-        />
+        {/* Login */}
+        <Route path="/" element={<Login />} />
 
-        {/* MFA Verification */}
-        <Route
-          path="/verify-mfa"
-          element={<VerifyMFA />}
-        />
+        {/* 2FA */}
+        <Route path="/verify-sms" element={<VerifySMS />} />
+        <Route path="/verify-totp" element={<VerifyTOTP />} />
 
-        {/* Staff Dashboard */}
-        <Route
-          path="/staff"
-          element={<Staff />}
-        />
+        {/* TOTP Setup */}
+        <Route path="/setup-totp" element={<SetupTOTP />} />
+        <Route path="/confirm-totp" element={<ConfirmTOTP />} />
 
-        {/* Student Dashboard */}
-        <Route
-          path="/student"
-          element={<Student />}
-        />
+        {/* Dashboards */}
+        <Route path="/staff" element={<Staff />} />
+        <Route path="/student" element={<Student />} />
 
-        <Route
-          path="/settings"
-          element={<Settings />}
-        />
+        {/* Settings */}
+        <Route path="/settings" element={<Settings />} />
 
-
-        {/* Classes page */}
-        <Route
-          path="/page"
-          element={<Page />}
-        /> 
+        {/* Other */}
+        <Route path="/page" element={<Page />} />
 
       </Routes>
-
     </BrowserRouter>
-  )
-
-  
+  );
 }
+
 export default App;

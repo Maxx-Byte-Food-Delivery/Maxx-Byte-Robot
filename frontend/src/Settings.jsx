@@ -1,36 +1,73 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
-function Settings() {
+function Settings({ setPage }) {
+    const [message, setMessage] = useState("");
 
-    const navigate = useNavigate();
+    // 🔐 Enable TOTP (go to QR setup)
+    const enableTOTP = () => {
+        setPage("setup-totp");
+    };
 
-    const enableMFA = () => {
+    // 📩 Enable SMS
+    const enableSMS = async () => {
+        const res = await fetch("http://127.0.0.1:8000/api/enable-sms-2fa/", {
+            method: "POST",
+            credentials: "include",
+        });
 
-        window.location.href =
-            "http://127.0.0.1:8000/account/two_factor/setup/";
+        const data = await res.json();
 
+        if (res.ok) {
+            setMessage("SMS 2FA enabled");
+        } else {
+            setMessage(data.message || "Error enabling SMS");
+        }
+    };
+
+    // ❌ Disable 2FA
+    const disable2FA = async () => {
+        const res = await fetch("http://127.0.0.1:8000/api/disable-2fa/", {
+            method: "POST",
+            credentials: "include",
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            setMessage("2FA disabled");
+        } else {
+            setMessage(data.message || "Error disabling 2FA");
+        }
     };
 
     return (
-
         <div>
-
             <h2>Settings</h2>
 
-            <button onClick={enableMFA}>
-                Enable MFA
+            <button onClick={enableTOTP}>
+                Enable Authenticator App (TOTP)
             </button>
 
             <br /><br />
 
-            <button onClick={() =>
-                navigate("/staff")
-            }>
+            <button onClick={enableSMS}>
+                Enable SMS 2FA
+            </button>
+
+            <br /><br />
+
+            <button onClick={disable2FA}>
+                Disable 2FA
+            </button>
+
+            <br /><br />
+
+            <button onClick={() => setPage("student")}>
                 Back
             </button>
 
+            {message && <p>{message}</p>}
         </div>
-
     );
 }
 

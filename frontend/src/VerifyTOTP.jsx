@@ -17,7 +17,7 @@ function VerifyTOTP({ setPage }) {
 
         if (res.ok) {
             if (data.role === "staff") setPage("staff");
-            else setPage("student");
+            else navigate("/student");
         } else {
             setError(data.message || "Invalid code");
         }
