@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function OrderHistory() {
   const [orders, setOrders] = useState([]);
@@ -7,7 +8,7 @@ function OrderHistory() {
 
   // Fetch orders
   const fetchOrders = async () => {
-    let url = "http://127.0.0.1:8000/api/orders/";
+    let url = `http://127.0.0.1:8000/api/users/1/orders/view_history/`;
 
     const params = new URLSearchParams();
     if (item) params.append("item", item);
@@ -32,7 +33,7 @@ function OrderHistory() {
   };
 
   const handleReorder = async (orderId) => {
-    const res = await fetch("http://127.0.0.1:8000/api/reorder/", {
+    const res = await fetch(`http://127.0.0.1:8000/api/users/1/orders/reorder/${orderId}/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
