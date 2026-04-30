@@ -10,32 +10,71 @@ const Login = () =>{
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
 
-  const handleLogin = async (e) =>{
+  const handleLogin = async (e) => {
+
     e.preventDefault();
 
+    if (loading) return;
+
+    setLoading(true);
+
     try {
-        const response = await axios.post(
-            "http://127.0.0.1:8000/api/users/login/",
-            {
-                username: username,
-                password: password,
-            }
-        );
-        //setMessage(response.data.message);
-        
-        alert(response.data.message);
-        
-        navigate("/page");
 
-    }   catch (error) {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/users/login/",
+        {
+          username: username,
+          password: password,
+        },
+        {
+          withCredentials: true
+        }
+      );
 
-        setMessage(
-            "Invalid username or password"
-        );
+      const data = response.data;
+
+      // If MFA required
+      if (data.mfa_required) {
+
+        navigate("/verify-mfa", {
+          state: {
+            username: username,
+            role: data.role
+          }
+        });
+
+      } else {
+
+        // No MFA
+        if (data.role === "staff") {
+
+          navigate("/staff");
+
+        } else {
+
+          navigate("/student");
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.error("Login error:", error);
+
+      setMessage(
+        "Invalid username or password"
+      );
+
     }
-  }
+    finally {
+      setLoading(false);
+    }
+
+  };
 
   return (
 
@@ -66,8 +105,8 @@ const Login = () =>{
           }
         />
 
-        <button type="submit">
-          Login
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p>{message}</p>

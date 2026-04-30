@@ -5,6 +5,10 @@ import heroImg from './assets/hero.png'
 import './App.css'
 import Login from "./Login";
 import Page from "./Page";
+import VerifyMFA from "./VerifyMFA";
+import Staff from "./Staff";
+import Student from "./Student";
+import Settings from "./Settings";
 
 import {
   BrowserRouter,
@@ -56,12 +60,17 @@ function App() {
           element={<Student />}
         />
 
+        <Route
+          path="/settings"
+          element={<Settings />}
+        />
+
 
         {/* Classes page */}
         <Route
           path="/page"
           element={<Page />}
-        />
+        /> 
 
       </Routes>
 

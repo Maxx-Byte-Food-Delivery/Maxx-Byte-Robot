@@ -1,12 +1,18 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function VerifyMFA() {
+const VerifyMFA = () => {
 
-    const [token, setToken] = useState("");
-    const username = localStorage.getItem("username");
+    const [code, setCode] = useState("");
 
-    const handleSubmit = async (e) => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const username = location.state?.username;
+    const role = location.state?.role;
+
+    const handleVerify = async (e) => {
 
         e.preventDefault();
 
@@ -16,17 +22,24 @@ function VerifyMFA() {
                 "http://127.0.0.1:8000/api/verify-mfa/",
                 {
                     username: username,
-                    token: token
+                    code: code
                 }
             );
 
-            alert(response.data.message);
+            if (role === "staff") {
 
-            window.location.href = "/dashboard";
+                navigate("/staff");
 
-        } catch (error) {
+            } else {
 
-            alert("Invalid MFA code");
+                navigate("/student");
+
+            }
+
+        }
+        catch (error) {
+
+            alert("Invalid or expired code");
 
         }
 
@@ -34,15 +47,16 @@ function VerifyMFA() {
 
     return (
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleVerify}>
 
-            <h2>Enter MFA Code</h2>
+            <h2>Enter Code</h2>
 
             <input
                 type="text"
-                placeholder="Enter code"
+                placeholder="Enter Code"
+                value={code}
                 onChange={(e) =>
-                    setToken(e.target.value)
+                    setCode(e.target.value)
                 }
             />
 
@@ -54,6 +68,6 @@ function VerifyMFA() {
 
     );
 
-}
+};
 
 export default VerifyMFA;
