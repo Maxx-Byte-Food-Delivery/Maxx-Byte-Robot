@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from apps.models.order import Order
 from django.contrib.auth.hashers import check_password
+from apps.utils.send_sms import send_mfa_code
 
 class LoginView(APIView):
 
@@ -25,12 +26,16 @@ class LoginView(APIView):
             return Response({
                 "message": "Invalid credentials"
             }, status=400)
+        
+        login(request, user)
 
         profile = user.profile
 
         #Determine role automatically
         # Staff → ALWAYS MFA
         if user.is_staff:
+
+            send_mfa_code(user)
 
             return Response({
                 "mfa_required": True,
@@ -39,6 +44,8 @@ class LoginView(APIView):
 
         # Student → Only if enabled
         if profile.mfa_enabled:
+
+            send_mfa_code(user)
 
             return Response({
                 "mfa_required": True,

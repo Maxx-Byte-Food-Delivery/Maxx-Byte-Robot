@@ -19,6 +19,12 @@ load_dotenv()
 
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/account/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/account/login/'
+
 # # ---------------------------------------------------------------------------
 # # Apps
 # # ---------------------------------------------------------------------------
@@ -58,13 +64,18 @@ STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+
+    # ✅ Required
+    'django_otp.middleware.OTPMiddleware',
+
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'django_otp.middleware.OTPMiddleware',
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -157,12 +168,21 @@ ASGI_APPLICATION = "config.asgi.application"   # For Django Channels
 #     "GEOFENCE_ENABLED": True,
 # }
 INSTALLED_APPS = [
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.admin',
     'django.contrib.staticfiles',
+
+    'django.contrib.sites',
+
+    # ✅ MFA core
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_static',
+    'two_factor',
+
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -170,12 +190,13 @@ INSTALLED_APPS = [
     'channels',
     'config',
     'apps',
-    'django_otp',
-    'django_otp.plugins.otp_totp',
-    'two_factor',
 ]
 
+SITE_ID = 1
+
 CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 DATABASES = {
     'default': {
@@ -199,3 +220,8 @@ TEMPLATES = [
         },
     },
 ]
+
+#For text vefication
+TWILIO_ACCOUNT_SID = "your_sid"
+TWILIO_AUTH_TOKEN = "your_token"
+TWILIO_PHONE_NUMBER = "+1234567890"

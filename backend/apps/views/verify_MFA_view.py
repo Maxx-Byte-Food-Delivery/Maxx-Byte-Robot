@@ -1,8 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
 from django.contrib.auth.models import User
-from django_otp import devices_for_user
+from django.utils import timezone
 
 
 class VerifyMFAView(APIView):
@@ -10,7 +9,7 @@ class VerifyMFAView(APIView):
     def post(self, request):
 
         username = request.data.get("username")
-        token = request.data.get("token")
+        code = request.data.get("code")
 
         try:
             user = User.objects.get(
@@ -23,14 +22,24 @@ class VerifyMFAView(APIView):
                 "message": "User not found"
             }, status=404)
 
-        device = devices_for_user(user).first()
+        profile = user.profile
 
-        if device and device.verify_token(token):
+        # Check code
+        if profile.mfa_code != code:
 
             return Response({
-                "message": "MFA verified"
-            })
+                "message": "Invalid code"
+            }, status=400)
+
+        # Check expiration
+        if timezone.now() > profile.mfa_expiry:
+
+            return Response({
+                "message": "Code expired"
+            }, status=400)
+
+        request.session["mfa_verified"] = True
 
         return Response({
-            "message": "Invalid MFA code"
-        }, status=400)
+            "message": "MFA verified"
+        })
