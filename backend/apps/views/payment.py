@@ -1,12 +1,14 @@
 import stripe
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse
-from apps.models import order
+from apps.models.order import Order
 from apps.models.payment import Payment
 
-stripe_api_key = settings.STRIPE_API_KEY
+stripe.api_key = settings.STRIPE_API_KEY
+
 
 def create_checkout_session(request, order_id):
+
     order = Order.objects.get(id=order_id)
 
     session = stripe.checkout.Session.create(
@@ -21,6 +23,9 @@ def create_checkout_session(request, order_id):
             },
             'quantity': 1,
         }],
+        metadata={
+            "order_id": order.id
+        },
         mode='payment',
         success_url='http://localhost:3000/success',
         cancel_url='http://localhost:3000/cancel',
@@ -28,15 +33,18 @@ def create_checkout_session(request, order_id):
 
     return JsonResponse({'id': session.id})
 
+
 def stripe_webhook(request):
-    event = stripe.Event.construct_from(...)
+
+    event = stripe.Event.construct_from(request.json, stripe.api_key)
 
     if event['type'] == 'checkout.session.completed':
+
         session = event['data']['object']
         order_id = session['metadata']['order_id']
-        order = Order.objects.get(id=order_id)
 
+        order = Order.objects.get(id=order_id)
         order.status = 'confirmed'
         order.save()
 
-        return HttpResponse(status=200)
+    return HttpResponse(status=200)
