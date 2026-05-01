@@ -54,3 +54,20 @@ def test_order_placement_unauthenticated(api_client, create_products):
 
     assert response.status_code == 401
     assert response.data['detail'] == "Authentication credentials were not provided."
+
+@pytest.mark.skip(reason="order endpoint not yet implemented")
+def test_order_placement_for_other_user_raises_error(api_client, users, create_products):
+    api_client.force_authenticate(user=users[0])
+
+    url = reverse('place_order')
+    data = {
+        "items": [
+            {"product_id": create_products[0].id, "quantity": 2},
+            {"product_id": create_products[1].id, "quantity": 1}
+        ]
+        "user_id": users[1].id
+    }
+    response = api_client.post(url, data, format='json')
+
+    assert response.status_code == 400
+    assert response.data['error'] == "Action forbidden"
