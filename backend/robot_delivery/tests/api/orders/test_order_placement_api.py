@@ -9,7 +9,7 @@ from django.urls import reverse
 def test_order_placement(api_client, users, create_products):
     api_client.force_authenticate(user=users[0])
 
-    url = reverse('place_order')
+    url = reverse('place_order', args=[users[0].id])
     data = {
         "items": [
             {"product_id": create_products[0].id, "quantity": 2},
@@ -28,7 +28,7 @@ def test_order_placement(api_client, users, create_products):
 def test_order_placement_no_quantity(api_client, users, create_products):
     api_client.force_authenticate(user=users[0])
 
-    url = reverse('place_order')
+    url = reverse('place_order', args=[users[0].id])
     data = {
         "items": [
             {"product_id": create_products[0].id},
@@ -59,13 +59,12 @@ def test_order_placement_unauthenticated(api_client, create_products):
 def test_order_placement_for_other_user_raises_error(api_client, users, create_products):
     api_client.force_authenticate(user=users[0])
 
-    url = reverse('place_order')
+    url = reverse('place_order', args=[users[0].id])
     data = {
         "items": [
             {"product_id": create_products[0].id, "quantity": 2},
             {"product_id": create_products[1].id, "quantity": 1}
-        ],
-        "user_id": users[1].id
+        ]
     }
     response = api_client.post(url, data, format='json')
 

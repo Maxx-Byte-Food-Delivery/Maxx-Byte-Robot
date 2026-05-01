@@ -9,7 +9,7 @@ from django.urls import reverse
 def test_order_tracking_api_endpoint(api_client, users, create_orders):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse('order_tracking', kwargs={'order_id': create_orders[0].id, 'user_id': users[0].id})
+  url = reverse('order_tracking', args=[create_orders[0].id, users[0].id])
   response = api_client.get(url)
 
   assert response.status_code == 200
@@ -19,7 +19,7 @@ def test_order_tracking_api_endpoint(api_client, users, create_orders):
 
 @pytest.mark.skip(reason="order tracking endpoint not yet implemented")
 def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders):
-  url = reverse('order_tracking', kwargs={'order_id': create_orders[0].id})
+  url = reverse('order_tracking', args=[create_orders[0].id])
   response = api_client.get(url)
 
   assert response.status_code == 403
@@ -27,7 +27,7 @@ def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders):
 
 @pytest.mark.skip(reason="order tracking endpoint not yet implemented")
 def test_order_tracking_api_endpoint_no_order(api_client, create_orders):
-  url = reverse('order_tracking', kwargs={'user_id': users[0].id})
+  url = reverse('order_tracking', args=[users[1].id])
   response = api_client.get(url)
 
   assert response.status_code == 400
