@@ -10,9 +10,11 @@ Built with **Django REST Framework** (backend) and **React** (frontend).
 Maxx-Byte-Food-Delivery/
 ├── backend/                   Django + DRF + Django Channels
 │   ├── config/                Settings, URLs, ASGI/WSGI
+│   │   ├── urls.py             contains root url patterns i.e.(api/ & admin/)
 │   └── apps/
-│   │   ├── models/             contains models for db that include ordering, itmes, payment
+│   │   ├── models/             contains models for db that include ordering, items, payment, etc.
 │   │   ├── views/              contains api endpoints handling
+│   │   ├── urls.py             contains url patterns
 │   │ 
 │   └── robot_delivery/
 │        └──  tests/           contains tests
@@ -87,8 +89,38 @@ cd backend
 ```
 run
 ```
-pytest robot_delivery
+pytest robot_delivery tests
 ```
+<h3>To run API or Model tests only</h3>
+<h4>Model Tests</h4>
+
+run
+```
+pytest robot_delivery tests/model
+```
+
+<h4>API Tests</h4>
+
+run
+```
+pytest robot_delivery tests/api
+```
+
+<h4>Specific Model Tests</h4>
+
+run
+```
+pytest robot_delivery tests/model/[file name]
+```
+
+<h4>Specific API Tests</h4>
+
+run
+```
+pytest robot_delivery tests/api/[folder name i.e. orders]/[file name]
+```
+
+
 ### Frontend
 
 ```bash
