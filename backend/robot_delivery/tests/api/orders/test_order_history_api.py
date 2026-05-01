@@ -21,6 +21,7 @@ def test_order_history_endpoint_user_cant_access_other_users_history(api_client,
   response = api_client.get(url, format='json')
 
   assert response.status_code == 403
+  assert response.data['error'] == 'Unauthorized'
 
 @pytest.mark.django_db
 def test_order_history_item_endpoint(api_client, users, order_items):
@@ -36,4 +37,12 @@ def test_order_history_item_endpoint(api_client, users, order_items):
   assert response.data['order_items'][0]['quantity'] == 2
   assert float(response.data['order_items'][0]['price']) == 50.00
  
+@pytest.mark.django_db
+def test_order_history_item_endpoint_wrong_user(api_client, users, order_items):
+  api_client.force_authenticate(user=users[0])
 
+  url = reverse('view_history_item', args=[users[1].id, order_items[0].order.id])
+  response = api_client.get(url, format='json')
+
+  assert response.status_code == 403
+  assert response.data['error'] == 'Unauthorized'
