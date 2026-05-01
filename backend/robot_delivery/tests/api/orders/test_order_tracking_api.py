@@ -26,9 +26,19 @@ def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders):
   assert response.data['detail'] == "This request requires you to be logged in."
 
 @pytest.mark.skip(reason="order tracking endpoint not yet implemented")
+def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders):
+  api_client.force_authenticate(user=users[0])
+
+  url = reverse('order_tracking', args=[create_orders[0].id, users[1].id])
+  response = api_client.get(url)
+
+  assert response.status_code == 403
+  assert response.data['error'] == "Unauthorized"
+
+@pytest.mark.skip(reason="order tracking endpoint not yet implemented")
 def test_order_tracking_api_endpoint_no_order(api_client, create_orders):
   url = reverse('order_tracking', args=[users[1].id])
   response = api_client.get(url)
 
   assert response.status_code == 400
-  assert response.data['detail'] == "This request requires an order"
+  assert response.data['error'] == "This request requires an order"
