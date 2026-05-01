@@ -30,5 +30,5 @@ def test_order_tracking_api_endpoint_no_order(api_client, create_orders):
   url = reverse('order_tracking', kwargs={'user_id': users[0].id})
   response = api_client.get(url)
 
-  assert response.status_code == 403
-  assert response.data['detail'] == "This request requires you to be logged in."
+  assert response.status_code == 400
+  assert response.data['detail'] == "This request requires an order"
