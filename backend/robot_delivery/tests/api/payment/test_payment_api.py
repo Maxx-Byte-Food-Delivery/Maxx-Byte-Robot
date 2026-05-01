@@ -54,13 +54,13 @@ def test_stripe_webhook_checkout_completed(mock_construct_event, mock_session_cr
     assert response.status_code == 200
 
     mock_event = {
-        'type': 'checkout.session.completed',
-        'data': {
-            'object': {
-                'id': 'cs_test_123',
-                'metadata': {'order_id': str(create_orders[0].id)}
-            }
+      'type': 'checkout.session.completed',
+      'data': {
+        'object': {
+          'id': 'cs_test_123',
+          'metadata': {'order_id': str(create_orders[0].id)}
         }
+      }
     }
     mock_construct_event.return_value = mock_event
 

@@ -64,7 +64,7 @@ def test_order_placement_for_other_user_raises_error(api_client, users, create_p
         "items": [
             {"product_id": create_products[0].id, "quantity": 2},
             {"product_id": create_products[1].id, "quantity": 1}
-        ]
+        ],
         "user_id": users[1].id
     }
     response = api_client.post(url, data, format='json')
