@@ -34,3 +34,13 @@ def test_user_logout_endpoint(api_client, users):
   
   assert response.status_code == 200
   assert response.data['message'] == "Logged out successfully"
+
+@pytest.mark.skip(reason = "change password endpoint not yet implamented")
+def test_user_chnage_password_endpoint(api_client, users):
+  api_client.force_authenticate(user=users[0])
+  url = reverse('change_password')
+  data = {"old_password": "psswrd123!", "new_password": "newpsswrd123!"}
+  response = api_client.post(url, data, format='json')
+
+  assert response.status_code == 200
+  assert response.data['message'] == "password changed successfully"
