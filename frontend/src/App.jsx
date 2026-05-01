@@ -43,8 +43,16 @@ function App() {
           path="/page"
           element={<Page />}
         />
+        
+        <Route
+          path="/products"
+          element={<Products />}
+        />
 
-        <Route path="/checkout" element={<CheckoutPage />} />
+        {/*Checkout page*/}
+        <Route 
+        path="/checkout" 
+        element={<CheckoutPage />} />
 
       </Routes>
 

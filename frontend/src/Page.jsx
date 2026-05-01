@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Login from "./Login";
+import { useNavigate } from "react-router-dom";
 
 function Page(){
     
@@ -269,9 +270,7 @@ function Page(){
     }
 
     //Switch the view between the products, cart and checkout.  
-    function switchView(event) {
-        setView(event.target.value);
-    }
+    const navigate = useNavigate();
 
     return (
         <>
@@ -280,11 +279,13 @@ function Page(){
             </div>
             <table>
                 <tbody>
-                    {/*The viewing tabs that let you cycle beteen products to buy, your cart and a checkout page.*/}
                     <tr>
-                        <td><button type="button" value="productList" onClick={switchView} disabled={view === "productList"} >🏪 PRODUCTS</button></td>
+                        <td><button type="button" 
+                        onClick={() => navigate("/products")}>🏪 PRODUCTS</button></td>
                         <td><button type="button" value="cart" onClick={switchView} disabled={view === "cart"} >🛒 CART ({currentCart.totalQty})</button></td>
-                        <td><button type="button" value="checkout" onClick={switchView} disabled={view === "checkout" || currentCart.totalQty <= 0} >💳 CHECKOUT</button></td>
+                        <td><button type="button" 
+                        disabled={currentCart.totalQty <= 0}
+                        onClick={() => navigate("/checkout")}>💳 CHECKOUT</button></td>
                     </tr>
                 </tbody>
             </table>
