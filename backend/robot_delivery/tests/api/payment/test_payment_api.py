@@ -5,10 +5,12 @@ from unittest.mock import patch, MagicMock
 import stripe
 
 @pytest.mark.django_db
-def test_payment_endpoint(api_client, users, create_orders):
+def test_payment_endpoint(api_client, create_orders, users):
+  api_client.force_authenticate(user=users[0])
+
   url = reverse("create_checkout_session")
 
-  data = {"order": create_orders[0].id, "user": users[0].id, "total_price": create_orders[0].total_price, "status": "pending"}
+  data = {"order": create_orders[0].id, "user": users[0].id, }
   response = api_client.post(url, data, format="json")
 
   if response.status_code != 200:
@@ -21,9 +23,11 @@ def test_payment_endpoint(api_client, users, create_orders):
   assert float(payment.amount) == 100.00
   assert payment.order.user == create_orders[0].user
 
-def test_payment_endpoint_missing_order(api_client, create_orders):
+def test_payment_endpoint_missing_order(api_client, create_orders, users):
+  api_client.force_authenticate(user=users[0])
+
   url = reverse("create_checkout_session")
-  data = {"total_price": create_orders[0].total_price, "status": "pending"}
+  data = {"user": users[0].id}
   response = api_client.post(url, data, format="json")
 
   assert response.status_code == 400
@@ -31,9 +35,11 @@ def test_payment_endpoint_missing_order(api_client, create_orders):
   assert response.data["error"] == "order_id is required"
 
 @pytest.mark.django_db
-def test_payment_endpoint_invalid_order(api_client, create_orders):
+def test_payment_endpoint_invalid_order(api_client, create_orders, users):
+  api_client.force_authenticate(user=users[0])
+
   url = reverse("create_checkout_session")
-  data = {"order": 9999, "total_price": create_orders[0].total_price, "status": "pending"}
+  data = {"order": 9999, "user": users[0].id}
   response = api_client.post(url, data, format="json")
 
   assert response.status_code == 404
@@ -43,13 +49,15 @@ def test_payment_endpoint_invalid_order(api_client, create_orders):
 @pytest.mark.django_db
 @patch('stripe.checkout.Session.create')
 @patch('stripe.Webhook.construct_event')
-def test_stripe_webhook_checkout_completed(mock_construct_event, mock_session_create, api_client, create_orders):
+def test_stripe_webhook_checkout_completed(mock_construct_event, mock_session_create, api_client, create_orders, users):
+    api_client.force_authenticate(user=users[0])
+
     mock_session = MagicMock()
     mock_session.id = 'cs_test_123'
     mock_session_create.return_value = mock_session
 
     url = reverse("create_checkout_session")
-    data = {"order": create_orders[0].id}
+    data = {"order": create_orders[0].id, "user": users[0].id}
     response = api_client.post(url, data, format="json")
     assert response.status_code == 200
 
@@ -76,7 +84,9 @@ def test_stripe_webhook_checkout_completed(mock_construct_event, mock_session_cr
 @pytest.mark.django_db
 @patch('stripe.checkout.Session.create')
 @patch('stripe.Webhook.construct_event')
-def test_stripe_webhook_invalid_signature(mock_construct_event, mock_session_create, api_client, create_orders):
+def test_stripe_webhook_invalid_signature(mock_construct_event, mock_session_create, api_client, create_orders, users):
+    api_client.force_authenticate(user=users[0])
+
     mock_construct_event.side_effect = stripe.error.SignatureVerificationError("Invalid signature", None)
 
     mock_session = MagicMock()
@@ -84,7 +94,7 @@ def test_stripe_webhook_invalid_signature(mock_construct_event, mock_session_cre
     mock_session_create.return_value = mock_session
 
     url = reverse("create_checkout_session")
-    data = {"order": create_orders[0].id}
+    data = {"order": create_orders[0].id, "user": users[0].id}
     response = api_client.post(url, data, format="json")
 
     webhook_url = '/api/stripe/webhook'
@@ -96,7 +106,9 @@ def test_stripe_webhook_invalid_signature(mock_construct_event, mock_session_cre
 @pytest.mark.django_db
 @patch('stripe.checkout.Session.create')
 @patch('stripe.Webhook.construct_event')
-def test_stripe_webhook_invalid_payload(mock_construct_event, mock_session_create, api_client, create_orders):
+def test_stripe_webhook_invalid_payload(mock_construct_event, mock_session_create, api_client, create_orders, users):
+    api_client.force_authenticate(user=users[0])
+
     mock_construct_event.side_effect = ValueError("Invalid payload")
 
     mock_session = MagicMock()
@@ -104,7 +116,7 @@ def test_stripe_webhook_invalid_payload(mock_construct_event, mock_session_creat
     mock_session_create.return_value = mock_session
 
     url = reverse("create_checkout_session")
-    data = {"order": create_orders[0].id}
+    data = {"order": create_orders[0].id, "user": users[0].id}
     response = api_client.post(url, data, format="json")
 
     webhook_url = '/api/stripe/webhook'
@@ -112,3 +124,12 @@ def test_stripe_webhook_invalid_payload(mock_construct_event, mock_session_creat
     response = api_client.post(webhook_url, payload, content_type='application/json', HTTP_STRIPE_SIGNATURE='fake_sig')
 
     assert response.status_code == 400
+
+def test_stripe_webhook_user_cant_pay_for_other_users(api_client, create_orders, users):
+    api_client.force_authenticate(user=users[0])
+
+    url = reverse("create_checkout_session")
+    data = {"order": create_orders[1].id, "user": users[1].id}
+    response = api_client.post(url, data, format="json")
+    assert response.status_code == 403
+    assert response.data["error"] == "Action not allowed"
