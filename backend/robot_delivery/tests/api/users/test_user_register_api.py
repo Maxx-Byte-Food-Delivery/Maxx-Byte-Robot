@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 
 # when unskipping these tests change @pytest.mark.skip to @pytest.mark.django_db
-# make sure url = reverse('place_order') matches the name of the url pattern for the order placement endpoint in the urls.py file
+# make sure url = reverse('register') matches the name of the url pattern for the order placement endpoint in the urls.py file
 
 @pytest.mark.skip(reason="no user registration api endpoint yet")
 def test_user_registration_api_endpoint(api_client):

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
 # when unskipping these tests change @pytest.mark.skip to @pytest.mark.django_db
-# make sure url = reverse('place_order') matches the name of the url pattern for the order placement endpoint in the urls.py file
+# make sure url = reverse('login') or reverse('change_password') matches the name of the url pattern for the order placement endpoint in the urls.py file
 
 @pytest.mark.django_db
 def test_user_login_endpoint(api_client, users):
