@@ -7,7 +7,7 @@ function SetupTOTP({ setPage }) {
     const generateQR = async () => {
         setLoading(true);
 
-        const res = await fetch("http://127.0.0.1:8000/api/setup-totp/", {
+        const res = await fetch("http://localhost:8000/api/setup-totp/", {
             method: "POST",
             credentials: "include",
         });

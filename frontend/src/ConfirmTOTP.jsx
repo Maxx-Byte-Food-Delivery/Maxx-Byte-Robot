@@ -5,7 +5,7 @@ function ConfirmTOTP({ setPage }) {
     const [error, setError] = useState("");
 
     const confirm = async () => {
-        const res = await fetch("http://127.0.0.1:8000/api/confirm-totp/", {
+        const res = await fetch("http://localhost:8000/api/confirm-totp/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

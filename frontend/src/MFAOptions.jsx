@@ -11,7 +11,7 @@ function MFAOptions() {
 
     // 🔍 Load current MFA status
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/user-profile/", {
+        fetch("http://localhost:8000/api/user-profile/", {
             credentials: "include",
             headers: {
                 "X-CSRFToken": getCSRF(),
