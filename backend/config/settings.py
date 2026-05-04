@@ -76,6 +76,7 @@ MIDDLEWARE = [
 
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.csrf.CsrfViewMiddleware',
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -194,9 +195,23 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 CORS_ALLOW_CREDENTIALS = True
+
+SESSION_COOKIE_SAMESITE = "Lax"
+
+SESSION_COOKIE_SECURE = False 
 
 DATABASES = {
     'default': {

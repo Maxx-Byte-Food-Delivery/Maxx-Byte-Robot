@@ -10,21 +10,39 @@ class Verify2FAView(APIView):
         user_id = request.session.get("user_id")
 
         if not user_id:
-            return Response({"success": False, "error": "Session expired"})
+            return Response({"success": False, "error": "Session expired"}, status=400)
 
         user = User.objects.get(id=user_id)
+        profile = user.profile
 
         # ✅ TOTP
-        if user.twofa_method == "totp":
-            totp = get_totp(user.twofa_secret)
+        if profile.mfa_method == "totp":
+            totp = get_totp(user.mfa_secret)
             if totp.verify(code):
                 login(request, user)
-                return Response({"success": True})
+                print("USER LOGGED IN:", request.user)
+                request.session.pop("user_id", None)
+                return Response({
+                    "success": True,
+                    "role": "staff" if user.is_staff else "student"
+                })
 
         # ✅ SMS
-        if user.twofa_method == "sms":
+        if profile.mfa_method == "sms":
+            
             if code == request.session.get("sms_code"):
                 login(request, user)
-                return Response({"success": True})
+                print("USER LOGGED IN:", request.user)
 
-        return Response({"success": False})
+                request.session.pop("user_id", None)
+                request.session.pop("sms_code", None)
+                
+                return Response({
+                    "success": True,
+                    "role": "staff" if user.is_staff else "student",
+                })
+
+        return Response({
+            "success": False,
+            "error": "Invalid code"
+        }, status=400)
