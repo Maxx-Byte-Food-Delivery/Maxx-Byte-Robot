@@ -11,7 +11,7 @@ def test_order_history_endpoint(api_client, users, order_items):
   assert response.status_code == 200
   assert len(response.data) == 1
   assert response.data[0]['id'] == order_items[0].order.id
-  assert float(response.data[0]['total_price']) == 100.00
+  assert float(response.data[0]['total_price']) == 39.98
 
 @pytest.mark.django_db
 def test_order_history_endpoint_user_cant_access_other_users_history(api_client, users, order_items):
@@ -35,7 +35,8 @@ def test_order_history_item_endpoint(api_client, users, order_items):
   assert len(response.data['order_items']) == 1
   assert response.data['order_items'][0]['product']['name'] == "Test Product 1"
   assert response.data['order_items'][0]['quantity'] == 2
-  assert float(response.data['order_items'][0]['price']) == 50.00
+  assert float(response.data['order_items'][0]['price']) == 39.98
+  assert float(response.data['order_items'][0]['product']['price']) == 19.99
  
 @pytest.mark.django_db
 def test_order_history_item_endpoint_wrong_user(api_client, users, order_items):

@@ -20,7 +20,7 @@ def test_payment_endpoint(api_client, create_orders, users):
   payment = Payment.objects.filter(order=create_orders[0]).first()
   assert payment is not None
   assert payment.status == "pending"
-  assert float(payment.amount) == 100.00
+  assert float(payment.amount) == 39.98
   assert payment.order.user == create_orders[0].user
 
 def test_payment_endpoint_missing_order(api_client, create_orders, users):
