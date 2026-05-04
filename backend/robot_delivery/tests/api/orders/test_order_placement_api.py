@@ -40,6 +40,21 @@ def test_order_placement_no_quantity(api_client, users, create_products):
     assert response.status_code == 400
     assert 'quantity' in response.data['error']
 
+#user cannot place an order without quantity
+@pytest.mark.skip(reason="order endpoint not yet implemented")
+def test_order_placement_no_items(api_client, users, create_products):
+    api_client.force_authenticate(user=users[0])
+
+    url = reverse('place_order', args=[users[0].id])
+    data = {
+        "items": [
+        ]
+    }
+    response = api_client.post(url, data, format='json')
+
+    assert response.status_code == 400
+    assert 'quantity' in response.data['error']
+
 #user cannot place an order without logging in
 @pytest.mark.skip(reason="order endpoint not yet implemented")
 def test_order_placement_unauthenticated(api_client, create_products):
