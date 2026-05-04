@@ -6,7 +6,7 @@ from django.urls import reverse
 
 #user can cancel an order successfully
 @pytest.mark.skip(reason="cancel order endpoint not yet implemented")
-def test_order_cancel_api_endpoint(api_client, users, create_orders):
+def test_cancel_order_api_endpoint(api_client, users, create_orders):
   api_client.force_authenticate(user=users[0])
 
   url = reverse('cancel_order', args=[create_orders[0].id,users[0].id])
@@ -19,7 +19,7 @@ def test_order_cancel_api_endpoint(api_client, users, create_orders):
   assert response.data['status'] == "cancelled"
 
 @pytest.mark.skip(reason="cancel order endpoint not yet implemented")
-def test_cant_cancel_other_user_order_api_endpoint(api_client, users, create_orders):
+def test_cancel_order_api_endpoint_wrong_user(api_client, users, create_orders):
   api_client.force_authenticate(user=users[0])
 
   url = reverse('cancel_order', args=[create_orders[1].id,users[0].id])
@@ -31,7 +31,7 @@ def test_cant_cancel_other_user_order_api_endpoint(api_client, users, create_ord
   assert create_orders[1].status != "cancelled"
 
 @pytest.mark.skip(reason="cancel order endpoint not yet implemented")
-def test_cant_cancel_order_not_authenticated(api_client, users, create_orders):
+def test_cancel_order_api_endpoint_not_authenticated(api_client, users, create_orders):
   url = reverse('cancel_order', args=[create_orders[0].id, users[0].id])
   response = api_client.post(url)
 
@@ -41,7 +41,7 @@ def test_cant_cancel_order_not_authenticated(api_client, users, create_orders):
   assert create_orders[0].status != "cancelled"
 
 @pytest.mark.skip(reason="cancel order endpoint not yet implemented")
-def test_order_cancel_api_endpoint_no_order(api_client, users, create_orders):
+def test_cancel_order_api_endpoint_no_order(api_client, users, create_orders):
   api_client.force_authenticate(user=users[0])
 
   url = reverse('cancel_order', args=[users[0].id])
