@@ -5,10 +5,11 @@ function VerifyTOTP({ setPage }) {
     const [error, setError] = useState("");
 
     const verify = async () => {
-        const res = await fetch("http://127.0.0.1:8000/api/verify-2fa/", {
+        const res = await fetch("http://localhost:8000/api/verify-2fa/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "X-CSRFToken": getCSRF(),
             },
             body: JSON.stringify({ code }),
         });

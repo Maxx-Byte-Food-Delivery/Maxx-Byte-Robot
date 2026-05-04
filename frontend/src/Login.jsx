@@ -37,15 +37,14 @@ const Login = () =>{
       const data = response.data;
 
       // If MFA required
-      if (data.mfa_required) {
-
-        navigate("/verify-mfa", {
-          state: {
-            username: username,
-            role: data.role
-          }
-        });
-
+      if (data.requires_2fa) {
+        if (data.method === "sms") {
+          navigate("/verify-sms");
+        } else {
+          navigate("/verify-totp");
+        }
+        return;
+      
       } else {
 
         // No MFA

@@ -8,7 +8,7 @@ function Settings() {
             <h2>Settings</h2>
 
             <button onClick={() => navigate("/mfa-options")}>
-                Manage 2FA / MFA
+                Enable/Disable Two Factor Authentication
             </button>
 
             <br /><br />

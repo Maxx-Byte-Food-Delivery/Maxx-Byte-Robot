@@ -23,13 +23,17 @@ function App() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/hello")
-      .then(res => res.json())
-      .then(data => {
-        setMessage(data.message);
-        console.log(data);
-      })
-      .catch(err => console.error(err));
+    const initCSRF = async () => {
+      try {
+        await fetch("http://localhost:8000/api/csrf/", {
+          credentials: "include",
+        });
+      } catch (err) {
+        console.error("CSRF init failed", err);
+      }
+    };
+
+    initCSRF();
   }, []);
 
   return (
