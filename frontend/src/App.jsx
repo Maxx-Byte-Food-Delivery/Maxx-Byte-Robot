@@ -48,7 +48,10 @@ function App() {
           path="/products"
           element={<Products />}
         />
-
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
         {/*Checkout page*/}
         <Route 
         path="/checkout" 
