@@ -28,3 +28,29 @@ function App() {
 }
 
 export default App
+ 
+  return(
+    <BrowserRouter>
+      <Routes>
+
+        {/* Login page */}
+        <Route
+          path="/"
+          element={<Login />}
+        />
+
+        {/* Classes page */}
+        <Route
+          path="/page"
+          element={<Page />}
+        />
+        <Route path="/orders" element={<OrderHistory />} />
+        <Route path="/tracker" element={<OrderTracker />} />
+      </Routes>
+
+    </BrowserRouter>
+  )
+
+  
+}
+export default App;
