@@ -40,7 +40,7 @@ def test_order_placement_no_quantity(api_client, users, create_products):
     assert response.status_code == 400
     assert 'quantity' in response.data['error']
 
-#user cannot place an order without quantity
+#user cannot place an order without items
 @pytest.mark.skip(reason="order endpoint not yet implemented")
 def test_order_placement_no_items(api_client, users, create_products):
     api_client.force_authenticate(user=users[0])
