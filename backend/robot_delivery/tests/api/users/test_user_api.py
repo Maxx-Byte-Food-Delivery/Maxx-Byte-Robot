@@ -44,3 +44,4 @@ def test_user_chnage_password_endpoint(api_client, users):
 
   assert response.status_code == 200
   assert response.data['message'] == "password changed successfully"
+  assert get_user_model().objects.get(username="johndoe").check_password("newpsswrd123!") == True
