@@ -24,6 +24,15 @@ def test_order_history_endpoint_user_cant_access_other_users_history(api_client,
   assert response.data['error'] == 'Unauthorized'
 
 @pytest.mark.django_db
+def test_order_history_endpoint_unauthenticated(api_client, users, order_items):
+  url = reverse('view_history', args=[users[0].id])
+  response = api_client.get(url, format='json')
+
+  assert response.status_code == 403
+  assert response.data['error'] == 'You must be logged in to view order history'
+  assert response.data['orders'] == []
+
+@pytest.mark.django_db
 def test_order_history_item_endpoint(api_client, users, order_items):
   api_client.force_authenticate(user=users[0])
 
@@ -47,3 +56,13 @@ def test_order_history_item_endpoint_wrong_user(api_client, users, order_items):
 
   assert response.status_code == 403
   assert response.data['error'] == 'Unauthorized'
+
+@pytest.mark.django_db
+def test_order_history_item_endpoint_no_item(api_client, users, order_items):
+  api_client.force_authenticate(user=users[0])
+
+  url = reverse('view_history_item', args=[users[1].id, order_items[1].order.id])
+  response = api_client.get(url, format='json')
+
+  assert response.status_code == 404
+  assert response.data['error'] == 'Order item not found'
