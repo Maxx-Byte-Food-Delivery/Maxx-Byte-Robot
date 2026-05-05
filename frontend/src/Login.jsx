@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import axios from "axios";
+import reactLogo from './assets/react.svg';
+import viteLogo from './assets/vite.svg';
+import heroImg from './assets/hero.png';
+import API from "./api";
 import { useNavigate } from "react-router-dom";
 
 const Login = () =>{
@@ -10,32 +10,68 @@ const Login = () =>{
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    API.get("/csrf/");
+  }, []);
 
 
-  const handleLogin = async (e) =>{
+  const handleLogin = async (e) => {
+
     e.preventDefault();
 
+    if (loading) return;
+
+    setLoading(true);
+
     try {
-        const response = await axios.post(
-            "http://127.0.0.1:8000/api/users/login/",
-            {
-                username: username,
-                password: password,
-            }
-        );
-        //setMessage(response.data.message);
-        
-        alert(response.data.message);
-        
-        navigate("/page");
 
-    }   catch (error) {
+      const response = await API.post("/users/login/", {
+        username,
+        password,
+      });
 
-        setMessage(
-            "Invalid username or password"
-        );
+      const data = response.data;
+
+      // If MFA required
+      if (data.requires_2fa) {
+        if (data.method === "sms") {
+          navigate("/verify-sms");
+        } else {
+          navigate("/verify-totp");
+        }
+        return;
+      
+      } else {
+
+        // No MFA
+        if (data.role === "staff") {
+
+          navigate("/staff");
+
+        } else {
+
+          navigate("/student");
+
+        }
+
+      }
+
+    } catch (error) {
+
+      console.error("Login error:", error);
+
+      setMessage(
+        "Invalid username or password"
+      );
+
     }
-  }
+    finally {
+      setLoading(false);
+    }
+
+  };
 
   return (
 
@@ -66,8 +102,8 @@ const Login = () =>{
           }
         />
 
-        <button type="submit">
-          Login
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
         </button>
 
         <p>{message}</p>

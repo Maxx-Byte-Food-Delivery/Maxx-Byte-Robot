@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import './App.css';
+
 import Login from "./Login";
 import Page from "./Page";
-import OrderHistory from "./history";
+import Staff from "./Staff";
+import Student from "./Student";
+import Settings from "./Settings";
+
+import VerifySMS from "./VerifySMS";
+import VerifyTOTP from "./VerifyTOTP";
+import SetupTOTP from "./SetupTOTP";
+import ConfirmTOTP from "./ConfirmTOTP";
+import MFAOptions from "./MFAOptions"
 
 import {
   BrowserRouter,
@@ -13,42 +19,54 @@ import {
   Route
 } from "react-router-dom";
 
-
 function App() {
-  const [count, setCount] = useState(0)
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/hello")
-      .then(res => res.json())
-      .then(data => {
-        setMessage(data.message);
-        console.log(data);
-      })
-      .catch(err => console.error(err));
+    const initCSRF = async () => {
+      try {
+        await fetch("http://localhost:8000/api/csrf/", {
+          credentials: "include",
+        });
+      } catch (err) {
+        console.error("CSRF init failed", err);
+      }
+    };
+
+    initCSRF();
   }, []);
-  
-  return(
+
+  return (
     <BrowserRouter>
       <Routes>
 
-        {/* Login page */}
-        <Route
-          path="/"
-          element={<Login />}
-        />
+        {/* Login */}
+        <Route path="/" element={<Login />} />
 
-        {/* Classes page */}
-        <Route
-          path="/page"
-          element={<Page />}
-        />
-        <Route path="/orders" element={<OrderHistory />} />
+        {/* 2FA Options*/}
+        <Route path="/mfa-options" element={<MFAOptions />} />
+
+        {/* 2FA */}
+        <Route path="/verify-sms" element={<VerifySMS />} />
+        <Route path="/verify-totp" element={<VerifyTOTP />} />
+
+        {/* TOTP Setup */}
+        <Route path="/setup-totp" element={<SetupTOTP />} />
+        <Route path="/confirm-totp" element={<ConfirmTOTP />} />
+
+        {/* Dashboards */}
+        <Route path="/staff" element={<Staff />} />
+        <Route path="/student" element={<Student />} />
+
+        {/* Settings */}
+        <Route path="/settings" element={<Settings />} />
+
+        {/* Other */}
+        <Route path="/page" element={<Page />} />
+
       </Routes>
-
     </BrowserRouter>
-  )
-
-  
+  );
 }
+
 export default App;
