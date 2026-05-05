@@ -3,10 +3,9 @@ import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
-import Login from "./pages/Login";
-import Page from "./pages/Page";
-import CheckoutPage from "./pages/CheckoutPage";
-import Products from './pages/Products'
+import Login from "./Login";
+import Page from "./Page";
+import OrderHistory from "./history";
 
 import {
   BrowserRouter,
@@ -58,6 +57,7 @@ function App() {
         path="/checkout" 
         element={<CheckoutPage />} />
 
+        <Route path="/orders" element={<OrderHistory />} />
       </Routes>
 
     </BrowserRouter>
