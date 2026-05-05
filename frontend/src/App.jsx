@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import './App.css';
+
 import Login from "./Login";
 import Page from "./Page";
 import OrderHistory from "./history";
@@ -13,9 +11,7 @@ import {
   Route
 } from "react-router-dom";
 
-
 function App() {
-  const [count, setCount] = useState(0)
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -32,11 +28,8 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Login page */}
-        <Route
-          path="/"
-          element={<Login />}
-        />
+        {/* Login */}
+        <Route path="/" element={<Login />} />
 
         {/* Classes page */}
         <Route
@@ -45,10 +38,8 @@ function App() {
         />
         <Route path="/orders" element={<OrderHistory />} />
       </Routes>
-
     </BrowserRouter>
-  )
-
-  
+  );
 }
+
 export default App;

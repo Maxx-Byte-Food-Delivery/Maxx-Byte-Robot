@@ -9,7 +9,7 @@ function Hello() {
   useEffect(() => {
 
     axios.get(
-      "http://127.0.0.1:8000/api/hello/"
+      "http://localhost:8000/api/hello/"
     )
 
     .then(response => {
