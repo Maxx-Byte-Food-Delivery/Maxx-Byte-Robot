@@ -37,9 +37,7 @@ function MFAOptions() {
         try {
             const res = await API.post("/enable-sms-2fa/");
 
-            setMessage("Switched to SMS 2FA");
-            setProfile({ ...profile, mfa_enabled: true, mfa_method: "sms" });
-            setShowOptions(false);
+            navigate("/verify-sms");
 
         } catch (err) {
             setMessage(err.response?.data?.message || "Error");

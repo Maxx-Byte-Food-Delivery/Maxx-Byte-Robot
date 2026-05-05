@@ -35,12 +35,7 @@ class LoginView(APIView):
         # ======================
         if user.is_staff:
 
-            code = generate_sms_code()
-            profile.sms_code = code
-            profile.sms_code_created_at = timezone.now()
-            profile.save()
-
-            send_mfa_code(user, code)  # you already have this
+            send_mfa_code(user)  # you already have this
 
             return Response({
                 "requires_2fa": True,
