@@ -20,9 +20,9 @@ def users(db):
 #makes multiple orders
 @pytest.fixture
 def create_orders(db, users):
-  order1 = Order.objects.create(user=users[0], total_price=100.00)
-  order2 = Order.objects.create(user=users[1], total_price=150.00)
-  order3 = Order.objects.create(user=users[2], total_price=200.00)
+  order1 = Order.objects.create(user=users[0], total_price=39.98)
+  order2 = Order.objects.create(user=users[1], total_price=29.99)
+  order3 = Order.objects.create(user=users[2], total_price=59.97)
   order1.save()
   order2.save()
   order3.save()
@@ -35,20 +35,16 @@ def create_payment(db, create_orders):
   return payment
 
 @pytest.fixture
-def order_item(db, create_orders, create_products):
-  order_item = OrderItem.objects.create(order=create_orders[0], product=create_products[0], quantity=2, price=50.00)
-  order_item.save()
-  return order_item
-
-@pytest.fixture
 def order_items(db, create_orders, create_products):
-  order1_item = OrderItem.objects.create(order=create_orders[0], product=create_products[0], quantity=2, price=50.00)
-  order2_item = OrderItem.objects.create(order=create_orders[1], product=create_products[1], quantity=1, price=29.99)
-  order3_item = OrderItem.objects.create(order=create_orders[2], product=create_products[0], quantity=3, price=150.00)
+  order1_item = OrderItem.objects.create(order=create_orders[0], product=create_products[0], quantity=2, price = create_products[0].price * 2)
+  order2_item = OrderItem.objects.create(order=create_orders[1], product=create_products[1], quantity=1, price = create_products[1].price)
+  order3_item = OrderItem.objects.create(order=create_orders[2], product=create_products[0], quantity=3, price = create_products[0].price * 3)
+  order3_item2 = OrderItem.objects.create(order=create_orders[2], product=create_products[1], quantity=1, price = create_products[1].price)
   order1_item.save()
   order2_item.save()
   order3_item.save()
-  return [order1_item, order2_item, order3_item]
+  order3_item2.save()
+  return [order1_item, order2_item, order3_item, order3_item2]
 
 @pytest.fixture
 def create_products(db):

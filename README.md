@@ -10,18 +10,18 @@ Built with **Django REST Framework** (backend) and **React** (frontend).
 Maxx-Byte-Food-Delivery/
 ├── backend/                   Django + DRF + Django Channels
 │   ├── config/                Settings, URLs, ASGI/WSGI
+│   │   ├── urls.py             contains root url patterns i.e.(api/ & admin/)
 │   └── apps/
-│       ├── models/             contains models for db that include ordering, itmes, payment
-│    └── robot_delivery/
+│   │   ├── models/             contains models for db that include ordering, items, payment, etc.
+│   │   ├── views/              contains api endpoints handling
+│   │   ├── urls.py             contains url patterns
+│   │ 
+│   └── robot_delivery/
 │        └──  tests/           contains tests
-│                └── users/    tests for users
+│                │
+│                ├── api/      contains tests for api endpoints
 │                │
 │                └── model/    contains tests for models     
-│
-│ logic
-│    └── views/
-│        ├── login.py          contains api endpoint handling for user login
-│        ├── order_history.py  contains api endpoint handling for user order history
 │
 └── frontend/                  React 19 using Vite
     └── src/
@@ -89,8 +89,38 @@ cd backend
 ```
 run
 ```
-pytest robot_delivery
+pytest robot_delivery tests
 ```
+<h3>To run API or Model tests only</h3>
+<h4>Model Tests</h4>
+
+run
+```
+pytest robot_delivery tests/model
+```
+
+<h4>API Tests</h4>
+
+run
+```
+pytest robot_delivery tests/api
+```
+
+<h4>Specific Model Tests</h4>
+
+run
+```
+pytest robot_delivery tests/model/[file name]
+```
+
+<h4>Specific API Tests</h4>
+
+run
+```
+pytest robot_delivery tests/api/[folder name i.e. orders]/[file name]
+```
+
+
 ### Frontend
 
 ```bash
@@ -112,3 +142,13 @@ npm run dev          #http://localhost:5173/
 | POST   | `/api/users/login/` |  User login endpoint <br>
 
 | POST   | `/api/users/register/` | User registration endpoint <br>
+
+| GET    | `/api/users/<int:user_id>/orders/view_history/` | User order history endpoint <br>
+
+| GET    | `/api/users/<int:user_id>/orders/view_history/item/<int:id>/` | User order history items endpoint <br>
+
+| GET    | `/api/users/<int:user_id>/orders/reorder/<int:id>/` | Reorder from order history endpoint <br>
+
+| GET    | `/api/all_products/`  | All products available endpoint <br>
+
+| POST   | `api/checkout/`  | Create checkout session endpoint <br>

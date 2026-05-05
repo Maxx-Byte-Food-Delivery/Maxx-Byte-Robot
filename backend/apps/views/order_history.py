@@ -9,11 +9,15 @@ from apps.models.order_item import OrderItem
 
 @api_view(['GET'])
 def View_History(request, user_id):
-    if request.user.id != user_id:
+    if not request.user.is_authenticated:
+        return Response({'error': 'You must be logged in to view order history', 'orders': []}, status=status.HTTP_403_FORBIDDEN)
+    elif request.user.id != user_id:
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
     
-    orders = Order.objects.filter(user_id=user_id)
 
+    orders = Order.objects.filter(user_id=user_id)
+    if not orders.exists():
+        return Response({'error': 'No orders found', 'orders': []}, status=status.HTTP_404_NOT_FOUND)
     item_query = request.GET.get('item')
     date_query = request.GET.get('date')
 
@@ -31,7 +35,9 @@ def View_History(request, user_id):
 
 @api_view(['GET'])
 def item(request, user_id, id):
-    if request.user.id != user_id:
+    if not request.user.is_authenticated:
+        return Response({'error': 'You must be logged in to view order history'}, status=status.HTTP_403_FORBIDDEN)
+    elif request.user.id != user_id:
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
     
     try:
@@ -51,7 +57,6 @@ def item(request, user_id, id):
             'quantity': item.quantity,
             'price': item.price,
         })
-
     return Response({
         'order': {
             'id': order.id,

@@ -9,7 +9,7 @@ from apps.models.payment import Payment
 stripe_api_key = settings.STRIPE_API_KEY
 
 @api_view(['POST'])
-def create_checkout_session(request, order_id=None):
+def create_checkout_session(request, order_id=None, user_id=None):
     data = request.data if hasattr(request, 'data') else {}
     order_id = order_id or data.get('order')
 
@@ -18,6 +18,8 @@ def create_checkout_session(request, order_id=None):
 
     try:
         order = Order.objects.get(id=order_id)
+        if not request.user.is_authenticated or order.user_id != request.user.id:
+            return Response({'error': 'Action not allowed'}, status=403)
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=404)
 
