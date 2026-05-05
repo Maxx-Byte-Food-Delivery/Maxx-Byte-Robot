@@ -12,7 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS =[]
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -82,6 +82,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"   # For Django Channels
+
 
 # # ---------------------------------------------------------------------------
 # # Database
@@ -191,6 +192,7 @@ INSTALLED_APPS = [
     'channels',
     'config',
     'apps',
+    'users',
 ]
 
 SITE_ID = 1

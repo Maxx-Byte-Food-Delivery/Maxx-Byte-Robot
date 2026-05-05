@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
 @pytest.mark.django_db
-def test_user_creation(user):
+def test_user_creation():
+  user = User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
   assert user is not None
 
 #test for that username is not blank
