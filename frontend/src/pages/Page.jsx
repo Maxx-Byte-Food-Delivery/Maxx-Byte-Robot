@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Login from "./Login";
+import CheckoutPage from "./CheckoutPage";
 import { useNavigate } from "react-router-dom";
 import CartComponent from "../components/CartComponent";
 
