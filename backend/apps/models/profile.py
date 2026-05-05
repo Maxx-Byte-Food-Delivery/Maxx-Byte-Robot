@@ -9,6 +9,16 @@ class Profile(models.Model):
         on_delete=models.CASCADE
     )
 
+    ROLE_CHOICES = [
+    ("student", "Student"),
+    ("teacher", "Teacher"),
+    ("admin", "Admin"),
+    ("it", "IT Support"),
+]
+
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="student")
+
     phone_number = models.CharField(
         max_length=15,
         blank=True,
@@ -37,5 +47,11 @@ class Profile(models.Model):
         default=True
     )
 
+    mfa_secret = models.CharField(
+        max_length=32, 
+        blank=True, 
+        null=True
+    )
+    
     def __str__(self):
         return self.user.username

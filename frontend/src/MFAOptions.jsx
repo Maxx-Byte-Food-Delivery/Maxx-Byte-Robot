@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCSRF } from "/src/utils/csrf";
+import API from "./api";
 
 function MFAOptions() {
     const navigate = useNavigate();
@@ -11,23 +11,20 @@ function MFAOptions() {
 
     // 🔍 Load current MFA status
     useEffect(() => {
-        fetch("http://localhost:8000/api/user-profile/", {
-            credentials: "include",
-            headers: {
-                "X-CSRFToken": getCSRF(),
-            }
-        })
-            .then(res => {
-                if (res.status === 401) {
-                    navigate("/"); // 🚨 send back to login
-                    return null;
+        const fetchProfile = async () => {
+            try {
+                const res = await API.get("/user-profile/");
+                setProfile(res.data);
+            } catch (err) {
+                if (err.response?.status === 401) {
+                    navigate("/");
+                } else {
+                    console.error(err);
                 }
-                return res.json();
-            })
-            .then(data => {
-                if (data) setProfile(data);
-            })
-            .catch(err => console.error(err));
+            }
+        };
+
+        fetchProfile();
     }, []);
 
     // 📱 Switch to TOTP
@@ -37,43 +34,29 @@ function MFAOptions() {
 
     // 📩 Switch to SMS
     const switchToSMS = async () => {
-        const res = await fetch("http://127.0.0.1:8000/api/enable-sms-2fa/", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "X-CSRFToken": getCSRF(),
-            }
-        });
+        try {
+            const res = await API.post("/enable-sms-2fa/");
 
-        const data = await res.json();
-
-        if (res.ok) {
             setMessage("Switched to SMS 2FA");
             setProfile({ ...profile, mfa_enabled: true, mfa_method: "sms" });
             setShowOptions(false);
-        } else {
-            setMessage(data.message || "Error");
+
+        } catch (err) {
+            setMessage(err.response?.data?.message || "Error");
         }
     };
 
     // ❌ Disable
     const disable2FA = async () => {
-        const res = await fetch("http://127.0.0.1:8000/api/disable-2fa/", {
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "X-CSRFToken": getCSRF(),
-            }
-        });
+        try {
+            const res = await API.post("/disable-2fa/");
 
-        const data = await res.json();
-
-        if (res.ok) {
             setMessage("2FA disabled");
             setProfile({ ...profile, mfa_enabled: false, mfa_method: null });
             setShowOptions(false);
-        } else {
-            setMessage(data.message || "Error");
+
+        } catch (err) {
+            setMessage(err.response?.data?.message || "Error");
         }
     };
 
@@ -83,7 +66,6 @@ function MFAOptions() {
         <div>
             <h2>Multi-Factor Authentication</h2>
 
-            {/* 🔐 Current status */}
             <p>
                 Status:{" "}
                 {profile.mfa_enabled
@@ -93,7 +75,6 @@ function MFAOptions() {
 
             <br />
 
-            {/* 🔁 Change method */}
             <button onClick={() => setShowOptions(!showOptions)}>
                 Change Method
             </button>

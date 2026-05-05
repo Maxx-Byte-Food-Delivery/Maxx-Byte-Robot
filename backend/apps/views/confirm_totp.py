@@ -7,13 +7,17 @@ class ConfirmTOTPView(APIView):
 
     def post(self, request):
 
-        code = request.data.get("code")
+        code = request.data.get("code", "").strip()
         user = request.user
         profile = user.profile
 
         totp = get_totp(profile.mfa_secret)
 
-        if not totp.verify(code):
+        print("SECRET:", profile.mfa_secret)
+        print("CODE:", code)
+        print("RESULT:", totp.verify(code, valid_window=1))
+
+        if not totp.verify(code, valid_window=1):
             return Response({
                 "message": "Invalid code"
             }, status=400)

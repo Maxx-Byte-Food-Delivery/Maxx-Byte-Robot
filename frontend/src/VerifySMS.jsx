@@ -1,28 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "./api";
 
-function VerifySMS({ setPage }) {
+function VerifySMS() {
     const [code, setCode] = useState("");
     const [error, setError] = useState("");
+    const [cooldown, setCooldown] = useState(0);
+    const navigate = useNavigate();
 
     const verify = async () => {
-        const res = await fetch("http://localhost:8000/api/verify-2fa/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRF(),
-            },
-            body: JSON.stringify({ code }),
-        });
+        try {
+            const res = await API.post("/verify-sms/", {
+                code: code.trim(),
+            });
 
-        const data = await res.json();
+            const data = res.data;
 
-        if (res.ok) {
-            if (data.role === "staff") setPage("staff");
-            else navigate('/student');
-        } else {
-            setError(data.message || "Invalid code");
+            navigate(data.role === "staff" ? "/staff" : "/student");
+
+        } catch (err) {
+            setError("Invalid code");
         }
     };
+
+    const resend = async () => {
+        try {
+            await API.get("/verify-sms/");
+            setCooldown(30);
+        } catch {
+            setError("Failed to resend code");
+        }
+    };
+
+    useEffect(() => {
+        if (cooldown <= 0) return;
+
+        const timer = setInterval(() => {
+            setCooldown((prev) => prev - 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [cooldown]);
 
     return (
         <div>
@@ -36,6 +54,12 @@ function VerifySMS({ setPage }) {
             />
 
             <button onClick={verify}>Verify</button>
+
+            <br /><br />
+
+            <button onClick={resend} disabled={cooldown > 0}>
+                {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend Code"}
+            </button>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
         </div>

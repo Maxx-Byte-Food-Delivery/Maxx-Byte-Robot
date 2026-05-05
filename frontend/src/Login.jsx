@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import axios from "axios";
+import reactLogo from './assets/react.svg';
+import viteLogo from './assets/vite.svg';
+import heroImg from './assets/hero.png';
+import API from "./api";
 import { useNavigate } from "react-router-dom";
 
 const Login = () =>{
@@ -11,6 +11,10 @@ const Login = () =>{
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    API.get("/csrf/");
+  }, []);
 
 
   const handleLogin = async (e) => {
@@ -23,16 +27,10 @@ const Login = () =>{
 
     try {
 
-      const response = await axios.post(
-        "http://localhost:8000/api/users/login/",
-        {
-          username: username,
-          password: password,
-        },
-        {
-          withCredentials: true
-        }
-      );
+      const response = await API.post("/users/login/", {
+        username,
+        password,
+      });
 
       const data = response.data;
 

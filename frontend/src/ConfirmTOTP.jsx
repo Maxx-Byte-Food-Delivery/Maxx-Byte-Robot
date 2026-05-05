@@ -1,26 +1,23 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "./api";
 
-function ConfirmTOTP({ setPage }) {
+function ConfirmTOTP() {
+    const navigate = useNavigate();
     const [code, setCode] = useState("");
     const [error, setError] = useState("");
 
     const confirm = async () => {
-        const res = await fetch("http://localhost:8000/api/confirm-totp/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({ code }),
-        });
+        try {
+            const res = await API.post("/confirm-totp/", {
+                code: code,
+            });
 
-        const data = await res.json();
-
-        if (res.ok) {
             alert("TOTP enabled!");
-            setPage("student");
-        } else {
-            setError(data.message || "Invalid code");
+            navigate("/student"); // ✅ redirect properly
+
+        } catch (err) {
+            setError("Invalid code");
         }
     };
 

@@ -1,18 +1,17 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "./api";
 
 function SetupTOTP({ setPage }) {
     const [qr, setQr] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const generateQR = async () => {
         setLoading(true);
 
-        const res = await fetch("http://localhost:8000/api/setup-totp/", {
-            method: "POST",
-            credentials: "include",
-        });
-
-        const data = await res.json();
+        const res = await API.post("/setup-totp/");
+        const data = res.data;
 
         setQr(data.qr_code);
         setLoading(false);
@@ -31,7 +30,7 @@ function SetupTOTP({ setPage }) {
                     <p>Scan this with Google Authenticator</p>
                     <img src={`data:image/png;base64,${qr}`} alt="QR Code" />
 
-                    <button onClick={() => setPage("confirm-totp")}>
+                    <button onClick={() => navigate("/confirm-totp")}>
                         Next
                     </button>
                 </>

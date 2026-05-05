@@ -8,6 +8,7 @@ from apps.utils.twofa import generate_sms_code
 class LoginView(APIView):
 
     def post(self, request):
+        print("HIT LOGIN VIEW")   # 👈 add this
 
         username = request.data.get("username")
         password = request.data.get("password")
@@ -18,6 +19,11 @@ class LoginView(APIView):
             return Response({
                 "message": "Invalid credentials"
             }, status=400)
+        
+        #Test
+        print("USERNAME:", username)
+        print("PASSWORD:", password)
+        print("USER:", user)
 
         profile = user.profile
 
@@ -30,9 +36,11 @@ class LoginView(APIView):
         if user.is_staff:
 
             code = generate_sms_code()
-            request.session['sms_code'] = code
+            profile.sms_code = code
+            profile.sms_code_created_at = timezone.now()
+            profile.save()
 
-            send_mfa_code(user)  # you already have this
+            send_mfa_code(user, code)  # you already have this
 
             return Response({
                 "requires_2fa": True,
@@ -55,17 +63,13 @@ class LoginView(APIView):
 
             # 📩 SMS
             if profile.mfa_method == "sms":
-                code = generate_sms_code()
-                request.session['sms_code'] = code
-
-                send_mfa_code(user)
+                send_mfa_code(user)  # ✅ single source of truth
 
                 return Response({
                     "requires_2fa": True,
                     "method": "sms",
                     "role": "student"
                 })
-
         # ======================
         # ✅ NO 2FA → LOGIN
         # ======================

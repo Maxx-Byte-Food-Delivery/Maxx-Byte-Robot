@@ -1,26 +1,29 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "./api";
 
-function VerifyTOTP({ setPage }) {
+function VerifyTOTP() {
     const [code, setCode] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
 
     const verify = async () => {
-        const res = await fetch("http://localhost:8000/api/verify-2fa/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCSRF(),
-            },
-            body: JSON.stringify({ code }),
-        });
+        try {
+            const res = await API.post("/confirm-totp/", {
+                code: code.trim(),
+            });
 
-        const data = await res.json();
+            const data = res.data;
 
-        if (res.ok) {
-            if (data.role === "staff") setPage("staff");
-            else navigate("/student");
-        } else {
-            setError(data.message || "Invalid code");
+            // Redirect based on role
+            if (data.role === "staff") {
+                navigate("/staff");
+            } else {
+                navigate("/student");
+            }
+
+        } catch (err) {
+            setError("Invalid code");
         }
     };
 
