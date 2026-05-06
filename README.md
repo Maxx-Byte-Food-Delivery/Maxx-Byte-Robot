@@ -1,79 +1,126 @@
-# 🤖 RoboEats – Robot Food Delivery Platform
 
 A full-stack web application for managing autonomous robot food delivery.
-Built with **Django REST Framework** (backend) and **React + Redux** (frontend).
+Built with **Django REST Framework** (backend) and **React** (frontend).
 
 ---
 
 ## Architecture Overview
 
 ```
-robot-delivery-app/
+Maxx-Byte-Food-Delivery/
 ├── backend/                   Django + DRF + Django Channels
 │   ├── config/                Settings, URLs, ASGI/WSGI
+│   │   ├── urls.py             contains root url patterns i.e.(api/ & admin/)
 │   └── apps/
-│       ├── accounts/          Custom user model, JWT auth, roles
-│       ├── orders/            Menu items, order lifecycle
-│       ├── robots/            Fleet models, telemetry, WS consumer
-│       ├── mapping/           Zones, waypoints, geofencing
-│       ├── navigation/        Route planning, Haversine distance
-│       ├── power/             Charging stations & sessions
-│       ├── transactions/      Secure payment records
-│       └── delivery/          Robot assignment & completion logic
-└── frontend/                  React 18 + Redux Toolkit
+│   │   ├── models/             contains models for db that include ordering, items, payment, etc.
+│   │   ├── views/              contains api endpoints handling
+│   │   ├── urls.py             contains url patterns
+│   │ 
+│   └── robot_delivery/
+│        └──  tests/           contains tests
+│                │
+│                ├── api/      contains tests for api endpoints
+│                │
+│                └── model/    contains tests for models     
+│
+└── frontend/                  React 19 using Vite
     └── src/
-        ├── api/               Axios client + all service calls
-        ├── store/slices/      auth / orders / robots Redux slices
-        ├── hooks/             useAuth, useRobotSocket
-        ├── components/        RobotStatusCard, OrderForm,
-        │                      OrderTracker, MapView, ProtectedRoute
-        └── pages/             LoginPage, OrderPage,
-                               FleetDashboard, OrdersManagement, MapPage
+        └──        Various files containg jsx pages such as login
 ```
 
 ---
-
-## Quick Start (Docker)
-
-```bash
-# Clone and start everything
-docker compose up --build
 
 # Backend:  http://localhost:8000
-# Frontend: http://localhost:3000
+# Frontend: http://localhost:5173/
 # Django Admin: http://localhost:8000/admin/
-```
 
----
 
 ## Manual Setup
 
 ### Backend
 
-```bash
+Mac: 
+
+```
 cd backend
 python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
+```
+
+Windows:
+```
+cd backend
+python -m venv .venv
+```
+Command Prompt:
+```
+.venv\Scripts\activate.bat
+```
+PowerShell:
+```
+.\.venv\Scripts\Activate.ps1
+```
+To install dependencies run
+```
+pip install -r requirements.txt
+```
 
 # Configure environment
 cp .env.example .env   # edit DB / Redis credentials
 
+For setting up the database run:
+```
+python setup_auth.py
+python setup_db.py
 python manage.py migrate
-python manage.py createsuperuser
-
-# Run with Daphne (ASGI – supports WebSockets)
-daphne -p 8000 config.asgi:application
 ```
+To start backend server run:
+```
+python manage.py runserver
+```
+
+
 <h3>Running test</h3>
+Tests use pytest
+to run all tests:
 
 ```
-cd into backend
+cd backend
 ```
-to run tests:<br>
 run
 ```
-pytest users
+pytest robot_delivery tests
 ```
+<h3>To run API or Model tests only</h3>
+<h4>Model Tests</h4>
+
+run
+```
+pytest robot_delivery tests/model
+```
+
+<h4>API Tests</h4>
+
+run
+```
+pytest robot_delivery tests/api
+```
+
+<h4>Specific Model Tests</h4>
+
+run
+```
+pytest robot_delivery tests/model/[file name]
+```
+
+<h4>Specific API Tests</h4>
+
+run
+```
+pytest robot_delivery tests/api/[folder name i.e. orders]/[file name]
+```
+
+
 ### Frontend
 
 ```bash
@@ -86,67 +133,22 @@ npm run dev          #http://localhost:5173/
 
 ## User Roles
 
-| Role       | Access                                              |
-|------------|-----------------------------------------------------|
-| `customer` | Place orders, track delivery                        |
-| `operator` | Fleet dashboard, map, assign robots, manage orders  |
-| `admin`    | All of the above + Django admin                     |
-
----
 
 ## Key API Endpoints
 
 | Method | Endpoint                         | Description                    |
 |--------|----------------------------------|--------------------------------|
-| POST   | `/api/v1/auth/token/`            | Obtain JWT tokens              |
-| POST   | `/api/v1/auth/token/refresh/`    | Refresh access token           |
-| POST   | `/api/v1/accounts/register/`     | Customer registration          |
-| GET    | `/api/v1/accounts/me/`           | Current user profile           |
-| GET    | `/api/v1/orders/menu/`           | Available menu items           |
-| POST   | `/api/v1/orders/`                | Place a new order              |
-| POST   | `/api/v1/orders/{id}/cancel/`    | Cancel an order                |
-| GET    | `/api/v1/robots/`                | List all robots (operator+)    |
-| POST   | `/api/v1/robots/{id}/command/`   | Send robot command             |
-| GET    | `/api/v1/robots/{id}/telemetry/` | Last 50 telemetry records      |
-| GET    | `/api/v1/mapping/zones/`         | Delivery zones                 |
-| GET    | `/api/v1/mapping/waypoints/`     | Waypoints (charging, pickup…)  |
-| POST   | `/api/v1/navigation/routes/plan/`| Estimate route distance/ETA    |
-| GET    | `/api/v1/power/stations/`        | Charging stations              |
-| POST   | `/api/v1/transactions/initiate/` | Initiate payment               |
-| POST   | `/api/v1/delivery/{id}/assign/`  | Assign nearest robot to order  |
-| POST   | `/api/v1/delivery/{id}/complete/`| Mark delivery complete         |
 
-### WebSocket
+| POST   | `/api/users/login/` |  User login endpoint <br>
 
-```
-ws://localhost:8000/ws/robots/{robot_id}/
-```
-Connect to receive real-time telemetry for a robot. Also accepts telemetry
-pushes from robot hardware clients.
+| POST   | `/api/users/register/` | User registration endpoint <br>
 
----
+| GET    | `/api/users/<int:user_id>/orders/view_history/` | User order history endpoint <br>
 
-## Tech Stack
+| GET    | `/api/users/<int:user_id>/orders/view_history/item/<int:id>/` | User order history items endpoint <br>
 
-| Layer       | Technology                                          |
-|-------------|-----------------------------------------------------|
-| Backend     | Django 4.2, Django REST Framework, Django Channels  |
-| Auth        | JWT via `djangorestframework-simplejwt`             |
-| Database    | PostgreSQL 16                                       |
-| Cache / WS  | Redis 7 + channels-redis                           |
-| Frontend    | React 18, Redux Toolkit, React Router 6            |
-| HTTP Client | Axios (with auto-refresh interceptor)               |
-| Maps        | Leaflet + react-leaflet (OpenStreetMap – no API key)|
-| Containers  | Docker Compose                                      |
+| GET    | `/api/users/<int:user_id>/orders/reorder/<int:id>/` | Reorder from order history endpoint <br>
 
----
+| GET    | `/api/all_products/`  | All products available endpoint <br>
 
-## Next Steps
-
-- [ ] Integrate a real routing engine (OSRM / GraphHopper)
-- [ ] Add Stripe / PayPal payment gateway in `transactions/views.py`
-- [ ] Connect robot hardware via MQTT (Eclipse Mosquitto) or robot REST API
-- [ ] Add push notifications (Firebase / WebPush) for order status changes
-- [ ] Implement geofencing enforcement in `mapping/`
-- [ ] Add end-to-end tests (pytest-django + React Testing Library)
-- [ ] Production deployment: nginx → Daphne, Certbot TLS
+| POST   | `api/checkout/`  | Create checkout session endpoint <br>
