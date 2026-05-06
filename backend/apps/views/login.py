@@ -17,38 +17,11 @@ class LoginView(APIView):
 
         user = authenticate(request, username=username, password=password)
 
-        try:
-
-            user = User.objects.get(
-                username=username
-            )
-            print("USER FOUND:", user.username)
-
-            if check_password(password,user.password):
-
-                return Response({
-                    "message": "Login successful",
-                    "username": user.username
-                })
-
-            else:
-
-                print("PASSWORD WRONG")
-
-                return Response(
-                    {"error": "Wrong password"},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )   
-        except User.DoesNotExist:
+        if user is None:
             return Response(
                 {"error": "Invalid credentials"},
                 status=status.HTTP_401_UNAUTHORIZED
             )
-        
-        #Test
-        print("USERNAME:", username)
-        print("PASSWORD:", password)
-        print("USER:", user)
 
         profile = user.profile
 
@@ -59,44 +32,71 @@ class LoginView(APIView):
         # 👩‍💼 STAFF (MFA REQUIRED)
         # ======================
         if user.is_staff:
-
-            send_mfa_code(user)  # you already have this
-
-            return Response({
-                "requires_2fa": True,
-                "method": "sms",
-                "role": "staff"
-            })
-
-        # ======================
-        # 👨‍🎓 STUDENT (2FA OPTIONAL)
-        # ======================
-        if profile.mfa_enabled:
-
-            # 📱 TOTP (Authenticator App)
             if profile.mfa_method == "totp":
                 return Response({
                     "requires_2fa": True,
                     "method": "totp",
-                    "role": "student"
+                    "role": "staff"
                 })
-
-            # 📩 SMS
             if profile.mfa_method == "sms":
-                send_mfa_code(user)  # ✅ single source of truth
-
+                send_mfa_code(user)
+                request.session['sms_code'] = user.profile.mfa_code
                 return Response({
                     "requires_2fa": True,
                     "method": "sms",
+                    "role": "staff"
+                })
+            return Response(
+                {"error": "MFA method not configured for staff"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        elif profile.role == "student":
+            # ======================
+            # 👨‍🎓 STUDENT (2FA OPTIONAL)
+            # ======================
+            if profile.mfa_enabled:
+                # 📱 TOTP (Authenticator App)
+                if profile.mfa_method == "totp":
+                    return Response({
+                        "requires_2fa": True,
+                        "method": "totp",
+                        "role": "student"
+                    })
+
+                # 📩 SMS
+                if profile.mfa_method == "sms":
+                    send_mfa_code(user)  # ✅ single source of truth
+                    request.session['sms_code'] = user.profile.mfa_code
+
+                    return Response({
+                        "requires_2fa": True,
+                        "method": "sms",
+                        "role": "student"
+                    })
+
+                # if enabled but method not recognized, login
+                from django.contrib.auth import login
+                login(request, user)
+
+                return Response({
+                    "requires_2fa": False,
                     "role": "student"
                 })
-        # ======================
-        # ✅ NO 2FA → LOGIN
-        # ======================
-        from django.contrib.auth import login
-        login(request, user)
 
-        return Response({
-            "requires_2fa": False,
-            "role": "student"
-        })
+            else:
+                # not enabled, login
+                from django.contrib.auth import login
+                login(request, user)
+
+                return Response({
+                    "requires_2fa": False,
+                    "role": "student"
+                })
+
+        #Test
+        print("USERNAME:", username)
+        print("PASSWORD:", password)
+        print("USER:", user)
+
+        
