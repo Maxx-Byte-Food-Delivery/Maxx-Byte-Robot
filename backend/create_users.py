@@ -1,50 +1,67 @@
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+os.environ.setdefault(
+    'DJANGO_SETTINGS_MODULE',
+    'config.settings'
+)
+
 django.setup()
 
-from users.models import User
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+from apps.models.profile import Profile
+from apps.utils.twofa import generate_secret
 
-# 18 users (8 staff + 10 students)
+# username, password, email, first, last, is_staff
 users = [
-    # Staff users
-    ("james_wilson", "Staff@123", "james.wilson@university.edu", "James", "Wilson"),
-    ("maria_garcia", "Staff@456", "maria.garcia@university.edu", "Maria", "Garcia"),
-    ("david_park", "Staff@789", "david.park@university.edu", "David", "Park"),
-    ("lisa_rodriguez", "Staff@101", "lisa.rodriguez@university.edu", "Lisa", "Rodriguez"),
-    ("kevin_zhang", "Staff@202", "kevin.zhang@university.edu", "Kevin", "Zhang"),
-    ("jose_garcia", "Staff@303", "jose.garcia@university.edu", "Jose", "Garcia"),
-    ("lisa_thomas", "Staff@404", "lisa.thomas@university.edu", "Lisa", "Thomas"),
-    ("carlos_rodriguez", "Staff@505", "carlos.rodriguez@university.edu", "Carlos", "Rodriguez"),
-    # Student users
-    ("alice_johnson", "Student@123", "alice.johnson@university.edu", "Alice", "Johnson"),
-    ("bob_smith", "Student@456", "bob.smith@university.edu", "Bob", "Smith"),
-    ("carol_davis", "Student@789", "carol.davis@university.edu", "Carol", "Davis"),
-    ("david_wilson", "Student@101", "david.wilson@university.edu", "David", "Wilson"),
-    ("emma_brown", "Student@202", "emma.brown@university.edu", "Emma", "Brown"),
-    ("frank_miller", "Student@303", "frank.miller@university.edu", "Frank", "Miller"),
-    ("grace_lee", "Student@404", "grace.lee@university.edu", "Grace", "Lee"),
-    ("henry_taylor", "Student@505", "henry.taylor@university.edu", "Henry", "Taylor"),
-    ("isabel_martin", "Student@606", "isabel.martin@university.edu", "Isabel", "Martin"),
-    ("jack_anderson", "Student@707", "jack.anderson@university.edu", "Jack", "Anderson"),
+    ("alice_johnson", "Alice@123", "alice@maxxbyte.com", "Alice", "Johnson", False),
+    ("bob_smith", "Bob@456", "bob@maxxbyte.com", "Bob", "Smith", False),
+    ("carol_davis", "Carol@789", "carol@maxxbyte.com", "Carol", "Davis", False),
+    ("david_wilson", "David@101", "david@maxxbyte.com", "David", "Wilson", False),
+
+    # STAFF USERS
+    ("emma_brown", "Emma@202", "emma@maxxbyte.com", "Emma", "Brown", True),
+    ("frank_miller", "Frank@303", "frank@maxxbyte.com", "Frank", "Miller", True),
+    ("grace_lee", "Grace@404", "grace@maxxbyte.com", "Grace", "Lee", True),
+    ("henry_taylor", "Henry@505", "henry@maxxbyte.com", "Henry", "Taylor", True),
+
+    ("isabel_martin", "Isabel@606", "isabel@maxxbyte.com", "Isabel", "Martin", False),
+    ("jack_anderson", "Jack@707", "jack@maxxbyte.com", "Jack", "Anderson", False),
 ]
 
-created = 0
-for username, password, email, first, last in users:
-    if not User.objects.filter(username=username).exists():
-        User.objects.create(
-            username=username,
-            password=make_password(password),
-            email=email,
-            first_name=first,
-            last_name=last
-        )
-        print(f"✅ Created: {username} ({email})")
-        created += 1
-    else:
-        print(f"⚠️ Exists: {username}")
+for username, password, email, first, last, is_staff in users:
 
-print(f"\n🎉 {created} users created successfully!")
-print(f"📧 All emails: @university.edu")
+    user, created = User.objects.get_or_create(username=username)
+
+    user.set_password(password)
+    user.email = email
+    user.first_name = first
+    user.last_name = last
+    user.is_staff = is_staff
+    user.save()
+
+    profile, _ = Profile.objects.get_or_create(user=user)
+
+    # ======================
+    # 👨‍🎓 STUDENTS (NO MFA YET)
+    # ======================
+    if not is_staff:
+        profile.mfa_enabled = False
+        profile.mfa_method = None
+        profile.mfa_secret = None
+
+    # ======================
+    # 👩‍💼 STAFF (MFA ENABLED)
+    # ======================
+    else:
+        profile.mfa_enabled = True
+        profile.mfa_method = "sms"
+
+    profile.save()
+
+    if created:
+        print(f"Created user: {username}")
+    else:
+        print(f"Updated user: {username}")
+
+print("User setup complete.")
