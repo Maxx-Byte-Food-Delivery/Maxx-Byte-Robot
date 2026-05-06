@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from apps.utils.send_sms import send_mfa_code
 from apps.utils.twofa import generate_sms_code
-from django.contrib.auth.hashers import check_password
 from rest_framework import status
 
 class LoginView(APIView):
@@ -22,6 +21,7 @@ class LoginView(APIView):
                 {"error": "Invalid credentials"},
                 status=status.HTTP_401_UNAUTHORIZED
             )
+          
 
         profile = user.profile
 

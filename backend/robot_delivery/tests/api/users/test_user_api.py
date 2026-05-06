@@ -24,7 +24,7 @@ def test_user_login_endpoint_wrong_password(api_client, users):
   response = api_client.post(url, data, format='json')
 
   assert response.status_code == 401
-  assert response.data['error'] == "Wrong password"
+  assert response.data['error'] == "Invalid credentials"
 
 @pytest.mark.django_db
 def test_user_logout_endpoint(api_client, users):
