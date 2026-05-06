@@ -26,7 +26,7 @@ def test_user_login_endpoint_wrong_password(api_client, users):
   assert response.status_code == 401
   assert response.data['error'] == "Wrong password"
 
-@pytest.mark.skip(reason = "Logout endpoint not yet implemented")
+@pytest.mark.django_db
 def test_user_logout_endpoint(api_client, users):
   api_client.force_authenticate(user=users[0])
   url = reverse('logout')
@@ -35,7 +35,7 @@ def test_user_logout_endpoint(api_client, users):
   assert response.status_code == 200
   assert response.data['message'] == "Logged out successfully"
 
-@pytest.mark.skip(reason = "Logout endpoint not yet implemented")
+@pytest.mark.django_db
 def test_user_logout_endpoint_not_logged_in(api_client, users):
   url = reverse('logout')
   response = api_client.post(url, format='json')
@@ -64,7 +64,7 @@ def test_user_chnage_password_endpoint_not_logged_in(api_client, users):
   assert response.data['message'] == "You are not logged in"
 
 @pytest.mark.skip(reason = "change password endpoint not yet implamented")
-def test_user_chnage_password_endpoint_wrong_user(api_client, users):
+def test_user_change_password_endpoint_wrong_user(api_client, users):
   api_client.force_authenticate(user=users[0])
 
   url = reverse('change_password')
