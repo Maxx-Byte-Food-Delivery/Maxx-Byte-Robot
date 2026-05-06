@@ -14,10 +14,12 @@ def users(db):
   user1 = User.objects.create_user(username="johndoe", email= "johndoe@email.com", first_name="john", last_name="doe", password="psswrd123!")
   user2 = User.objects.create_user(username="janedoe", email= "janedoe@email.com", first_name="jane", last_name="doe", password ="SomeG00dPasswor!d")
   user3 = User.objects.create_user(username="SomeUser", email= "someuser@email.com", first_name="some", last_name="user", password="G00dPassw0rd!")
+  user4 = User.objects.create_user(username="student", email= "anotheruser@email.com", first_name="student", last_name="user", password="StudentP@ssw0rd!")
   user1.save()
   user2.save()
   user3.save()
-  return [user1, user2, user3]
+  user4.save()
+  return [user1, user2, user3, user4]
 
 @pytest.fixture
 def admin_users(db):
@@ -29,12 +31,33 @@ def admin_users(db):
 
 @pytest.fixture
 def student_profiles(db, users):
-  for user in users:
-    profile, created = Profile.objects.get_or_create(user=user, defaults={'role': 'student'})
-    if not created:
-      profile.role = "student"
-      profile.save()
-  return Profile.objects.all()
+  user = users[2]
+  user2 = users[3]
+  
+  # TOTP setup
+  student_profile, created = Profile.objects.get_or_create(
+    user=user,
+    defaults={'role': 'student', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret()}
+  )
+  if not created:
+    student_profile.role = 'student'
+    student_profile.mfa_method = 'totp'
+    student_profile.mfa_enabled = True
+    student_profile.mfa_secret = generate_secret()
+    student_profile.save()
+  
+  # SMS setup
+  student_profile2, created = Profile.objects.get_or_create(
+    user=user2,
+    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True}
+  )
+  if not created:
+    student_profile2.role = 'student'
+    student_profile2.mfa_method = 'sms'
+    student_profile2.mfa_enabled = True
+    student_profile2.save()
+  
+  return [student_profile, student_profile2]
 
 @pytest.fixture
 def admin_profiles(db, admin_users):
