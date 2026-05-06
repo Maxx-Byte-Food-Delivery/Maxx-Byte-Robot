@@ -3,15 +3,7 @@ import './App.css';
 
 import Login from "./Login";
 import Page from "./Page";
-import Staff from "./Staff";
-import Student from "./Student";
-import Settings from "./Settings";
-
-import VerifySMS from "./VerifySMS";
-import VerifyTOTP from "./VerifyTOTP";
-import SetupTOTP from "./SetupTOTP";
-import ConfirmTOTP from "./ConfirmTOTP";
-import MFAOptions from "./MFAOptions"
+import OrderHistory from "./history";
 
 import {
   BrowserRouter,
