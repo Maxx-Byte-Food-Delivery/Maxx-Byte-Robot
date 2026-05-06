@@ -7,10 +7,15 @@ channels>=4.0
 channels-redis>=4.2
 daphne>=4.0
 django-redis>=5.4
+django-otp>=1.1
+django-two-factor-auth>=1.14
 psycopg2-binary>=2.9
 Pillow>=10.0
 python-decouple>=3.8
 pytest
 pytest-django
 stripe
+twilio
+pyotp
+qrcode
 python-dotenv
