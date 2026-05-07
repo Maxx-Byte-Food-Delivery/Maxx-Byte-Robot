@@ -1,0 +1,1 @@
+from payments.views.payment import *
