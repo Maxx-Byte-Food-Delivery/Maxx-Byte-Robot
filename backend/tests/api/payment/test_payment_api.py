@@ -8,9 +8,9 @@ import stripe
 def test_payment_endpoint(api_client, create_orders, users):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse("create_checkout_session")
+  url = reverse("create_checkout_session", kwargs={"order_id": create_orders[0].id})
 
-  data = {"order": create_orders[0].id, "user": users[0].id, }
+  data = {"user": users[0].id, }
   response = api_client.post(url, data, format="json")
 
   if response.status_code != 200:
@@ -26,20 +26,19 @@ def test_payment_endpoint(api_client, create_orders, users):
 def test_payment_endpoint_missing_order(api_client, create_orders, users):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse("create_checkout_session")
+  url = "api/create-checkout-session/"
   data = {"user": users[0].id}
-  response = api_client.post(url, data, format="json")
+  response = api_client.post(url, {}, format="json")
 
-  assert response.status_code == 400
-  assert "error" in response.data
-  assert response.data["error"] == "order_id is required"
+  assert response.status_code == 404
+
 
 @pytest.mark.django_db
 def test_payment_endpoint_invalid_order(api_client, create_orders, users):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse("create_checkout_session")
-  data = {"order": 9999, "user": users[0].id}
+  url = reverse("create_checkout_session", kwargs={"order_id": 9999})
+  data = {"user": users[0].id}
   response = api_client.post(url, data, format="json")
 
   assert response.status_code == 404
@@ -56,8 +55,8 @@ def test_stripe_webhook_checkout_completed(mock_construct_event, mock_session_cr
     mock_session.id = 'cs_test_123'
     mock_session_create.return_value = mock_session
 
-    url = reverse("create_checkout_session")
-    data = {"order": create_orders[0].id, "user": users[0].id}
+    url = reverse("create_checkout_session", kwargs={"order_id": create_orders[0].id})
+    data = {"user": users[0].id}
     response = api_client.post(url, data, format="json")
     assert response.status_code == 200
 
@@ -93,8 +92,8 @@ def test_stripe_webhook_invalid_signature(mock_construct_event, mock_session_cre
     mock_session.id = 'cs_test_123'
     mock_session_create.return_value = mock_session
 
-    url = reverse("create_checkout_session")
-    data = {"order": create_orders[0].id, "user": users[0].id}
+    url = reverse("create_checkout_session", kwargs={"order_id": create_orders[0].id})
+    data = {"user": users[0].id}
     response = api_client.post(url, data, format="json")
 
     webhook_url = '/api/stripe/webhook'
@@ -115,8 +114,8 @@ def test_stripe_webhook_invalid_payload(mock_construct_event, mock_session_creat
     mock_session.id = 'cs_test_123'
     mock_session_create.return_value = mock_session
 
-    url = reverse("create_checkout_session")
-    data = {"order": create_orders[0].id, "user": users[0].id}
+    url = reverse("create_checkout_session", kwargs={"order_id": create_orders[0].id})
+    data = {"user": users[0].id}
     response = api_client.post(url, data, format="json")
 
     webhook_url = '/api/stripe/webhook'
@@ -128,8 +127,8 @@ def test_stripe_webhook_invalid_payload(mock_construct_event, mock_session_creat
 def test_stripe_webhook_user_cant_pay_for_other_users(api_client, create_orders, users):
     api_client.force_authenticate(user=users[0])
 
-    url = reverse("create_checkout_session")
-    data = {"order": create_orders[1].id, "user": users[1].id}
+    url = reverse("create_checkout_session", kwargs={"order_id": create_orders[1].id})
+    data = {"user": users[1].id}
     response = api_client.post(url, data, format="json")
     assert response.status_code == 403
     assert response.data["error"] == "Action not allowed"
