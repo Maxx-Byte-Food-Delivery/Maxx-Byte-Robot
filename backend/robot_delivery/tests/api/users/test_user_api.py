@@ -16,6 +16,8 @@ def test_user_login_endpoint(api_client, users):
     print(response.data) 
 
   assert response.status_code == 200
+  assert response.data['requires_2fa'] == False
+  assert response.data['role'] == "student"
 
 @pytest.mark.django_db
 def test_user_login_endpoint_wrong_password(api_client, users):
