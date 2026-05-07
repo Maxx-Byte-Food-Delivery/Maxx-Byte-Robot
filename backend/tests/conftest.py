@@ -1,11 +1,11 @@
 import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
-from apps.models.order import Order
-from apps.models.payment import Payment
-from apps.models.order_item import OrderItem
-from apps.models.product import Product
-from apps.models.profile import Profile
+from apps.orders.models.order import Order
+from apps.payments.models.payment import Payment
+from apps.orders.models.order_item import OrderItem
+from apps.products.models.product import Product
+from apps.users.models.profile import Profile
 from apps.utils.twofa import generate_secret
 
 #makes multiple users

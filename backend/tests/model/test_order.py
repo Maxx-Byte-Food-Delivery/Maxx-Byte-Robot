@@ -1,5 +1,5 @@
 import pytest
-from backend.apps.orders.models.order import Order
+from apps.orders.models.order import Order
 from django.db import IntegrityError
 
 @pytest.mark.django_db

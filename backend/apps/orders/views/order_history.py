@@ -2,9 +2,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import redirect
-from backend.apps.orders.models.order import Order
-from backend.apps.products.models.product import Product
-from backend.apps.orders.models.order_item import OrderItem
+from apps.orders.models.order import Order
+from apps.products.models.product import Product
+from apps.orders.models.order_item import OrderItem
 
 
 @api_view(['GET'])

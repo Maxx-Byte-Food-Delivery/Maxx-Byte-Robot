@@ -1,5 +1,5 @@
 import pytest
-from backend.apps.payments.models.payment import Payment
+from apps.payments.models.payment import Payment
 from django.db import IntegrityError
 
 @pytest.mark.django_db

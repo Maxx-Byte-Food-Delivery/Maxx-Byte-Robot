@@ -1,6 +1,6 @@
 import pytest
-from backend.apps.orders.models.order import Order
-from backend.apps.orders.models.order_item import OrderItem
+from apps.orders.models.order import Order
+from apps.orders.models.order_item import OrderItem
 from django.db import IntegrityError
 
 @pytest.mark.django_db

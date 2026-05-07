@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from twilio.rest import Client
 
-from backend.apps.users.models.profile import Profile
+from apps.users.models.profile import Profile
 
 
 def send_mfa_code(user):

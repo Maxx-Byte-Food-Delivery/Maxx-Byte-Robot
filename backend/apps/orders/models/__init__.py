@@ -1,2 +1,2 @@
-from orders.models.order import Order
-from orders.models.order_item import OrderItem
+from .order import Order
+from .order_item import OrderItem

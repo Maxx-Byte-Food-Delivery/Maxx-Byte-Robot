@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from backend.apps.products.models.product import Product
+from apps.products.models.product import Product
 
 @pytest.mark.django_db
 def test_product_endpoint(api_client, create_products):

@@ -3,8 +3,8 @@ from django.conf import settings
 from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from backend.apps.orders.models.order import Order
-from backend.apps.payments.models.payment import Payment
+from apps.orders.models.order import Order
+from apps.payments.models.payment import Payment
 
 stripe_api_key = settings.STRIPE_API_KEY
 

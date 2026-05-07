@@ -1,20 +1,20 @@
 from django.urls import path
-from backend.apps.users.views.csrf import csrf_view
-from backend.apps.users.views.login import LoginView
-from backend.apps.payments.views.payment import create_checkout_session, stripe_webhook
-from backend.apps.users.views.verify_MFA_view import VerifyMFAView
-from backend.apps.users.views.logout import logout_view
-from backend.apps.users.views.verify_2fa import Verify2FAView
-from backend.apps.users.views.setup_totp import SetupTOTPView
-from backend.apps.users.views.enable_sms_2fa import EnableSMS2FAView
-from backend.apps.users.views.disable_2fa import Disable2FAView
-from backend.apps.users.views.user_profile import UserProfileView
-from backend.apps.users.views.confirm_totp import ConfirmTOTPView
-from backend.apps.users.views.verify_sms import VerifySMSView
+from apps.users.views.csrf import csrf_view
+from apps.users.views.login import LoginView
+from apps.payments.views.payment import create_checkout_session, stripe_webhook
+from apps.users.views.verify_MFA_view import VerifyMFAView
+from apps.users.views.logout import logout_view
+from apps.users.views.verify_2fa import Verify2FAView
+from apps.users.views.setup_totp import SetupTOTPView
+from apps.users.views.enable_sms_2fa import EnableSMS2FAView
+from apps.users.views.disable_2fa import Disable2FAView
+from apps.users.views.user_profile import UserProfileView
+from apps.users.views.confirm_totp import ConfirmTOTPView
+from apps.users.views.verify_sms import VerifySMSView
 
 
-from backend.apps.products.views.products import get_all_products
-from backend.apps.orders.views.order_history import View_History, item, reorder
+from apps.products.views.products import get_all_products
+from apps.orders.views.order_history import View_History, item, reorder
 
 
 urlpatterns = [

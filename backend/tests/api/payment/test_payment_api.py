@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from apps.models import Payment
+from apps.payments.models import Payment
 from unittest.mock import patch, MagicMock
 import stripe
 

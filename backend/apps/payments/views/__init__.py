@@ -1,1 +1,1 @@
-from payments.views.payment import *
+from .payment import *

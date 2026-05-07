@@ -1,4 +1,3 @@
-from backend.apps.orders.models import order
 from django.db import models
 
 class Payment(models.Model):
@@ -9,7 +8,7 @@ class Payment(models.Model):
         ('apple', 'Apple Pay')
     ]
 
-    order = models.OneToOneField(order.Order, on_delete=models.CASCADE)
+    order = models.OneToOneField('orders.Order', on_delete=models.CASCADE)
     method = models.CharField(max_length=10, choices=PAYMENT_METHODS)
     amount = models.DecimalField(max_digits=8, decimal_places=2)
     transaction_id = models.CharField(max_length=100)
