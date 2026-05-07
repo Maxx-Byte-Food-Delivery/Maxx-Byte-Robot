@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+from apps.orders.models import order
+>>>>>>> Stashed changes
 from django.db import models
 
 class Payment(models.Model):

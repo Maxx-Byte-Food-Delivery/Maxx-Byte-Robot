@@ -34,10 +34,7 @@ urlpatterns = [
     path('confirm-totp/', ConfirmTOTPView.as_view()),
     path("verify-sms/", VerifySMSView.as_view()),
 
-    path('checkout/', create_checkout_session, name='create_checkout_session'),
-    path('stripe/webhook', stripe_webhook),
-    path('all_products/', get_all_products, name='get_all_products'),
-    path('checkout/<int:order_id>/', create_checkout_session, name='create_checkout_session'),
+    
     path('stripe/webhook', stripe_webhook),
     path('users/<int:user_id>/orders/view_history/', View_History, name='view_history'),
     path('users/<int:user_id>/orders/view_history/item/<int:id>/', item, name='view_history_item'),

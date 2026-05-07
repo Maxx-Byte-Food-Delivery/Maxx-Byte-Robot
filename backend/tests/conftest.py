@@ -5,8 +5,11 @@ from apps.orders.models.order import Order
 from apps.payments.models.payment import Payment
 from apps.orders.models.order_item import OrderItem
 from apps.products.models.product import Product
+<<<<<<< Updated upstream
 from apps.users.models.profile import Profile
 from apps.utils.twofa import generate_secret
+=======
+>>>>>>> Stashed changes
 
 #makes multiple users
 @pytest.fixture
