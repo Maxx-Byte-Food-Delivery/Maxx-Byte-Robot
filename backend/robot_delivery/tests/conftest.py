@@ -5,6 +5,8 @@ from apps.models.order import Order
 from apps.models.payment import Payment
 from apps.models.order_item import OrderItem
 from apps.models.product import Product
+from apps.models.profile import Profile
+from apps.utils.twofa import generate_secret
 
 #makes multiple users
 @pytest.fixture
@@ -12,10 +14,80 @@ def users(db):
   user1 = User.objects.create_user(username="johndoe", email= "johndoe@email.com", first_name="john", last_name="doe", password="psswrd123!")
   user2 = User.objects.create_user(username="janedoe", email= "janedoe@email.com", first_name="jane", last_name="doe", password ="SomeG00dPasswor!d")
   user3 = User.objects.create_user(username="SomeUser", email= "someuser@email.com", first_name="some", last_name="user", password="G00dPassw0rd!")
+  user4 = User.objects.create_user(username="student", email= "anotheruser@email.com", first_name="student", last_name="user", password="StudentP@ssw0rd!")
   user1.save()
   user2.save()
   user3.save()
-  return [user1, user2, user3]
+  user4.save()
+  return [user1, user2, user3, user4]
+
+@pytest.fixture
+def admin_users(db):
+  admin_user = User.objects.create_superuser(username="admin", email= "admin@email.com", first_name="admin", last_name="user", password="AdminP@ssw0rd!", is_staff=True)
+  admin_user2 = User.objects.create_superuser(username="admin2", email= "admin2@email.com", first_name="admin2", last_name="user2", password="AdminP@ssw0rd!", is_staff=True)
+  admin_user.save()
+  admin_user2.save()
+  return [admin_user, admin_user2]
+
+@pytest.fixture
+def student_profiles(db, users):
+  user = users[2]
+  user2 = users[3]
+  
+  # TOTP setup
+  student_profile, created = Profile.objects.get_or_create(
+    user=user,
+    defaults={'role': 'student', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret()}
+  )
+  if not created:
+    student_profile.role = 'student'
+    student_profile.mfa_method = 'totp'
+    student_profile.mfa_enabled = True
+    student_profile.mfa_secret = generate_secret()
+    student_profile.save()
+  
+  # SMS setup
+  student_profile2, created = Profile.objects.get_or_create(
+    user=user2,
+    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True}
+  )
+  if not created:
+    student_profile2.role = 'student'
+    student_profile2.mfa_method = 'sms'
+    student_profile2.mfa_enabled = True
+    student_profile2.save()
+  
+  return [student_profile, student_profile2]
+
+@pytest.fixture
+def admin_profiles(db, admin_users):
+  admin_user = admin_users[0]
+  admin_user2 = admin_users[1]
+  
+  # TOTP setup
+  admin_profile, created = Profile.objects.get_or_create(
+    user=admin_user, 
+    defaults={'role': 'staff', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret()}
+  )
+  if not created:
+    admin_profile.role = 'staff'
+    admin_profile.mfa_method = 'totp'
+    admin_profile.mfa_enabled = True
+    admin_profile.mfa_secret = generate_secret()
+    admin_profile.save()
+  
+  # SMS setup
+  admin_profile2, created = Profile.objects.get_or_create(
+    user=admin_user2,
+    defaults={'role': 'staff', 'mfa_method': 'sms', 'mfa_enabled': True}
+  )
+  if not created:
+    admin_profile2.role = 'staff'
+    admin_profile2.mfa_method = 'sms'
+    admin_profile2.mfa_enabled = True
+    admin_profile2.save()
+  
+  return [admin_profile, admin_profile2]
 
 #makes multiple orders
 @pytest.fixture

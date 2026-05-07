@@ -17,13 +17,13 @@ class Verify2FAView(APIView):
 
         # ✅ TOTP
         if profile.mfa_method == "totp":
-            totp = get_totp(user.mfa_secret)
+            totp = get_totp(profile.mfa_secret)
             if totp.verify(code):
                 login(request, user)
                 print("USER LOGGED IN:", request.user)
                 request.session.pop("user_id", None)
                 return Response({
-                    "success": True,
+                    "message": "2FA verified",
                     "role": "staff" if user.is_staff else "student"
                 })
 
@@ -38,11 +38,10 @@ class Verify2FAView(APIView):
                 request.session.pop("sms_code", None)
                 
                 return Response({
-                    "success": True,
+                    "message": "2FA verified",
                     "role": "staff" if user.is_staff else "student",
                 })
 
         return Response({
-            "success": False,
-            "error": "Invalid code"
+            "message": "Invalid code"
         }, status=400)

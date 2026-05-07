@@ -1,4 +1,7 @@
 # """Root URL Configuration"""
+from django.contrib import admin
+from django.urls import path, include
+from two_factor.urls import urlpatterns as tf_urls
 # from django.contrib import admin
 from django.urls import path, include
 from django.contrib import admin
