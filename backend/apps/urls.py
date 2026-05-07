@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from apps.users.views.csrf import csrf_view
 from apps.users.views.login import LoginView
 from apps.payments.views.payment import create_checkout_session, stripe_webhook
@@ -13,7 +13,7 @@ from apps.users.views.confirm_totp import ConfirmTOTPView
 from apps.users.views.verify_sms import VerifySMSView
 
 
-from apps.products.views.products import get_all_products
+from apps.products.views.products import ProductListView
 from apps.orders.views.order_history import View_History, item, reorder
 
 
@@ -33,7 +33,7 @@ urlpatterns = [
     path('user-profile/', UserProfileView.as_view()),
     path('confirm-totp/', ConfirmTOTPView.as_view()),
     path("verify-sms/", VerifySMSView.as_view()),
-
+    path('products/', ProductListView.as_view(), name='get_all_products'),
     
     path('stripe/webhook', stripe_webhook),
     path('users/<int:user_id>/orders/view_history/', View_History, name='view_history'),

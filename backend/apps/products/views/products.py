@@ -1,7 +1,8 @@
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from apps.products.models.product import Product
 
-@api_view(['GET'])
-def get_all_products(request):
-    return Response({"products": Product.objects.all().values()})
+class ProductListView(APIView):
+    def get(self, request):
+        products = Product.objects.all()
+        return Response({"products": Product.objects.all().values()})
