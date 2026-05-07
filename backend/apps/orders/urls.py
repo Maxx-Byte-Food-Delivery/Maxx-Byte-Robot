@@ -1,5 +1,5 @@
 from django.urls import path;
-from backend.apps.orders.views.order_history import View_History, item, reorder
+from apps.orders.views.order_history import View_History, item, reorder
 
 urlpatterns = [
     path('users/<int:user_id>/orders/view_history/', View_History, name='view_history'),
