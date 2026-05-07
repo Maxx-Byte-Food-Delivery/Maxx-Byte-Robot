@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
 import './App.css';
-
-import Login from "./Login";
-import Page from "./Page";
+import MFAOptions from "./MFAOptions";
+import VerifySMS from "./VerifySMS";
+import VerifyTOTP from "./VerifyTOTP";
+import SetupTOTP from "./SetupTOTP";
+import ConfirmTOTP from "./ConfirmTOTP";
+import Settings from "./Settings";
+import Staff from "./Staff";
+import Student from "./Student";
+import Login from "./pages/Login";
+import Page from "./pages/Page";
 import OrderHistory from "./history";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -36,12 +43,6 @@ function App() {
     <BrowserRouter>
       <CartComponent/>
       <Routes>
-        
-        {/* Login page */}
-        <Route
-          path="/"
-          element={<Login />}
-        />
 
         {/* Classes page */}
         <Route
