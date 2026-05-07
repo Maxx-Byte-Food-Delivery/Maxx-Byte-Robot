@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import './App.css';
-
+import MFAOptions from "./MFAOptions";
+import VerifySMS from "./VerifySMS";
+import VerifyTOTP from "./VerifyTOTP";
+import SetupTOTP from "./SetupTOTP";
+import ConfirmTOTP from "./ConfirmTOTP";
+import Student from "./Student";
+import Staff from "./Staff";
+import Settings from "./Settings";
 import Login from "./Login";
 import Page from "./Page";
 import OrderHistory from "./history";
