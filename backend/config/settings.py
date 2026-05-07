@@ -192,12 +192,9 @@ INSTALLED_APPS = [
     'channels',
     'config',
     'apps.users',
-<<<<<<< Updated upstream
     'apps.orders',
     'apps.products',
     'apps.payments',
-=======
->>>>>>> Stashed changes
 ]
 
 SITE_ID = 1

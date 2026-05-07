@@ -1,10 +1,6 @@
 import pytest
 from django.urls import reverse
-<<<<<<< Updated upstream
-from apps.payments.models import Payment
-=======
 from apps.payments.models.payment import Payment
->>>>>>> Stashed changes
 from unittest.mock import patch, MagicMock
 import stripe
 
