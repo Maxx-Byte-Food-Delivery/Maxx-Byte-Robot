@@ -11,17 +11,13 @@ Maxx-Byte-Food-Delivery/
 ├── backend/                   Django + DRF + Django Channels
 │   ├── config/                Settings, URLs, ASGI/WSGI
 │   │   ├── urls.py             contains root url patterns i.e.(api/ & admin/)
-│   └── apps/
-│   │   ├── models/             contains models for db that include ordering, items, payment, etc.
-│   │   ├── views/              contains api endpoints handling
-│   │   ├── urls.py             contains url patterns
+│   └── apps/                   contains models and views
 │   │ 
-│   └── robot_delivery/
-│        └──  tests/           contains tests
-│                │
-│                ├── api/      contains tests for api endpoints
-│                │
-│                └── model/    contains tests for models     
+│   └──  tests/           contains tests
+│   │
+│   ├── api/      contains tests for api endpoints
+│   │
+│   └── model/    contains tests for models     
 │
 └── frontend/                  React 19 using Vite
     └── src/
