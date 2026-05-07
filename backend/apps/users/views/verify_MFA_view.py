@@ -34,7 +34,7 @@ class VerifyMFAView(APIView):
 
         #TOTP
         if profile.mfa_method == "totp":
-            totp = get_totp(profile.nfa_secret)
+            totp = get_totp(profile.mfa_secret)
 
             if not totp.verify(code):
                 return Response({
