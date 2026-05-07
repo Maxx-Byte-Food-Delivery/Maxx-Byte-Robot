@@ -89,35 +89,35 @@ cd backend
 ```
 run
 ```
-pytest robot_delivery tests
+pytest tests
 ```
 <h3>To run API or Model tests only</h3>
 <h4>Model Tests</h4>
 
 run
 ```
-pytest robot_delivery tests/model
+pytest tests/model
 ```
 
 <h4>API Tests</h4>
 
 run
 ```
-pytest robot_delivery tests/api
+pytest tests/api
 ```
 
 <h4>Specific Model Tests</h4>
 
 run
 ```
-pytest robot_delivery tests/model/[file name]
+pytest tests/model/[file name]
 ```
 
 <h4>Specific API Tests</h4>
 
 run
 ```
-pytest robot_delivery tests/api/[folder name i.e. orders]/[file name]
+pytest tests/api/[folder name i.e. orders]/[file name]
 ```
 
 
