@@ -229,8 +229,8 @@ cp .env.example .env   # edit DB / Redis credentials
 
 For setting up the database run:
 ```
-python setup_auth.py
-python setup_db.py
+python scripts\setup_auth.py
+python scripts\setup_db.py
 python manage.py migrate
 ```
 To setup the test users run:
