@@ -1,4 +1,15 @@
 import os
+import sys
+
+sys.path.append(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__)
+        )
+    )
+)
+
+
 import django
 
 os.environ.setdefault(
@@ -9,7 +20,7 @@ os.environ.setdefault(
 django.setup()
 
 from django.contrib.auth.models import User
-from backend.apps.users.models.profile import Profile
+from apps.users.models.profile import Profile
 from apps.utils.twofa import generate_secret
 
 # username, password, email, first, last, is_staff

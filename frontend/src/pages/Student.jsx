@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./Student.css";
+import "../styles/Student.css";
 
 function Student() {
 

@@ -49,6 +49,7 @@ class VerifySMSView(APIView):
     def get(self, request):
         print("METHOD:", request.method)
         print("DATA:", request.data)
+        print("SESSION:", request.session.get("user_id"))
 
         user = request.user
         profile = user.profile
@@ -61,6 +62,7 @@ class VerifySMSView(APIView):
                     {"message": "Wait before requesting another code"},
                     status=429
                 )
+            
 
         # ✅ Use the SAME function
         send_mfa_code(user)
