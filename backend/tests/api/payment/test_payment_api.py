@@ -71,7 +71,7 @@ def test_stripe_webhook_checkout_completed(mock_construct_event, mock_session_cr
     }
     mock_construct_event.return_value = mock_event
 
-    webhook_url = '/api/stripe/webhook'
+    webhook_url = '/api/payments/stripe/webhook'
     payload = b'fake_payload'
     response = api_client.post(webhook_url, payload, content_type='application/json', HTTP_STRIPE_SIGNATURE='fake_sig')
 
@@ -96,7 +96,7 @@ def test_stripe_webhook_invalid_signature(mock_construct_event, mock_session_cre
     data = {"user": users[0].id}
     response = api_client.post(url, data, format="json")
 
-    webhook_url = '/api/stripe/webhook'
+    webhook_url = '/api/payments/stripe/webhook'
     payload = b'fake_payload'
     response = api_client.post(webhook_url, payload, content_type='application/json', HTTP_STRIPE_SIGNATURE='invalid_sig')
 
@@ -118,7 +118,7 @@ def test_stripe_webhook_invalid_payload(mock_construct_event, mock_session_creat
     data = {"user": users[0].id}
     response = api_client.post(url, data, format="json")
 
-    webhook_url = '/api/stripe/webhook'
+    webhook_url = '/api/payments/stripe/webhook'
     payload = b'invalid_payload'
     response = api_client.post(webhook_url, payload, content_type='application/json', HTTP_STRIPE_SIGNATURE='fake_sig')
 
