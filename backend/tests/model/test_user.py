@@ -7,6 +7,11 @@ from django.contrib.auth import get_user_model
 def test_user_creation():
   user = User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
   assert user is not None
+  assert user.username == "johndoe"
+  assert user.email == "johndoe@email.com"
+  assert user.first_name == "john"
+  assert user.last_name == "doe"
+  assert check_password("StrongPasswo312rd!", user.password)
 
 #test for that username is not blank
 @pytest.mark.django_db
