@@ -12,7 +12,7 @@ from apps.users.views.confirm_totp import ConfirmTOTPView
 from apps.users.views.verify_sms import VerifySMSView
 
 urlpatterns = [
-    path('login/', LoginView.as_view(), name='login'),
+    path('users/login/', LoginView.as_view(), name='login'),
     path('csrf/', csrf_view),
     path("verify-mfa/", VerifyMFAView.as_view(), name="verify-mfa"),
     path("logout/", logout_view, name="logout"),
