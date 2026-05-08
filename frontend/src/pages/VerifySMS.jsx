@@ -25,7 +25,7 @@ function VerifySMS() {
 
     const resend = async () => {
         try {
-            await API.post("/verify-sms/");
+            await API.get("/verify-sms/");
             setCooldown(30);
         } catch {
             setError("Failed to resend code");
