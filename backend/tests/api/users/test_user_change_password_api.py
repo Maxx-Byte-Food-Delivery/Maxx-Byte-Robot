@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 
 # when unskipping these tests change @pytest.mark.skip to @pytest.mark.django_db
-# make sure url = reverse('change_password') matches the name of the url pattern for the order placement endpoint in the urls.py file
+# make sure url = reverse('change_password') matches the name of the url pattern for the user change password endpoint in the urls.py file
 
 @pytest.mark.skip(reason = "change password endpoint not yet implamented")
 def test_user_chnage_password_endpoint(api_client, users):
