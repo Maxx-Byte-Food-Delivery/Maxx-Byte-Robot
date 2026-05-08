@@ -137,6 +137,8 @@ npm run dev          #http://localhost:5173/
 
 | POST   | `/api/users/login/` |  User login endpoint <br>
 
+| POST   | `/api/users/logout/` |  User logout endpoint <br>
+
 | POST   | `/api/users/register/` | User registration endpoint <br>
 
 | GET    | `/api/users/<int:user_id>/orders/view_history/` | User order history endpoint <br>
@@ -145,6 +147,6 @@ npm run dev          #http://localhost:5173/
 
 | GET    | `/api/users/<int:user_id>/orders/reorder/<int:id>/` | Reorder from order history endpoint <br>
 
-| GET    | `/api/all_products/`  | All products available endpoint <br>
+| GET    | `/api/products/all_products/`  | All products available endpoint <br>
 
-| POST   | `api/checkout/`  | Create checkout session endpoint <br>
+| POST   | `api/payments/checkout/`  | Create checkout session endpoint <br>
