@@ -242,6 +242,27 @@ TEMPLATES = [
     },
 ]
 
+AUTH_PASSWORD_VALIDATORS= [
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 10,
+        }
+    },
+    {
+        'NAME': 'apps.users.validators.ComplexityValidator',
+        'OPTIONS': {
+            'min_special': 1,
+            'min_uppercase': 1,
+            'min_digits': 1,
+
+        }
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+]
+
 #For text vefication
 TWILIO_ACCOUNT_SID = "your_sid"
 TWILIO_AUTH_TOKEN = "your_token"
