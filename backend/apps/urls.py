@@ -11,11 +11,11 @@ from apps.views.disable_2fa import Disable2FAView
 from apps.views.user_profile import UserProfileView
 from apps.views.confirm_totp import ConfirmTOTPView
 from apps.views.verify_sms import VerifySMSView
-
+from apps.utils.fetch_products import FetchProductsView
 
 from apps.views.products import get_all_products
 from apps.views.order_history import View_History, item, reorder
-
+from apps.utils.checkout import CreateCheckoutSessionView
 
 urlpatterns = [
     path('users/login/', LoginView.as_view(), name='login'),
@@ -34,7 +34,9 @@ urlpatterns = [
     path('confirm-totp/', ConfirmTOTPView.as_view()),
     path("verify-sms/", VerifySMSView.as_view()),
 
-    path('checkout/', create_checkout_session, name='create_checkout_session'),
+    path('api/products/', FetchProductsView.as_view()),
+
+    path('api/create-checkout-session/', CreateCheckoutSessionView.as_view()),
     path('stripe/webhook', stripe_webhook),
     path('all_products/', get_all_products, name='get_all_products'),
     path('checkout/<int:order_id>/', create_checkout_session, name='create_checkout_session'),

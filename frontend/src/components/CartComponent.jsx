@@ -1,53 +1,14 @@
-import { useState } from "react";
-import { CartModel } from "../models/CartModel";
-import { CartEntry } from "../models/CartEntry";
+import { BsCart4 } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
-function CartComponent() {
-
-    const [currentCart, setCurrentCart] = useState(() => new CartModel());
-    const [productList] = useState([]);
-
-    function addToCart(event) {
-
-        const index = Number(event.target.value);
-        const product = productList[index];
-
-        if (index >= 0 && index < productList.length) {
-
-            setCurrentCart(prevCart => {
-
-                const updated = new Map(prevCart.entries);
-
-                if (updated.has(product.name)) {
-
-                    const qty = updated.get(product.name).quantity;
-
-                    updated.set(
-                        product.name,
-                        new CartEntry(product.name, product.price, qty + 1)
-                    );
-
-                } else {
-                    updated.set(
-                        product.name,
-                        new CartEntry(product.name, product.price, 1)
-                    );
-                }
-
-                return {
-                    entries: updated,
-                    totalQty: prevCart.totalQty + 1,
-                    totalCost: prevCart.totalCost + product.price
-                };
-            });
-        }
-    }
-
-    return (
-        <div>
-            <h2>Cart Component</h2>
-        </div>
-    );
+function CartComponent({ cart }) {
+  return (
+    <div>
+        <Link to="/cart">
+            <h2><BsCart4 /> {cart.totalQty}</h2>
+        </Link>
+    </div>
+  );
 }
 
 export default CartComponent;

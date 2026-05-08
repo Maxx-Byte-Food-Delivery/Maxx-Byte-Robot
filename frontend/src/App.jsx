@@ -15,6 +15,8 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import Products from "./pages/Products";
 import CartComponent from "./components/CartComponent";
+import { CartModel } from "./models/CartModel";
+import { CartEntry } from "./models/CartEntry";
 
 import {
   BrowserRouter,
@@ -24,6 +26,7 @@ import {
 
 function App() {
   const [message, setMessage] = useState("");
+  const [cart, setCart] = useState({ entries: new Map(), totalQty: 0, totalCost: 0 });
 
   useEffect(() => {
     const initCSRF = async () => {
@@ -41,7 +44,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <CartComponent/>
+      <CartComponent cart={cart} />
       <Routes>
 
         {/* Classes page */}
@@ -52,16 +55,12 @@ function App() {
         
         <Route
           path="/products"
-          element={<Products />}
-        />
+          element={<Products cart={cart} setCart={setCart} />} />
         <Route
           path="/cart"
-          element={<CartPage />}
-        />
-        {/*Checkout page*/}
-        <Route 
-        path="/checkout" 
-        element={<CheckoutPage />} />
+          element={<CartPage cart={cart} setCart={setCart} />} />
+        
+        <Route path="/checkout" element={<CheckoutPage cart={cart} />} />
 
         <Route path="/orders" element={<OrderHistory />} />
 
