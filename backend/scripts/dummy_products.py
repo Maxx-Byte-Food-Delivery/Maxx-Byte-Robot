@@ -5,7 +5,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from backend.apps.products.models.product import Product
+from apps.products.models.product import Product
 
 product1 = Product(id=1, name='Hamburger and fries', price = 9.99, description = 'Juicy hamburger with crispy fries')
 product2 = Product(id=2, name='Pizza', price = 11.99, description = 'Delicious pizza with your favorite toppings')

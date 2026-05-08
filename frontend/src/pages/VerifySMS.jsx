@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "./api";
+import API from "../api/api";
 
 function VerifySMS() {
     const [code, setCode] = useState("");
@@ -25,7 +25,7 @@ function VerifySMS() {
 
     const resend = async () => {
         try {
-            await API.get("/verify-sms/");
+            await API.post("/verify-sms/");
             setCooldown(30);
         } catch {
             setError("Failed to resend code");
