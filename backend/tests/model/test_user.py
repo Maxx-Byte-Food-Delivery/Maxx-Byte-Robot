@@ -48,19 +48,20 @@ def test_weak_password_raises_error():
 
 #test that account with username already exists
 @pytest.mark.skip(reason="no exceptions coded for this yet")
-def test_user_cant_be_created_if_username_already_exists(user):
+def test_user_cant_be_created_if_username_already_exists():
   with pytest.raises(IntegrityError) as excinfo:
     User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
   assert "username already exists" in str(excinfo.value)
 
 @pytest.mark.skip(reason="no exceptions coded for this yet")
 #test that account with email already exists
-def test_user_cant_be_created_if_email_already_exists(user):
+def test_user_cant_be_created_if_email_already_exists(users):
   with pytest.raises(IntegrityError) as excinfo:
     User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
   assert "An account with this email is already registred" in str(excinfo.value)
 
-# @pytest.mark.django_db
-# def test_user_not_admin_by_default(user):
-#   assert user.username == "john doe"
-#   assert user.admin == False
+@pytest.mark.django_db
+def test_user_not_admin_by_default():
+  user = User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
+  assert user.is_staff == False
+  assert user.profile.role == "student"
