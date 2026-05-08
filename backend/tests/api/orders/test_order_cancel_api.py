@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 
 # when unskipping these tests change @pytest.mark.skip to @pytest.mark.django_db
-# make sure url = reverse('cancel_order') matches the name of the url pattern for the order placement endpoint in the urls.py file
+# make sure url = reverse('cancel_order') matches the name of the url pattern for the order cancel endpoint in the urls.py file
 
 #user can cancel an order successfully
 @pytest.mark.skip(reason="cancel order endpoint not yet implemented")
