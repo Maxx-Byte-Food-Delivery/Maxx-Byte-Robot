@@ -171,6 +171,7 @@ INSTALLED_APPS = [
     'config',
     'apps',
     'users',
+    'serializers',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

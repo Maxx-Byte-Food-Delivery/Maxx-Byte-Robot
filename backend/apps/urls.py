@@ -4,6 +4,7 @@ from apps.views.login import LoginView
 from apps.views.payment import create_checkout_session, stripe_webhook
 from apps.views.products import get_all_products
 from apps.views.order_history import View_History, item, reorder
+from apps.views.active_order import active_order_detail
 
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('users/<int:user_id>/orders/view_history/', View_History, name='view_history'),
     path('users/<int:user_id>/orders/view_history/item/<int:id>/', item, name='view_history_item'),
     path('users/<int:user_id>/orders/reorder/<int:id>/', reorder, name='reorder'),
+    path('users/<int:user_id>/orders/active_order_detail/<int:id>/', active_order_detail)
 ]
