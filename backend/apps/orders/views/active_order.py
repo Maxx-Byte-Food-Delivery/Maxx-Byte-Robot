@@ -6,23 +6,34 @@ from apps.serializers.active_order import ActiveOrderSerializer
 
 
 class ActiveOrderView(APIView):
-    
-    
-    
     # GET: List all active orders
-    def get(self, request):
-        orders = Order.objects.filter(is_active=True)
-        serializer = ActiveOrderSerializer(orders, many=True)
-        return Response(serializer.data)
-
-    # PATCH: Edit a specific order (e.g., change status)
-    def patch(self, request, pk):
+    def get(self, request, user_id,order_id):
         try:
-            order = Order.objects.get(pk=pk)
+            order = Order.objects.get(id = order_id, user_id = user_id, status = "active")
+
+            serializer = ActiveOrderSerializer(order)
+            return Response(serializer.data)
+
+        except Order.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    
+    
+
+    def patch(self, request, user_id, order_id):
+        try:
+            order = Order.objects.get(
+                id=order_id,
+                user_id=user_id
+            )
+
             serializer = ActiveOrderSerializer(order, data=request.data, partial=True)
+
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
+
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         except Order.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
