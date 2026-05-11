@@ -1,4 +1,6 @@
-function CartPage({ cart }) {
+import ClearCartButton from "../components/ClearCartButton";
+
+function CartPage({ cart, clearCart }) {
   const entries = Array.from(cart.entries.values());
 
   return (
@@ -14,6 +16,7 @@ function CartPage({ cart }) {
         ))
       )}
       <h3>Total: ${cart.totalCost}</h3>
+      <ClearCartButton clearCart={clearCart} disabled={entries.length === 0} />
     </div>
   );
 }

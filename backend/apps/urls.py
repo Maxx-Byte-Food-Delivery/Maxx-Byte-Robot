@@ -15,7 +15,7 @@ from apps.utils.fetch_products import FetchProductsView
 
 from apps.views.products import get_all_products
 from apps.views.order_history import View_History, item, reorder
-from apps.utils.checkout import CreateCheckoutSessionView
+from apps.views.checkout import CreateCheckoutSessionView
 
 urlpatterns = [
     path('users/login/', LoginView.as_view(), name='login'),

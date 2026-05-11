@@ -9,3 +9,5 @@
             this.description = description;
         }
     }
+
+    export default Product;

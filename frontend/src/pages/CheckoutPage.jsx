@@ -104,7 +104,13 @@ const handleCheckout = async () => {
       </div>
 
       <button onClick={clearAddress}>❌ Clear Address</button>
-      <button onClick={handleCheckout}>💳 Pay Now</button>
+      <button
+          type="button"
+          onClick={switchView}
+          disabled={view === "checkout" || currentCart.totalQty <= 0}
+        >
+          💳 CHECKOUT
+    </button>
 
     </div>
   );
