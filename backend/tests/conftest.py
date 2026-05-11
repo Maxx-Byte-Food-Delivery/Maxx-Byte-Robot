@@ -95,10 +95,12 @@ def create_orders(db, users):
   order1 = Order.objects.create(user=users[0], total_price=39.98)
   order2 = Order.objects.create(user=users[1], total_price=29.99)
   order3 = Order.objects.create(user=users[2], total_price=59.97)
+  order4 = Order.objects.create(user=users[0], total_price=59.97)
   order1.save()
   order2.save()
   order3.save()
-  return [order1, order2, order3]
+  order4.save()
+  return [order1, order2, order3, order4]
 
 @pytest.fixture
 def create_payment(db, create_orders):
