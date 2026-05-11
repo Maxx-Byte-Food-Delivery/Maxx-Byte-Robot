@@ -7,6 +7,7 @@ function MFAOptions() {
 
     const [profile, setProfile] = useState(null);
     const [showOptions, setShowOptions] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [message, setMessage] = useState("");
 
     // 🔍 Load current MFA status
@@ -32,10 +33,17 @@ function MFAOptions() {
         navigate("/setup-totp");
     };
 
-    // 📩 Switch to SMS
+    // 📩 Switch to SMS (NOW includes phone number step)
     const switchToSMS = async () => {
         try {
-            const res = await API.post("/enable-sms-2fa/");
+            if (!phoneNumber) {
+                setMessage("Please enter a phone number");
+                return;
+            }
+
+            const res = await API.post("/enable-sms-2fa/", {
+                phone_number: phoneNumber
+            });
 
             navigate("/verify-sms");
 
@@ -47,7 +55,7 @@ function MFAOptions() {
     // ❌ Disable
     const disable2FA = async () => {
         try {
-            const res = await API.post("/disable-2fa/");
+            await API.post("/disable-2fa/");
 
             setMessage("2FA disabled");
             setProfile({ ...profile, mfa_enabled: false, mfa_method: null });
@@ -87,19 +95,31 @@ function MFAOptions() {
 
                     <br /><br />
 
-                    <button onClick={switchToSMS}>
-                        Use SMS Code
-                    </button>
+                    {/* 📱 SMS FLOW */}
+                    <div>
+                        <h4>Use SMS Code</h4>
 
-                    <br /><br />
+                        <input
+                            type="text"
+                            placeholder="Enter phone number"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
+
+                        <br /><br />
+
+                        <button onClick={switchToSMS}>
+                            Send SMS Code
+                        </button>
+                    </div>
+
+                    <br />
 
                     {profile.mfa_enabled && (
                         <>
                             <button onClick={disable2FA}>
                                 Disable 2FA
                             </button>
-
-                            <br /><br />
                         </>
                     )}
                 </div>

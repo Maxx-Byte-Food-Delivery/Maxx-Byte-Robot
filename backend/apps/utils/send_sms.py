@@ -12,6 +12,9 @@ def send_mfa_code(user):
 
     profile = user.profile
 
+    if not profile.phone_number:
+        raise ValueError("Phone number not set")
+    
     code = str(random.randint(100000, 999999))
 
     profile.mfa_code = code
@@ -24,13 +27,13 @@ def send_mfa_code(user):
     # TEMP SMS simulation
     print("MFA CODE:", code)
 
-    #client = Client(
-        #settings.TWILIO_ACCOUNT_SID,
-        #settings.TWILIO_AUTH_TOKEN
-    #)
+    client = Client(
+        settings.TWILIO_ACCOUNT_SID,
+        settings.TWILIO_AUTH_TOKEN
+    )
 
-    #client.messages.create(
-        #body=f"Your login code is {code}",
-        #from_=settings.TWILIO_PHONE_NUMBER,
-        #to=profile.phone_number
-    #)
+    client.messages.create(
+        body=f"Your login code is {code}",
+        from_=settings.TWILIO_PHONE_NUMBER,
+        to=profile.phone_number
+    )

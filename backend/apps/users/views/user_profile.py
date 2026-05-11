@@ -22,12 +22,19 @@ class UserProfileView(APIView):
             # 📱 IMPORTANT for SMS MFA
             "phone_number": profile.phone_number,
         })
+    
     # ✏️ UPDATE profile settings
     def patch(self, request):
         profile = request.user.profile
 
         phone_number = request.data.get("phone_number")
         mfa_method = request.data.get("mfa_method")
+
+        # 🔐 Validate SMS requires phone number
+        if mfa_method == "sms" and not phone_number and not profile.phone_number:
+            return Response({
+                "message": "Phone number required for SMS MFA"
+            }, status=400)
 
         # 📱 Update phone number
         if phone_number is not None:
