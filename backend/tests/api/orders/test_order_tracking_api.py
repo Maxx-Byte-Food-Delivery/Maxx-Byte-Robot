@@ -5,11 +5,11 @@ from django.urls import reverse
 # make sure url = reverse('order_tracking') matches the name of the url pattern for the order placement endpoint in the urls.py file
 
 #user can place an order successfully
-@pytest.mark.skip(reason="order tracking endpoint not yet implemented")
+@pytest.mark.django_db
 def test_order_tracking_api_endpoint(api_client, users, create_orders):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse('order_tracking', args=[create_orders[0].id, users[0].id])
+  url = reverse('active_order', args=[create_orders[0].id, users[0].id])
   response = api_client.get(url)
 
   assert response.status_code == 200
@@ -17,27 +17,27 @@ def test_order_tracking_api_endpoint(api_client, users, create_orders):
   assert response.data['eta'] == "10 minutes"
   assert response.data['destination'] == "2 miles"
 
-@pytest.mark.skip(reason="order tracking endpoint not yet implemented")
-def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders):
-  url = reverse('order_tracking', args=[create_orders[0].id])
+@pytest.mark.django_db
+def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders, users):
+  url = reverse('active_order', args=[create_orders[0].id])
   response = api_client.get(url)
 
   assert response.status_code == 403
   assert response.data['detail'] == "This request requires you to be logged in."
 
-@pytest.mark.skip(reason="order tracking endpoint not yet implemented")
-def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders):
+@pytest.mark.django_db
+def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders, users):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse('order_tracking', args=[create_orders[0].id, users[1].id])
+  url = reverse('active_order', args=[create_orders[0].id, users[1].id])
   response = api_client.get(url)
 
   assert response.status_code == 403
   assert response.data['error'] == "Unauthorized"
 
-@pytest.mark.skip(reason="order tracking endpoint not yet implemented")
-def test_order_tracking_api_endpoint_no_order(api_client, create_orders):
-  url = reverse('order_tracking', args=[users[1].id])
+@pytest.mark.django_db
+def test_order_tracking_api_endpoint_no_order(api_client, create_orders, users):
+  url = reverse('active_order', args=[users[1].id])
   response = api_client.get(url)
 
   assert response.status_code == 400
