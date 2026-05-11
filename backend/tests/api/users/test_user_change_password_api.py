@@ -1,5 +1,8 @@
 import pytest
 from django.urls import reverse
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 # when unskipping these tests change @pytest.mark.skip to @pytest.mark.django_db
 # make sure url = reverse('change_password') matches the name of the url pattern for the user change password endpoint in the urls.py file
