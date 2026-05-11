@@ -10,18 +10,20 @@ def test_order_tracking_api_endpoint(api_client, users, create_orders):
   api_client.force_authenticate(user=users[0])
 
   url = reverse('active_order', args=[create_orders[0].id, users[0].id])
+  create_orders[0].status = "active"
   response = api_client.get(url)
 
   assert response.status_code == 200
-  assert response.data['status'] == "pending"
+  assert response.data['status'] == "active"
   assert response.data['eta'] == "10 minutes"
   assert response.data['destination'] == "2 miles"
 
 @pytest.mark.django_db
 def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders, users):
   url = reverse('active_order', args=[create_orders[0].id])
+  create_orders[0].status = "active"
   response = api_client.get(url)
-
+  
   assert response.status_code == 403
   assert response.data['detail'] == "This request requires you to be logged in."
 
@@ -31,6 +33,7 @@ def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders, users
 
   url = reverse('active_order', args=[create_orders[0].id, users[1].id])
   response = api_client.get(url)
+  create_orders[0].status = "active"
 
   assert response.status_code == 403
   assert response.data['error'] == "Unauthorized"
