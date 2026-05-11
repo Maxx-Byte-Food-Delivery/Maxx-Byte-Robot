@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from apps.models.active_order import ActiveOrder
+from apps.orders.models import Order
 
 
 class ActiveOrderSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = ActiveOrder
+        model = Order
         fields = "__all__"
