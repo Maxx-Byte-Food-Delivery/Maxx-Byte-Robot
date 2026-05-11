@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 @pytest.mark.django_db
 def test_user_login_endpoint(api_client, users):
   url = reverse('login')
-  data = {"username": "johndoe", "password": "psswrd123!"}
+  data = {"username": "johndoe", "password": "VeryG00d!Password"}
   response = api_client.post(url, data, format='json')
 
   if response.status_code != 200:
