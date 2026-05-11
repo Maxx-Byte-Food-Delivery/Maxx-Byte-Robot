@@ -4,9 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class UserProfileView(APIView):
-    def get(self, request):
 
-        permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     # 📖 GET user profile
     def get(self, request):
