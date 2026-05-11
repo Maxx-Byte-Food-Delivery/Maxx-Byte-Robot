@@ -5,6 +5,8 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+
 STATIC_URL = '/static/'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,8 +16,9 @@ DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS =[]
 
-from dotenv import load_dotenv
 load_dotenv()
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_API_KEY")
 
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
 

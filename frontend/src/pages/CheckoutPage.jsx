@@ -1,7 +1,4 @@
 import { useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-
-const stripePromise = loadStripe("pk_test_51TOiPRIlqypzYkQOXY8dDEHPiprEjw5nzeEAoPGviLKpqIoKrtSApkxVTEGsUnCvwvex00Vq0YlrU6");
 
 const states = [
   "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
@@ -23,31 +20,40 @@ function CheckoutPage({ cart }) {
 
   const [inputAddress, setInputAddress] = useState(emptyAddress);
 
-  const onChangeAddress1 = (e) => setInputAddress(prev => ({ ...prev, addressLine1: e.target.value }));
-  const onChangeAddress2 = (e) => setInputAddress(prev => ({ ...prev, addressLine2: e.target.value }));
-  const onChangeCity     = (e) => setInputAddress(prev => ({ ...prev, city: e.target.value }));
-  const onChangeState    = (e) => setInputAddress(prev => ({ ...prev, state: e.target.value }));
-  const onChangeZip      = (e) => setInputAddress(prev => ({ ...prev, zipCode: e.target.value }));
-  const clearAddress     = () => setInputAddress(emptyAddress);
+  const onChange = (field) => (e) =>
+    setInputAddress(prev => ({ ...prev, [field]: e.target.value }));
 
-const handleCheckout = async () => {
-    const cartItems = Array.from(cart.entries.values()).map(item => ({
+  const clearAddress = () => setInputAddress(emptyAddress);
+
+  const handleCheckout = async () => {
+    try {
+      const cartItems = Array.from(cart.entries.values()).map(item => ({
         name: item.name,
         price: item.price,
         quantity: item.quantity
-    }));
+      }));
 
-    const response = await fetch("/api/create-checkout-session/", {
+      const response = await fetch("http://localhost:8000/api/create-checkout-session/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: cartItems })
-    });
+      });
 
-    const session = await response.json();
-    const stripe = await stripePromise;
+      const data = await response.json();
 
-    await stripe.redirectToCheckout({ sessionId: session.sessionId });
-};
+      // ✅ Proper error handling
+      if (!data.url) {
+        console.error("Stripe session error:", data);
+        return;
+      }
+
+      // ✅ Correct modern Stripe flow
+      window.location.href = data.url;
+
+    } catch (err) {
+      console.error("Checkout failed:", err);
+    }
+  };
 
   return (
     <div>
@@ -63,55 +69,60 @@ const handleCheckout = async () => {
               <td>${item.price * item.quantity}</td>
             </tr>
           ))}
+
           <tr>
             <td><b>TOTAL</b></td>
-            <td>➡️</td>
-            <td><b>{cart.totalQty} item(s)</b></td>
-            <td><b>${Math.trunc(cart.totalCost * 100) / 100}</b></td>
+            <td></td>
+            <td><b>{cart.totalQty} items</b></td>
+            <td><b>${cart.totalCost}</b></td>
           </tr>
         </tbody>
       </table>
 
       <h2>Shipping Address</h2>
 
-      <div>
-        Street Address 1:
-        <input type="text" value={inputAddress.addressLine1} onChange={onChangeAddress1} />
-      </div>
+      <input placeholder="Address 1"
+        value={inputAddress.addressLine1}
+        onChange={onChange("addressLine1")}
+      />
 
-      <div>
-        Street Address 2:
-        <input type="text" value={inputAddress.addressLine2} onChange={onChangeAddress2} />
-      </div>
+      <input placeholder="Address 2"
+        value={inputAddress.addressLine2}
+        onChange={onChange("addressLine2")}
+      />
 
-      <div>
-        City:
-        <input type="text" value={inputAddress.city} onChange={onChangeCity} />
-      </div>
+      <input placeholder="City"
+        value={inputAddress.city}
+        onChange={onChange("city")}
+      />
 
-      <div>
-        State:
-        <select value={inputAddress.state} onChange={onChangeState}>
-          {states.map(state => (
-            <option key={state} value={state}>{state}</option>
-          ))}
-        </select>
-      </div>
+      <select
+        value={inputAddress.state}
+        onChange={onChange("state")}
+      >
+        {states.map(s => (
+          <option key={s} value={s}>{s}</option>
+        ))}
+      </select>
 
-      <div>
-        Zip Code:
-        <input type="text" maxLength="5" value={inputAddress.zipCode} onChange={onChangeZip} />
-      </div>
+      <input
+        placeholder="Zip"
+        maxLength="5"
+        value={inputAddress.zipCode}
+        onChange={onChange("zipCode")}
+      />
 
-      <button onClick={clearAddress}>❌ Clear Address</button>
+      <button onClick={clearAddress}>
+        ❌ Clear Address
+      </button>
+
       <button
-          type="button"
-          onClick={switchView}
-          disabled={view === "checkout" || currentCart.totalQty <= 0}
-        >
-          💳 CHECKOUT
-    </button>
-
+        type="button"
+        onClick={handleCheckout}
+        disabled={cart.totalQty <= 0}
+      >
+        💳 CHECKOUT
+      </button>
     </div>
   );
 }
