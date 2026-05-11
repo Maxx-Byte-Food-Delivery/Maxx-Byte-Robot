@@ -6,6 +6,7 @@ import './App.css'
 import Login from "./Login";
 import Page from "./Page";
 import OrderHistory from "./history";
+import ActiveOrders from "./ActiveOrders";
 
 import {
   BrowserRouter,

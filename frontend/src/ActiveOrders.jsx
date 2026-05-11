@@ -1,39 +1,118 @@
-import {useState } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-function ActiveOrders() {
-  const updateQuantity = (index, qty) => {
-    const newItems = [...items];
-    newItems[index].qty = qty;
-    setItems(newItems);
-  };
+const ActiveOrders = () => {
 
-  const saveChanges = () => {
-    fetch(`http://localhost:8000/api/orders/${order.id}/`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...order,
-        items: items
-      })
-    });
-  };
+    const [orders, setOrders] = useState([]);
 
-  return (
-    <div>
-      <h4>Items</h4>
+    useEffect(() => {
+        fetchOrders();
+    }, []);
 
-      {items.map((item, i) => (
-        <div key={i}>
-          <span>{item.name}</span>
-          <input
-            type="number"
-            value={item.qty}
-            onChange={(e) => updateQuantity(i, e.target.value)}
-          />
+    // FETCH ACTIVE ORDERS
+    const fetchOrders = async () => {
+
+        try {
+
+            const response = await axios.get(
+                'http://127.0.0.1:8000/api/active-orders/'
+            );
+
+            setOrders(response.data);
+
+        } catch (error) {
+
+            console.error("Error fetching orders:", error);
+        }
+    };
+
+    // UPDATE ORDER STATUS
+    const updateStatus = async (id, newStatus) => {
+
+        try {
+
+            await axios.patch(
+                `http://127.0.0.1:8000/api/active-orders/${id}/`,
+                {
+                    status: newStatus
+                }
+            );
+
+            // REFRESH ORDERS
+            fetchOrders();
+
+        } catch (error) {
+
+            console.error("Error updating status:", error);
+        }
+    };
+
+    return (
+
+        <div className="order-container">
+
+            <h1>Active Food Orders</h1>
+
+            {orders.map(order => (
+
+                <div
+                    key={order.id}
+                    className="order-card"
+                    style={{
+                        border: '1px solid #ccc',
+                        margin: '10px',
+                        padding: '10px',
+                        borderRadius: '10px'
+                    }}
+                >
+
+                    <h3>
+                        Order #{order.id} - {order.customer_name}
+                    </h3>
+
+                    <p>
+                        <strong>Items:</strong>
+                        {" "}
+                        {order.items}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        {" "}
+                        {order.status}
+                    </p>
+
+                    <button
+                        onClick={() =>
+                            updateStatus(order.id, 'Preparing')
+                        }
+                    >
+                        Preparing
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            updateStatus(order.id, 'Out for Delivery')
+                        }
+                        style={{ marginLeft: '10px' }}
+                    >
+                        Out for Delivery
+                    </button>
+
+                    <button
+                        onClick={() =>
+                            updateStatus(order.id, 'Delivered')
+                        }
+                        style={{ marginLeft: '10px' }}
+                    >
+                        Mark Delivered
+                    </button>
+
+                </div>
+            ))}
+
         </div>
-      ))}
+    );
+};
 
-      <button onClick={saveChanges}>Save Changes</button>
-    </div>
-  );
-}
+export default ActiveOrders;
