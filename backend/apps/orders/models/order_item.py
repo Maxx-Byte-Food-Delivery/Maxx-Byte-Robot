@@ -13,6 +13,7 @@ class OrderItem(models.Model):
     def subtotal(self):
         return self.product.price * self.quantity
 
-
-
-   
+    def save(self, *args, **kwargs):
+        if self.product and self.quantity is not None:
+            self.price = self.product.price * self.quantity
+        super().save(*args, **kwargs)
