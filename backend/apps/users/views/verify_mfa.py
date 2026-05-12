@@ -1,26 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import login
-from django.contrib.auth.models import User
-from django.utils import timezone
 from apps.utils.twofa import get_totp
-
 
 
 class VerifyMFAView(APIView):
 
     def post(self, request):
         code = request.data.get("code")
-        user_id = request.session.get("user_id")
-
-        if not user_id:
-            return Response({"message": "Session expired"}, status=400)
-
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({"message": "User not found"}, status=404)
-
+        user = request.user
         profile = user.profile
 
         # 🔐 TOTP
@@ -32,20 +20,10 @@ class VerifyMFAView(APIView):
 
         # 📱 SMS
         elif profile.mfa_method == "sms":
-
-            if not profile.mfa_code:
-                return Response({"message": "No code generated"}, status=400)
-
-            if timezone.now() > profile.mfa_expiry:
-                return Response({"message": "Code expired"}, status=400)
-
             if profile.mfa_code != code:
                 return Response({"message": "Invalid code"}, status=400)
 
-        # ✅ LOGIN SUCCESS
         login(request, user)
-
-        request.session.pop("user_id", None)
 
         return Response({
             "message": "MFA verified",

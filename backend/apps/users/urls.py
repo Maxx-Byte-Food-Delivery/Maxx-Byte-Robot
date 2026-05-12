@@ -9,6 +9,8 @@ from apps.users.views.enable_sms_2fa import EnableSMS2FAView
 from apps.users.views.disable_2fa import Disable2FAView
 from apps.users.views.user_profile import UserProfileView
 from apps.users.views.confirm_totp import ConfirmTOTPView
+from apps.users.views.trigger_mfa import MFATriggerView
+from apps.users.views.resend_mfa_code import ResendMFAView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
@@ -19,6 +21,8 @@ urlpatterns = [
     path('setup-totp/', SetupTOTPView.as_view()),
     path('enable-sms-2fa/', EnableSMS2FAView.as_view()),
     path('disable-2fa/', Disable2FAView.as_view()),
-    path('user-profile/', UserProfileView.as_view()),
+    path('profile/', UserProfileView.as_view()),
     path('confirm-totp/', ConfirmTOTPView.as_view()),
+    path('mfa-trigger/', MFATriggerView.as_view()),
+    path("resend-mfa/", ResendMFAView.as_view()),
 ]

@@ -11,6 +11,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Page from "./pages/Page";
 import OrderHistory from "./components/history";
+import SetupSMS from "./pages/SetupSMS";
 
 import {
   BrowserRouter,
@@ -52,6 +53,9 @@ function App() {
         {/* TOTP Setup */}
         <Route path="/setup-totp" element={<SetupTOTP />} />
         <Route path="/confirm-totp" element={<ConfirmTOTP />} />
+
+        {/* SMS Setup */}
+        <Route path="/setup-sms" element={<SetupSMS />} />
 
         {/* Dashboards */}
         <Route path="/staff" element={<Staff />} />

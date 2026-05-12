@@ -6,15 +6,13 @@ function MFAOptions() {
     const navigate = useNavigate();
 
     const [profile, setProfile] = useState(null);
-    const [showOptions, setShowOptions] = useState(false);
-    const [phoneNumber, setPhoneNumber] = useState("");
     const [message, setMessage] = useState("");
 
-    // 🔍 Load current MFA status
+    // 🔍 Load MFA status
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const res = await API.get("/user-profile/");
+                const res = await API.get("/users/profile/");
                 setProfile(res.data);
             } catch (err) {
                 if (err.response?.status === 401) {
@@ -28,50 +26,14 @@ function MFAOptions() {
         fetchProfile();
     }, []);
 
-    // 📱 Switch to TOTP
-    const switchToTOTP = () => {
-        navigate("/setup-totp");
-    };
-
-    // 📩 Switch to SMS (NOW includes phone number step)
-    const switchToSMS = async () => {
-        try {
-            if (!phoneNumber) {
-                setMessage("Please enter a phone number");
-                return;
-            }
-
-            const res = await API.post("/enable-sms-2fa/", {
-                phone_number: phoneNumber
-            });
-
-            navigate("/verify-sms");
-
-        } catch (err) {
-            setMessage(err.response?.data?.message || "Error");
-        }
-    };
-
-    // ❌ Disable
-    const disable2FA = async () => {
-        try {
-            await API.post("/disable-2fa/");
-
-            setMessage("2FA disabled");
-            setProfile({ ...profile, mfa_enabled: false, mfa_method: null });
-            setShowOptions(false);
-
-        } catch (err) {
-            setMessage(err.response?.data?.message || "Error");
-        }
-    };
-
     if (!profile) return <p>Loading...</p>;
 
     return (
-        <div>
+        <div style={{ padding: "20px" }}>
+
             <h2>Multi-Factor Authentication</h2>
 
+            {/* 📊 Current status */}
             <p>
                 Status:{" "}
                 {profile.mfa_enabled
@@ -79,58 +41,51 @@ function MFAOptions() {
                     : "Disabled"}
             </p>
 
-            <br />
+            <hr />
 
-            <button onClick={() => setShowOptions(!showOptions)}>
-                Change Method
+            {/* 🔐 Options */}
+            <h3>Choose a method</h3>
+
+            <button onClick={() => navigate("/setup-totp")}>
+                🔑 Use Authenticator App (TOTP)
             </button>
 
             <br /><br />
 
-            {showOptions && (
-                <div>
-                    <button onClick={switchToTOTP}>
-                        Use Authenticator App (Recommended)
-                    </button>
+            <button onClick={() => navigate("/setup-sms")}>
+                📱 Use SMS Code
+            </button>
 
-                    <br /><br />
+            <br /><br />
 
-                    {/* 📱 SMS FLOW */}
-                    <div>
-                        <h4>Use SMS Code</h4>
-
-                        <input
-                            type="text"
-                            placeholder="Enter phone number"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                        />
-
-                        <br /><br />
-
-                        <button onClick={switchToSMS}>
-                            Send SMS Code
-                        </button>
-                    </div>
-
-                    <br />
-
-                    {profile.mfa_enabled && (
-                        <>
-                            <button onClick={disable2FA}>
-                                Disable 2FA
-                            </button>
-                        </>
-                    )}
-                </div>
+            {profile.mfa_enabled && (
+                <button
+                    onClick={async () => {
+                        try {
+                            await API.post("/users/disable-2fa/");
+                            setProfile({
+                                ...profile,
+                                mfa_enabled: false,
+                                mfa_method: null
+                            });
+                            setMessage("2FA disabled");
+                        } catch (err) {
+                            setMessage(err.response?.data?.message || "Error");
+                        }
+                    }}
+                >
+                    ❌ Disable 2FA
+                </button>
             )}
 
             <br /><br />
 
+            {/* 🔙 Back */}
             <button onClick={() => navigate("/settings")}>
                 Back
             </button>
 
+            {/* 📢 Messages */}
             {message && <p>{message}</p>}
         </div>
     );
