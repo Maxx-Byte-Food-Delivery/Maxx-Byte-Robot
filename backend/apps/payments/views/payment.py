@@ -18,6 +18,8 @@ def create_checkout_session(request, order_id=None, user_id=None):
 
     try:
         order = Order.objects.get(id=order_id)
+        order.total_price = sum(item.price for item in order.order_items.all())
+        order.save() 
         if not request.user.is_authenticated or order.user_id != request.user.id:
             return Response({'error': 'Action not allowed'}, status=403)
     except Order.DoesNotExist:
@@ -26,6 +28,10 @@ def create_checkout_session(request, order_id=None, user_id=None):
     amount = data.get('total_price', order.total_price)
     status = data.get('status', 'pending')
     method = data.get('method', 'card')
+
+    order.total_price = sum(item.price for item in order.order_items.all())
+    order.save()
+    amount = order.total_price 
 
     if stripe_api_key:
         stripe.api_key = stripe_api_key
