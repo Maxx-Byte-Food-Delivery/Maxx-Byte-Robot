@@ -1,14 +1,4 @@
 import React, { useEffect, useState } from "react";
-<<<<<<< HEAD
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-import Login from "./Login";
-import Page from "./Page";
-import OrderHistory from "./history";
-import ActiveOrders from "./ActiveOrders";
-=======
 import './App.css';
 import MFAOptions from "./pages/MFAOptions";
 import VerifySMS from "./pages/VerifySMS";
@@ -21,7 +11,6 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Page from "./pages/Page";
 import OrderHistory from "./components/history";
->>>>>>> 7d36b6ecddca7a73625fc4d68d6422069df92bb8
 
 import {
   BrowserRouter,
