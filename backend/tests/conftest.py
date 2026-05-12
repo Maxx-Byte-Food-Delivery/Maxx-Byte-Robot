@@ -92,31 +92,44 @@ def admin_profiles(db, admin_users):
 #makes multiple orders
 @pytest.fixture
 def create_orders(db, users):
-  order1 = Order.objects.create(user=users[0], total_price=39.98)
-  order2 = Order.objects.create(user=users[1], total_price=29.99)
-  order3 = Order.objects.create(user=users[2], total_price=59.97)
+  order1 = Order.objects.create(user=users[0])
+  order2 = Order.objects.create(user=users[1])
+  order3 = Order.objects.create(user=users[2])
+  order4 = Order.objects.create(user=users[0])
   order1.save()
   order2.save()
   order3.save()
-  return [order1, order2, order3]
+  order4.save()
+  return [order1, order2, order3, order4]
 
 @pytest.fixture
-def create_payment(db, create_orders):
-  payment = Payment.objects.create(order=create_orders[0], method='card', amount=100.00, transaction_id='abc123', status='pending')
-  payment.save()
+def create_payment(db, create_orders, order_items):
+  order = create_orders[0]
+  order.refresh_from_db()
+  payment = Payment.objects.create(order=order, method='card', transaction_id='abc123', status='pending', amount=order.total_price,)
+  
   return payment
 
-@pytest.fixture
+@pytest.fixture 
 def order_items(db, create_orders, create_products):
-  order1_item = OrderItem.objects.create(order=create_orders[0], product=create_products[0], quantity=2, price = create_products[0].price * 2)
-  order2_item = OrderItem.objects.create(order=create_orders[1], product=create_products[1], quantity=1, price = create_products[1].price)
-  order3_item = OrderItem.objects.create(order=create_orders[2], product=create_products[0], quantity=3, price = create_products[0].price * 3)
-  order3_item2 = OrderItem.objects.create(order=create_orders[2], product=create_products[1], quantity=1, price = create_products[1].price)
-  order1_item.save()
-  order2_item.save()
-  order3_item.save()
-  order3_item2.save()
-  return [order1_item, order2_item, order3_item, order3_item2]
+    # Helper to create items and calculate their price
+    def create_item(order, product, qty):
+      return OrderItem.objects.create(
+        order=order,
+        product=product,
+        quantity=qty,
+      )
+
+    items = [
+      create_item(create_orders[0], create_products[0], 2),
+      create_item(create_orders[1], create_products[1], 1),
+      create_item(create_orders[2], create_products[0], 3),
+      create_item(create_orders[2], create_products[1], 1),
+    ]
+    for order in create_orders:
+      order.refresh_from_db() 
+      order.update_total()
+    return items
 
 @pytest.fixture
 def create_products(db):
