@@ -9,7 +9,7 @@ function VerifyTOTP() {
 
     const verify = async () => {
         try {
-            const res = await API.post("/confirm-totp/", {
+            const res = await API.post("/users/confirm-totp/", {
                 code: code.trim(),
             });
 
