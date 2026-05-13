@@ -9,7 +9,7 @@ def test_order_history_endpoint(api_client, users, order_items):
   response = api_client.get(url, format='json')
 
   assert response.status_code == 200
-  assert len(response.data) == 1
+  assert len(response.data) == 2
   assert response.data[0]['id'] == order_items[0].order.id
   assert float(response.data[0]['total_price']) == 39.98
 
