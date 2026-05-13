@@ -33,7 +33,7 @@ function CheckoutPage({ cart }) {
         quantity: item.quantity
       }));
 
-      const response = await fetch("http://localhost:8000/api/create-checkout-session/", {
+      const response = await fetch("http://localhost:8000/api/payments/create-checkout-session/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cart: cartItems })

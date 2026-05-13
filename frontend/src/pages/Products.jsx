@@ -8,7 +8,7 @@ function Products({ cart, setCart }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("/products/all_products/")
+    fetch("api/products/all_products/")
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch products");
         return res.json();
