@@ -16,6 +16,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import Products from "./pages/Products";
 import NavigationBar from "./components/NavigationBar";
+import OrderHistory from "./components/history";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 

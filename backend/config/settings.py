@@ -194,8 +194,10 @@ INSTALLED_APPS = [
     'django_filters',
     'channels',
     'config',
-    'apps',
-    'users',
+    'apps.users',
+    'apps.orders',
+    'apps.products',
+    'apps.payments',
 ]
 
 SITE_ID = 1
