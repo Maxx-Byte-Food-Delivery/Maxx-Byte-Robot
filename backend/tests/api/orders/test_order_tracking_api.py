@@ -6,7 +6,7 @@ from django.urls import reverse
 
 #user can place an order successfully
 @pytest.mark.django_db
-def test_order_tracking_api_endpoint(api_client, users, create_orders):
+def test_order_tracking_api_endpoint(api_client, users, create_orders, order_items):
   api_client.force_authenticate(user=users[0])
   create_orders[0].status = "active"
   create_orders[0].save()
@@ -45,7 +45,7 @@ def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders, users
   assert response.data['error'] == "Unauthorized"
 
 @pytest.mark.django_db
-def test_orders_tracking_api_endpoint(api_client, users, create_orders):
+def test_orders_tracking_api_endpoint(api_client, users, create_orders, order_items):
   api_client.force_authenticate(user=users[0])
   create_orders[0].status = "active"
   create_orders[0].save()

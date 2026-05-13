@@ -18,7 +18,8 @@ def active_order(request, user_id, order_id):
 
     order_list = list(orders.values('id', 'total_price', 'status', 'user', 'created_at'))
 
-    return Response(order_list)
+    serializer = ActiveOrderSerializer(orders, many=True)
+    return Response(serializer.data)
 
 @api_view(['GET'])
 def active_orders(request, user_id):
@@ -26,15 +27,13 @@ def active_orders(request, user_id):
         return Response({'detail': 'You must be logged in to track an order', 'orders': []}, status=status.HTTP_403_FORBIDDEN)
     elif request.user.id != user_id:
         return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
-        
-    orders = Order.objects.filter(user_id=user_id, status = "active")
+
+    orders = Order.objects.filter(user_id=user_id, status="active").distinct()
     if not orders.exists():
         return Response({'error': 'No orders found', 'orders': []}, status=status.HTTP_404_NOT_FOUND)
-    orders = orders.distinct()
 
-    order_list = list(orders.values('id', 'total_price', 'status', 'user', 'created_at'))
-
-    return Response(order_list)
+    serializer = ActiveOrderSerializer(orders, many=True)
+    return Response(serializer.data)
 
 
 def patch(self, request, user_id, order_id):

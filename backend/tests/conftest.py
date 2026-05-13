@@ -90,7 +90,7 @@ def admin_profiles(db, admin_users):
   return [admin_profile, admin_profile2]
 
 #makes multiple orders
-@pytest.fixture
+@pytest.fixture(scope="function")
 def create_orders(db, users):
   order1 = Order.objects.create(user=users[0])
   order2 = Order.objects.create(user=users[1])
@@ -110,28 +110,24 @@ def create_payment(db, create_orders, order_items):
   
   return payment
 
-@pytest.fixture 
+@pytest.fixture(scope="function")
 def order_items(db, create_orders, create_products):
-    # Helper to create items and calculate their price
     def create_item(order, product, qty):
-      return OrderItem.objects.create(
-        order=order,
-        product=product,
-        quantity=qty,
-      )
+        return OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=qty,
+        )
 
     items = [
-      create_item(create_orders[0], create_products[0], 2),
-      create_item(create_orders[1], create_products[1], 1),
-      create_item(create_orders[2], create_products[0], 3),
-      create_item(create_orders[2], create_products[1], 1),
+        create_item(create_orders[0], create_products[0], 2),
+        create_item(create_orders[1], create_products[1], 1),
+        create_item(create_orders[2], create_products[0], 3),
+        create_item(create_orders[2], create_products[1], 1),
     ]
-    for order in create_orders:
-      order.refresh_from_db() 
-      order.update_total()
     return items
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def create_products(db):
   product1 = Product.objects.create(name="Test Product 1", description="Description for Test Product 1", price=19.99)
   product2 = Product.objects.create(name="Test Product 2", description="Description for Test Product 2", price=29.99)

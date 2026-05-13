@@ -19,12 +19,10 @@ class Order(models.Model):
     address = models.CharField(max_length=255, default="")
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending') # Active, Preparing, Shipped, Delivered
     created_at = models.DateTimeField(auto_now_add=True)
-    from django.db import models
 
     def update_total(self):
         items = self.order_items.all()
         self.total_price = sum(item.price for item in items)
-        self.save()
-    updated_at = models.DateTimeField(auto_now=True)
+        self.save(update_fields=['total_price'])
 
 
