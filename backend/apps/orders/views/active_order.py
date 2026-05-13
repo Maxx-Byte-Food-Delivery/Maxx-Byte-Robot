@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from apps.orders.models import Order
-from apps.serializers.active_order import ActiveOrderSerializer
+from apps.orders.serializers.active_order import ActiveOrderSerializer
 
 @api_view(['GET'])
 def active_order(request, user_id, order_id):
