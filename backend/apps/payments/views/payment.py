@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from apps.orders.models.order import Order
 from apps.payments.models.payment import Payment
 
-stripe_api_key = settings.STRIPE_API_KEY
+stripe.api_key = settings.STRIPE_API_KEY
+
 
 @api_view(['POST'])
 def create_checkout_session(request, order_id=None, user_id=None):
@@ -33,8 +34,8 @@ def create_checkout_session(request, order_id=None, user_id=None):
     order.save()
     amount = order.total_price 
 
-    if stripe_api_key:
-        stripe.api_key = stripe_api_key
+    if stripe.api_key:
+        stripe.api_key = stripe.api_key
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
@@ -67,6 +68,7 @@ def create_checkout_session(request, order_id=None, user_id=None):
 
     return Response({'id': session.id})
 
+
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
@@ -82,11 +84,12 @@ def stripe_webhook(request):
         return HttpResponse(status=400)
 
     if event['type'] == 'checkout.session.completed':
+
         session = event['data']['object']
         order_id = session['metadata']['order_id']
-        order = Order.objects.get(id=order_id)
 
+        order = Order.objects.get(id=order_id)
         order.status = 'confirmed'
         order.save()
 
-        return HttpResponse(status=200)
+    return HttpResponse(status=200)
