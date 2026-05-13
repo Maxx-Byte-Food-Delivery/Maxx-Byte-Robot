@@ -315,3 +315,7 @@ npm run dev          #http://localhost:5173/
 | GET    | `/api/all_products/`  | All products available endpoint <br>
 
 | POST   | `api/checkout/`  | Create checkout session endpoint <br>
+
+| GET    | `api/users/<int:user_id>/active-orders` | All of a user's active orders <br>
+
+| GET    | `api/users/<int:user_id>/active-orders/<int:order_id>/` | User's specific active order <br>
