@@ -19,12 +19,13 @@ const VerifyMFA = () => {
         try {
 
             const response = await axios.post(
-                "http://127.0.0.1:8000/api/verify-mfa/",
+                "http://localhost:8000/api/verify-mfa/",
                 {
-                    username: username,
                     code: code
                 }
             );
+
+            const role = response.data.role;
 
             if (role === "staff") {
 

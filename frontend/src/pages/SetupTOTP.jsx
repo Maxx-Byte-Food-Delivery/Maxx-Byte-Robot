@@ -10,7 +10,7 @@ function SetupTOTP({ setPage }) {
     const generateQR = async () => {
         setLoading(true);
 
-        const res = await API.post("/setup-totp/");
+        const res = await API.post("/users/setup-totp/");
         const data = res.data;
 
         setQr(data.qr_code);
@@ -30,7 +30,7 @@ function SetupTOTP({ setPage }) {
                     <p>Scan this with Google Authenticator</p>
                     <img src={`data:image/png;base64,${qr}`} alt="QR Code" />
 
-                    <button onClick={() => navigate("/confirm-totp")}>
+                    <button onClick={() => navigate("/users/confirm-totp")}>
                         Next
                     </button>
                 </>

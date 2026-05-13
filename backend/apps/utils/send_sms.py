@@ -12,7 +12,11 @@ def send_mfa_code(user):
 
     profile = user.profile
 
+    if not profile.phone_number:
+        raise ValueError("Phone number not set")
+    
     code = str(random.randint(100000, 999999))
+    #code = "123456"
 
     profile.mfa_code = code
     profile.mfa_expiry = (
@@ -22,7 +26,8 @@ def send_mfa_code(user):
     profile.save()
 
     # TEMP SMS simulation
-    print("MFA CODE:", code)
+    print("SMS CODE:", code)
+    print("PHONE:", profile.phone_number)
 
     #client = Client(
         #settings.TWILIO_ACCOUNT_SID,
