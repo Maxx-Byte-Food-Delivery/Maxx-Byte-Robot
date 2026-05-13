@@ -49,12 +49,13 @@ def student_profiles(db, users):
   # SMS setup
   student_profile2, created = Profile.objects.get_or_create(
     user=user2,
-    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True}
+    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': 555555555}
   )
   if not created:
     student_profile2.role = 'student'
     student_profile2.mfa_method = 'sms'
     student_profile2.mfa_enabled = True
+    student_profile2.phone_number = 5555555555
     student_profile2.save()
   
   return [student_profile, student_profile2]
@@ -67,24 +68,26 @@ def admin_profiles(db, admin_users):
   # TOTP setup
   admin_profile, created = Profile.objects.get_or_create(
     user=admin_user, 
-    defaults={'role': 'staff', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret()}
+    defaults={'role': 'staff', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret(), 'phone_number': 555555555}
   )
   if not created:
     admin_profile.role = 'staff'
     admin_profile.mfa_method = 'totp'
     admin_profile.mfa_enabled = True
     admin_profile.mfa_secret = generate_secret()
+    admin_profile.phone_number = 5555555555
     admin_profile.save()
   
   # SMS setup
   admin_profile2, created = Profile.objects.get_or_create(
     user=admin_user2,
-    defaults={'role': 'staff', 'mfa_method': 'sms', 'mfa_enabled': True}
+    defaults={'role': 'staff', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': 555555555}
   )
   if not created:
     admin_profile2.role = 'staff'
     admin_profile2.mfa_method = 'sms'
     admin_profile2.mfa_enabled = True
+    admin_profile2.phone_number = 5555555555
     admin_profile2.save()
   
   return [admin_profile, admin_profile2]
