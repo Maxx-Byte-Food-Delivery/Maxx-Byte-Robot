@@ -16,7 +16,7 @@ import Products from "./pages/Products";
 import NavigationBar from "./components/NavigationBar";
 import OrderHistory from "./pages/history";
 import SetupSMS from "./pages/SetupSMS";
-
+import OrderTracker from "./pages/OrderTracker";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -103,7 +103,8 @@ function App() {
 
         {/* Settings */}
         <Route path="/settings" element={<Settings />} />
-
+        {/* Order Tracker */}
+        <Route path="/tracker" element={<OrderTracker />} />
       </Routes>
     </BrowserRouter>
   );
