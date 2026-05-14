@@ -64,7 +64,7 @@ function App() {
         <Route path="/page" element={<Page />} />
 
         {/* Order History */}
-        <Route path="/order" element={<OrderHistory />} />
+        <Route path="/orders" element={<OrderHistory />} />
 
       </Routes>
     </BrowserRouter>
