@@ -6,7 +6,7 @@ function Page(){
     const [message, setMessage] = useState("");
 
      useEffect(() => {
-        fetch("http://127.0.0.1:8000/api/all_products")
+        fetch("http://127.0.0.1:8000/api/products/all_products")
         .then(res => res.json())
         .then(data => {
             console.log(data.products);
