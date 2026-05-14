@@ -1,6 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import './OrderTracker.css';
+import axios from 'axios';
+const ActiveOrders = () => {
 
+    const [orders, setOrders] = useState([]);
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    // FETCH ACTIVE ORDERS
+    const fetchOrders = async () => {
+
+        try {
+
+            const response = await axios.get(
+                `http://127.0.0.1:8000/api/active-orders/${id}/`
+            );
+
+            setOrders(response.data);
+
+        } catch (error) {
+
+            console.error("Error fetching orders:", error);
+        }
+    };
 const ORDER_STATUSES = {
   PLACED: 'placed',
   PREPARING: 'preparing',
