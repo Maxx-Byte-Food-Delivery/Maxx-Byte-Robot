@@ -11,7 +11,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Page from "./pages/Page";
 import OrderHistory from "./components/history";
-import OrderTracker from "./OrderTracker";
+import OrderTracker from "./pages/OrderTracker";
 
 import {
   BrowserRouter,
