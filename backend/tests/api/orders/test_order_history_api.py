@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 
 @pytest.mark.django_db
-def test_order_history_endpoint(api_client, users, order_items):
+def test_order_history_endpoint(api_client, users, order_items, create_orders):
   api_client.force_authenticate(user=users[0])
 
   url = reverse('view_history', args=[users[0].id])
@@ -33,7 +33,7 @@ def test_order_history_endpoint_unauthenticated(api_client, users, order_items):
   assert response.data['orders'] == []
 
 @pytest.mark.django_db
-def test_order_history_item_endpoint(api_client, users, order_items):
+def test_order_history_item_endpoint(api_client, users, order_items, create_orders):
   api_client.force_authenticate(user=users[0])
 
   url = reverse('view_history_item', args=[users[0].id, order_items[0].order.id])

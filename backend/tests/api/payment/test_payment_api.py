@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 import stripe
 
 @pytest.mark.django_db
-def test_payment_endpoint(api_client, create_orders, users):
+def test_payment_endpoint(api_client, create_orders, users, create_products, order_items):
   api_client.force_authenticate(user=users[0])
 
   url = reverse("create_checkout_session", kwargs={"order_id": create_orders[0].id})

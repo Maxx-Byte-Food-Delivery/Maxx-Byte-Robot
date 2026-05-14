@@ -1,25 +1,61 @@
 import pytest
+from django.conf import settings
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 @pytest.mark.django_db
 def test_user_creation():
   user = User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
   assert user is not None
+  assert user.username == "johndoe"
+  assert user.email == "johndoe@email.com"
+  assert user.first_name == "john"
+  assert user.last_name == "doe"
+  assert check_password("StrongPasswo312rd!", user.password)
+
 
 #test for that username is not blank
 @pytest.mark.django_db
 def test_user_username_cant_be_blank():
- with pytest.raises(ValueError, match="The given username must be set"):
-  User.objects.create_user(username="", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
+  with pytest.raises(ValueError, match="The given username must be set"):
+    User.objects.create_user(username="", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
 
 
 #test that user cant be created without password
-@pytest.mark.skip(reason="no exceptions coded for this yet")
+@pytest.mark.django_db
 def test_user_password_cant_be_blank():
- with pytest.raises(ValueError, match="Password must be set"):
-  User.objects.create_user(username="johndoe", first_name="john", last_name="doe", email="johndoe@email.com", password="")
+  with pytest.raises(ValidationError) as excinfo:
+    validate_password("")
+  assert "This password is too short. It must contain at least 10 characters.', 'Password cannot be blank." in str(excinfo.value)
+
+@pytest.mark.django_db
+def test_user_password_must_have_special_char():
+  with pytest.raises(ValidationError) as excinfo:
+    validate_password("NoSp3cialChar")
+  assert "This password must contain at least 1 special character(s)" in str(excinfo.value)
+
+@pytest.mark.django_db
+def test_user_password_must_have_special_char():
+  with pytest.raises(ValidationError) as excinfo:
+    validate_password("nouppercas3!")
+  assert "This password must contain at least 1 uppercase letter(s)" in str(excinfo.value)
+
+@pytest.mark.django_db
+def test_user_password_must_have_special_char():
+  with pytest.raises(ValidationError) as excinfo:
+    validate_password("NoNumbersPass!")
+  assert "This password must contain at least 1 digit(s)" in str(excinfo.value)
+
+#test that user can't be created with weak password
+@pytest.mark.django_db
+def test_weak_password_raises_error():
+  with pytest.raises(ValidationError) as excinfo:
+    validate_password("password")
+  assert "This password is too common." in str(excinfo.value)
 
 #test that user can't be created without email
 @pytest.mark.skip(reason="no exceptions coded for this yet")
@@ -39,28 +75,22 @@ def test_user_last_name_cant_be_blank():
  with pytest.raises(ValueError, match="Last name can't be blank"):
   User.objects.create_user(username="johndoe", email="", first_name="john", last_name="", password="StrongPasswo312rd!")
 
-#test that user can't be created with weak password
-@pytest.mark.skip(reason="no exceptions coded for this yet")
-def test_weak_password_raises_error():
-  with pytest.raises(ValidationError) as excinfo:
-    validate_password("password")
-  assert "Password must contain numbers and special characters" in str(excinfo.value)
-
 #test that account with username already exists
 @pytest.mark.skip(reason="no exceptions coded for this yet")
-def test_user_cant_be_created_if_username_already_exists(user):
+def test_user_cant_be_created_if_username_already_exists():
   with pytest.raises(IntegrityError) as excinfo:
     User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
   assert "username already exists" in str(excinfo.value)
 
 @pytest.mark.skip(reason="no exceptions coded for this yet")
 #test that account with email already exists
-def test_user_cant_be_created_if_email_already_exists(user):
+def test_user_cant_be_created_if_email_already_exists(users):
   with pytest.raises(IntegrityError) as excinfo:
     User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
   assert "An account with this email is already registred" in str(excinfo.value)
 
-# @pytest.mark.django_db
-# def test_user_not_admin_by_default(user):
-#   assert user.username == "john doe"
-#   assert user.admin == False
+@pytest.mark.django_db
+def test_user_not_admin_by_default():
+  user = User.objects.create_user(username="johndoe", email="johndoe@email.com", first_name="john", last_name="doe", password="StrongPasswo312rd!")
+  assert user.is_staff == False
+  assert user.profile.role == "student"

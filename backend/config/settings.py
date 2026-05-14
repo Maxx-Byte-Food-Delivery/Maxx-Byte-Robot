@@ -5,6 +5,8 @@
 from pathlib import Path
 from datetime import timedelta
 import os
+from dotenv import load_dotenv
+
 STATIC_URL = '/static/'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,8 +16,9 @@ DEBUG = os.environ.get("DEBUG", "True") == "True"
 
 ALLOWED_HOSTS =[]
 
-from dotenv import load_dotenv
 load_dotenv()
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_API_KEY")
 
 STRIPE_API_KEY = os.environ.get("STRIPE_API_KEY")
 
@@ -24,6 +27,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/account/login/'
+
+USE_TZ = True
 
 # # ---------------------------------------------------------------------------
 # # Apps
@@ -240,7 +245,28 @@ TEMPLATES = [
     },
 ]
 
+AUTH_PASSWORD_VALIDATORS= [
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 10,
+        }
+    },
+    {
+        'NAME': 'apps.users.validators.ComplexityValidator',
+        'OPTIONS': {
+            'min_special': 1,
+            'min_uppercase': 1,
+            'min_digits': 1,
+
+        }
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+]
+
 #For text vefication
-TWILIO_ACCOUNT_SID = "your_sid"
-TWILIO_AUTH_TOKEN = "your_token"
-TWILIO_PHONE_NUMBER = "+1234567890"
+TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
