@@ -63,6 +63,9 @@ function App() {
         {/* Other */}
         <Route path="/page" element={<Page />} />
 
+        {/* Order History */}
+        <Route path="/order" element={<OrderHistory />} />
+
       </Routes>
     </BrowserRouter>
   );
