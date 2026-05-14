@@ -10,7 +10,7 @@ import Staff from "./pages/Staff";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Page from "./pages/Page";
-import OrderHistory from "./components/history";
+import OrderHistory from "./pages/history";
 import SetupSMS from "./pages/SetupSMS";
 
 import {
