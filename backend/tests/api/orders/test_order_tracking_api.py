@@ -2,11 +2,11 @@ import pytest
 from django.urls import reverse
 
 # when unskipping these tests change @pytest.mark.skip to @pytest.mark.django_db
-# make sure url = reverse('order_tracking') matches the name of the url pattern for the order placement endpoint in the urls.py file
+# make sure url = reverse('order_tracking') matches the name of the url pattern for the order tracking endpoint in the urls.py file
 
 #user can place an order successfully
 @pytest.mark.django_db
-def test_order_tracking_api_endpoint(api_client, users, create_orders):
+def test_order_tracking_api_endpoint(api_client, users, create_orders, order_items):
   api_client.force_authenticate(user=users[0])
   create_orders[0].status = "active"
   create_orders[0].save()
@@ -45,7 +45,7 @@ def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders, users
   assert response.data['error'] == "Unauthorized"
 
 @pytest.mark.django_db
-def test_orders_tracking_api_endpoint(api_client, users, create_orders):
+def test_orders_tracking_api_endpoint(api_client, users, create_orders, order_items):
   api_client.force_authenticate(user=users[0])
   create_orders[0].status = "active"
   create_orders[0].save()

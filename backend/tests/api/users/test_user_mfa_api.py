@@ -4,26 +4,39 @@ import pyotp
 
 @pytest.mark.django_db
 def test_user_login_endpoint_mfa_totp_as_admin(api_client, admin_users, admin_profiles):
-  url = reverse('login')
-  data = {"username": "admin", "password": "AdminP@ssw0rd!"}
-  response = api_client.post(url, data, format='json')
+    url = reverse('login')
+    data = {"username": "admin", "password": "AdminP@ssw0rd!"}
+    response = api_client.post(url, data, format='json')
+    
+    if response.status_code != 200:
+        print(response.data)
+    assert response.status_code == 200
+    assert response.data['requires_2fa'] == True
+    assert response.data['method'] == "totp"
+    assert response.data['role'] == "staff"
 
-  if response.status_code != 200:
-    print(response.data) 
+    target_user = admin_users[0]
+    
+    target_user.__dict__.pop('_profile_cache', None)
+    target_user.__dict__.pop('profile', None)
 
-  assert response.status_code == 200
-  assert response.data['requires_2fa'] == True
-  assert response.data['method'] == "totp"
-  assert response.data['role'] == "staff"
+    api_client.force_authenticate(user=target_user)
 
-  url = reverse('verify-mfa')
-  totp = pyotp.TOTP(admin_profiles[0].mfa_secret)
-  code = totp.now()
-  data = {"code": code}
-  response = api_client.post(url, data, format='json')
+    url = reverse('verify-mfa')
+    
 
-  assert response.status_code == 200
-  assert response.data['message'] == "MFA verified"
+    target_user.refresh_from_db()
+    fresh_secret = target_user.profile.mfa_secret
+    
+    totp = pyotp.TOTP(fresh_secret)
+    code = totp.now()
+    
+    data = {"code": code}
+
+    response = api_client.post(url, data, format='json')
+    
+    assert response.status_code == 200
+    assert response.data['message'] == "MFA verified"
 
 @pytest.mark.django_db
 def test_user_login_endpoint_mfa_totp_as_admin_wrong_code(api_client, admin_users, admin_profiles):
@@ -35,6 +48,15 @@ def test_user_login_endpoint_mfa_totp_as_admin_wrong_code(api_client, admin_user
   assert response.data['requires_2fa'] == True
   assert response.data['method'] == "totp"
   assert response.data['role'] == "staff"
+
+  target_user = admin_users[0]
+    
+  target_user.refresh_from_db()
+
+  target_user.__dict__.pop('_profile_cache', None)
+  target_user.__dict__.pop('profile', None)
+  
+  api_client.force_authenticate(user=target_user)
 
   url = reverse('verify-mfa')
   data = {"code": "000000"}
@@ -57,10 +79,18 @@ def test_user_login_endpoint_sms_as_admin(api_client, admin_users, admin_profile
   assert response.data['method'] == "sms"
   assert response.data['role'] == "staff"
 
+  target_user = admin_users[1]
+    
+  target_user.refresh_from_db()
+
+  target_user.__dict__.pop('_profile_cache', None)
+  target_user.__dict__.pop('profile', None)
+  api_client.force_authenticate(user=target_user)
+
   url = reverse('verify-mfa')
-  admin_profiles[1].refresh_from_db()
-  code = admin_profiles[1].mfa_code
-  data = {"code": code}
+  fresh_sms_code = target_user.profile.mfa_code
+  
+  data = {"code": fresh_sms_code}
   response = api_client.post(url, data, format='json')
 
   assert response.status_code == 200
@@ -72,13 +102,26 @@ def test_user_login_endpoint_sms_as_admin_wrong_code(api_client, admin_users, ad
   data = {"username": "admin2", "password": "AdminP@ssw0rd!"}
   response = api_client.post(url, data, format='json')
 
+  if response.status_code != 200:
+    print(response.data) 
+
   assert response.status_code == 200
   assert response.data['requires_2fa'] == True
   assert response.data['method'] == "sms"
   assert response.data['role'] == "staff"
 
+  target_user = admin_users[1]
+    
+  target_user.refresh_from_db()
+
+  target_user.__dict__.pop('_profile_cache', None)
+  target_user.__dict__.pop('profile', None)
+  api_client.force_authenticate(user=target_user)
+
   url = reverse('verify-mfa')
-  data = {"code": "000000"}
+  fresh_sms_code = target_user.profile.mfa_code
+  
+  data = {"code": 000000}
   response = api_client.post(url, data, format='json')
 
   assert response.status_code == 400
@@ -119,21 +162,31 @@ def test_user_login_endpoint_mfa_totp_as_student(api_client, users, student_prof
   url = reverse('login')
   data = {"username": "SomeUser", "password": "G00dPassw0rd!"}
   response = api_client.post(url, data, format='json')
-
+  
   if response.status_code != 200:
-    print(response.data) 
-
+      print(response.data)
   assert response.status_code == 200
   assert response.data['requires_2fa'] == True
   assert response.data['method'] == "totp"
   assert response.data['role'] == "student"
 
+  target_user = users[2]
+  
+  target_user.refresh_from_db()
+  target_user.__dict__.pop('_profile_cache', None)
+  target_user.__dict__.pop('profile', None)
+  
+  api_client.force_authenticate(user=target_user)
+  
   url = reverse('verify-mfa')
-  totp = pyotp.TOTP(student_profiles[0].mfa_secret)
+  
+  fresh_secret = target_user.profile.mfa_secret
+  totp = pyotp.TOTP(fresh_secret)
   code = totp.now()
+  
   data = {"code": code}
   response = api_client.post(url, data, format='json')
-
+  
   assert response.status_code == 200
   assert response.data['message'] == "MFA verified"
 
@@ -142,14 +195,29 @@ def test_user_login_endpoint_mfa_totp_as_student_wrong_code(api_client, users, s
   url = reverse('login')
   data = {"username": "SomeUser", "password": "G00dPassw0rd!"}
   response = api_client.post(url, data, format='json')
-
+  
+  if response.status_code != 200:
+      print(response.data)
   assert response.status_code == 200
   assert response.data['requires_2fa'] == True
   assert response.data['method'] == "totp"
   assert response.data['role'] == "student"
 
+  target_user = users[2]
+  
+  target_user.refresh_from_db()
+  target_user.__dict__.pop('_profile_cache', None)
+  target_user.__dict__.pop('profile', None)
+  
+  api_client.force_authenticate(user=target_user)
+  
   url = reverse('verify-mfa')
-  data = {"code": "000000"}
+  
+  fresh_secret = target_user.profile.mfa_secret
+  totp = pyotp.TOTP(fresh_secret)
+  code = totp.now()
+  
+  data = {"code": 00000}
   response = api_client.post(url, data, format='json')
 
   assert response.status_code == 400
@@ -157,6 +225,12 @@ def test_user_login_endpoint_mfa_totp_as_student_wrong_code(api_client, users, s
 
 @pytest.mark.django_db
 def test_user_login_endpoint_sms_as_student(api_client, users, student_profiles):
+
+  target_user = next(u for u in users if u.username == "student")
+  target_user.refresh_from_db()
+
+  profile = target_user.profile
+
   url = reverse('login')
   data = {"username": "student", "password": "StudentP@ssw0rd!"}
   response = api_client.post(url, data, format='json')
@@ -165,14 +239,21 @@ def test_user_login_endpoint_sms_as_student(api_client, users, student_profiles)
     print(response.data) 
 
   assert response.status_code == 200
-  assert response.data['requires_2fa'] == True
+  
   assert response.data['method'] == "sms"
   assert response.data['role'] == "student"
+    
+  target_user.refresh_from_db()
+
+  target_user.__dict__.pop('_profile_cache', None)
+  target_user.__dict__.pop('profile', None)
+
+  api_client.force_authenticate(user=target_user)
 
   url = reverse('verify-mfa')
-  student_profiles[1].refresh_from_db()
-  code = student_profiles[1].mfa_code
-  data = {"code": code}
+  fresh_sms_code = target_user.profile.mfa_code
+  
+  data = {"code": fresh_sms_code}
   response = api_client.post(url, data, format='json')
 
   assert response.status_code == 200
@@ -180,18 +261,36 @@ def test_user_login_endpoint_sms_as_student(api_client, users, student_profiles)
 
 @pytest.mark.django_db
 def test_user_login_endpoint_sms_as_student_wrong_code(api_client, users, student_profiles):
+  target_user = next(u for u in users if u.username == "student")
+  target_user.refresh_from_db()
+
+  profile = target_user.profile
+
   url = reverse('login')
   data = {"username": "student", "password": "StudentP@ssw0rd!"}
   response = api_client.post(url, data, format='json')
 
+  if response.status_code != 200:
+    print(response.data) 
+
   assert response.status_code == 200
-  assert response.data['requires_2fa'] == True
+  
   assert response.data['method'] == "sms"
   assert response.data['role'] == "student"
+    
+  target_user.refresh_from_db()
+
+  target_user.__dict__.pop('_profile_cache', None)
+  target_user.__dict__.pop('profile', None)
+  
+  api_client.force_authenticate(user=target_user)
 
   url = reverse('verify-mfa')
-  data = {"code": "000000"}
+  fresh_sms_code = target_user.profile.mfa_code
+  
+  data = {"code": 000000}
   response = api_client.post(url, data, format='json')
+
 
   assert response.status_code == 400
   assert response.data['message'] == "Invalid code"

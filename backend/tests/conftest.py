@@ -11,7 +11,7 @@ from apps.utils.twofa import generate_secret
 #makes multiple users
 @pytest.fixture
 def users(db):
-  user1 = User.objects.create_user(username="johndoe", email= "johndoe@email.com", first_name="john", last_name="doe", password="psswrd123!")
+  user1 = User.objects.create_user(username="johndoe", email= "johndoe@email.com", first_name="john", last_name="doe", password="VeryG00d!Password")
   user2 = User.objects.create_user(username="janedoe", email= "janedoe@email.com", first_name="jane", last_name="doe", password ="SomeG00dPasswor!d")
   user3 = User.objects.create_user(username="SomeUser", email= "someuser@email.com", first_name="some", last_name="user", password="G00dPassw0rd!")
   user4 = User.objects.create_user(username="student", email= "anotheruser@email.com", first_name="student", last_name="user", password="StudentP@ssw0rd!")
@@ -49,12 +49,13 @@ def student_profiles(db, users):
   # SMS setup
   student_profile2, created = Profile.objects.get_or_create(
     user=user2,
-    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True}
+    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': 555555555}
   )
   if not created:
     student_profile2.role = 'student'
     student_profile2.mfa_method = 'sms'
     student_profile2.mfa_enabled = True
+    student_profile2.phone_number = 5555555555
     student_profile2.save()
   
   return [student_profile, student_profile2]
@@ -67,35 +68,37 @@ def admin_profiles(db, admin_users):
   # TOTP setup
   admin_profile, created = Profile.objects.get_or_create(
     user=admin_user, 
-    defaults={'role': 'staff', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret()}
+    defaults={'role': 'staff', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret(), 'phone_number': 555555555}
   )
   if not created:
     admin_profile.role = 'staff'
     admin_profile.mfa_method = 'totp'
     admin_profile.mfa_enabled = True
     admin_profile.mfa_secret = generate_secret()
+    admin_profile.phone_number = 5555555555
     admin_profile.save()
   
   # SMS setup
   admin_profile2, created = Profile.objects.get_or_create(
     user=admin_user2,
-    defaults={'role': 'staff', 'mfa_method': 'sms', 'mfa_enabled': True}
+    defaults={'role': 'staff', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': 555555555}
   )
   if not created:
     admin_profile2.role = 'staff'
     admin_profile2.mfa_method = 'sms'
     admin_profile2.mfa_enabled = True
+    admin_profile2.phone_number = 5555555555
     admin_profile2.save()
   
   return [admin_profile, admin_profile2]
 
 #makes multiple orders
-@pytest.fixture
+@pytest.fixture(scope="function")
 def create_orders(db, users):
-  order1 = Order.objects.create(user=users[0], total_price=39.98)
-  order2 = Order.objects.create(user=users[1], total_price=29.99)
-  order3 = Order.objects.create(user=users[2], total_price=59.97)
-  order4 = Order.objects.create(user=users[0], total_price=59.97)
+  order1 = Order.objects.create(user=users[0])
+  order2 = Order.objects.create(user=users[1])
+  order3 = Order.objects.create(user=users[2])
+  order4 = Order.objects.create(user=users[0])
   order1.save()
   order2.save()
   order3.save()
@@ -103,24 +106,31 @@ def create_orders(db, users):
   return [order1, order2, order3, order4]
 
 @pytest.fixture
-def create_payment(db, create_orders):
-  payment = Payment.objects.create(order=create_orders[0], method='card', amount=100.00, transaction_id='abc123', status='pending')
-  payment.save()
+def create_payment(db, create_orders, order_items):
+  order = create_orders[0]
+  order.refresh_from_db()
+  payment = Payment.objects.create(order=order, method='card', transaction_id='abc123', status='pending', amount=order.total_price,)
+  
   return payment
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def order_items(db, create_orders, create_products):
-  order1_item = OrderItem.objects.create(order=create_orders[0], product=create_products[0], quantity=2, price = create_products[0].price * 2)
-  order2_item = OrderItem.objects.create(order=create_orders[1], product=create_products[1], quantity=1, price = create_products[1].price)
-  order3_item = OrderItem.objects.create(order=create_orders[2], product=create_products[0], quantity=3, price = create_products[0].price * 3)
-  order3_item2 = OrderItem.objects.create(order=create_orders[2], product=create_products[1], quantity=1, price = create_products[1].price)
-  order1_item.save()
-  order2_item.save()
-  order3_item.save()
-  order3_item2.save()
-  return [order1_item, order2_item, order3_item, order3_item2]
+    def create_item(order, product, qty):
+        return OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=qty,
+        )
 
-@pytest.fixture
+    items = [
+        create_item(create_orders[0], create_products[0], 2),
+        create_item(create_orders[1], create_products[1], 1),
+        create_item(create_orders[2], create_products[0], 3),
+        create_item(create_orders[2], create_products[1], 1),
+    ]
+    return items
+
+@pytest.fixture(scope="function")
 def create_products(db):
   product1 = Product.objects.create(name="Test Product 1", description="Description for Test Product 1", price=19.99)
   product2 = Product.objects.create(name="Test Product 2", description="Description for Test Product 2", price=29.99)

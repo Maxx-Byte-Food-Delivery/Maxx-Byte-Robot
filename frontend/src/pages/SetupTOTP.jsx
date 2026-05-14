@@ -30,7 +30,7 @@ function SetupTOTP({ setPage }) {
                     <p>Scan this with Google Authenticator</p>
                     <img src={`data:image/png;base64,${qr}`} alt="QR Code" />
 
-                    <button onClick={() => navigate("/users/confirm-totp")}>
+                    <button onClick={() => navigate("/confirm-totp")}>
                         Next
                     </button>
                 </>
