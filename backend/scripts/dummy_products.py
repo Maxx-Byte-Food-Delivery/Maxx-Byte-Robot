@@ -1,10 +1,11 @@
 
 import os
 import django
+import sys
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.environ["DJANGO_SETTINGS_MODULE"] = "config.settings"
 django.setup()
-
 from apps.products.models.product import Product
 
 product1 = Product(id=1, name='Hamburger and fries', price = 9.99, description = 'Juicy hamburger with crispy fries')

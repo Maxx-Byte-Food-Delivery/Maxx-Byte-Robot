@@ -10,7 +10,7 @@ function SetupTOTP({ setPage }) {
     const generateQR = async () => {
         setLoading(true);
 
-        const res = await API.post("/setup-totp/");
+        const res = await API.post("/users/setup-totp/");
         const data = res.data;
 
         setQr(data.qr_code);

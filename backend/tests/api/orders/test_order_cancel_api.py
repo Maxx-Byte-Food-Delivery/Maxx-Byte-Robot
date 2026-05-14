@@ -2,7 +2,7 @@ import pytest
 from django.urls import reverse
 
 # when unskipping these tests change @pytest.mark.skip to @pytest.mark.django_db
-# make sure url = reverse('cancel_order') matches the name of the url pattern for the order placement endpoint in the urls.py file
+# make sure url = reverse('cancel_order') matches the name of the url pattern for the order cancel endpoint in the urls.py file
 
 #user can cancel an order successfully
 @pytest.mark.skip(reason="cancel order endpoint not yet implemented")
@@ -17,6 +17,20 @@ def test_cancel_order_api_endpoint(api_client, users, create_orders):
   assert 'order_id' in response.data
   assert response.data['order_id'] == create_orders[0].id
   assert response.data['status'] == "cancelled"
+
+@pytest.mark.skip(reason="cancel order endpoint not yet implemented")
+def test_cancel_order_api_endpoint_order_active(api_client, users, create_orders):
+  api_client.force_authenticate(user=users[0])
+  create_orders[0].status = "active"
+  create_orders[0].save()
+  url = reverse('cancel_order', args=[create_orders[0].id,users[0].id])
+  response = api_client.post(url)
+
+  assert response.status_code == 401
+  assert response.data['message'] == "Order cannot be cancelled while active."
+  assert 'order_id' in response.data
+  assert response.data['order_id'] == create_orders[0].id
+  assert response.data['status'] == "active"
 
 @pytest.mark.skip(reason="cancel order endpoint not yet implemented")
 def test_cancel_order_api_endpoint_wrong_user(api_client, users, create_orders):

@@ -10,7 +10,7 @@ function VerifySMS() {
 
     const verify = async () => {
         try {
-            const res = await API.post("/verify-sms/", {
+            const res = await API.post("/users/verify-mfa/", {
                 code: code.trim(),
             });
 
@@ -25,7 +25,7 @@ function VerifySMS() {
 
     const resend = async () => {
         try {
-            await API.get("/verify-sms/");
+            await API.post("/users/resend-mfa/");
             setCooldown(30);
         } catch {
             setError("Failed to resend code");

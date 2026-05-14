@@ -8,16 +8,28 @@ class EnableSMS2FAView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+
         user = request.user
         profile = user.profile
 
-        # 🔁 Prevent overwriting active code (optional but recommended)
-        if profile.mfa_code:
-            print("Reusing existing code:", profile.mfa_code)
-        else:
-            send_mfa_code(user)  # ✅ this generates + saves + sends
+        phone_number = request.data.get("phone_number")
+
+
+        # 📱 Set phone number ONLY when enabling SMS
+        if phone_number:
+            profile.phone_number = phone_number
+
+        if not profile.phone_number:
+            return Response({
+                "message": "Phone number required for SMS"
+            }, status=400)
+
+        profile.mfa_method = "sms"
+        profile.mfa_enabled = True
+        profile.save();
+
+        send_mfa_code(user)
 
         return Response({
-            "message": "Code sent",
-            "next": "verify-sms"
+            "message": "SMS MFA enabled"
         })

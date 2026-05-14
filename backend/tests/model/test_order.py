@@ -3,8 +3,8 @@ from apps.orders.models.order import Order
 from django.db import IntegrityError
 
 @pytest.mark.django_db
-def test_user_place_order(create_orders):
-    assert create_orders[0].total_price == 39.98
+def test_user_place_order(create_orders, order_items):
+    assert float(create_orders[0].total_price) == 39.98
     assert create_orders[0].status == 'pending'
     assert create_orders[0].created_at is not None
 
