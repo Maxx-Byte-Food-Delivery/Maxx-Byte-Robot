@@ -1,24 +1,17 @@
 import { test, expect } from '@playwright/test';
 
-
 test('user can log in successfully', async ({ page }) => {
-  // Navigate using the configured baseURL
-  await page.goto('/login');
+  // 1. Navigate to the frontend login page
+  await page.goto('/'); 
 
-  // Locate elements using accessible user-facing attributes
-  await page.getByLabel('User Name').fill('user@example.com');
-  await page.getByLabel('Password').fill('SecurePassword123');
-  
-  // Trigger submission
-  await page.getByRole('button', { name: 'Sign In' }).click();
+  // 2. Fill in the login form fields using placeholder text matching your JSX
+  await page.getByPlaceholderText('Username').fill('user@example.com');
+  await page.getByPlaceholderText('Password').fill('SecurePassword123');
 
-  await page.goto('/dashboard'); // Change to your actual route
+  // 3. Click the login button matching your JSX text
+  await page.getByRole('button', { name: 'Login', exact: true }).click();
 
-  // Finds a button specifically containing the exact text "Settings"
-  const settingsButton = page.getByRole('button', { name: 'Settings', exact: true });
-  
-  // Asserts the element is rendered and visible in the viewport
-  await expect(settingsButton).toBeVisible();
-
-  await expect(page )
+  // 4. Assert transition to one of your component's redirect paths (e.g., /student or /staff)
+  await expect(page).toHaveURL(/\/(student|staff)/);
 });
+
