@@ -18,12 +18,14 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install Backend Dependencies
+    - name: Install Backend Dependencies and Seed Database
       run: |
-        cd backend             # Navigates from root into backend
+        cd backend
         python -m venv venv
         ./venv/bin/pip install -r requirements.txt
         ./venv/bin/python manage.py migrate
+        
+        ./venv/bin/python scripts/*
 
     # --- FRONTEND SETUP ---
     - name: Set up Node.js

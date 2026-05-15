@@ -52,7 +52,7 @@ export default defineConfig({
     },
     {
       // 2. Your Backend Server (Adjust command and port to match your project)
-      command: 'cd ../backend && source venv/bin/activate && python manage.py runserver', // e.g., 'node server.js' or 'npm run dev' inside your backend folder
+      command: 'cd ../backend && ./venv/bin/python manage.py runserver', // e.g., 'node server.js' or 'npm run dev' inside your backend folder
       reuseExistingServer: !process.env.CI,
       timeout: 60 * 1000,
     }
