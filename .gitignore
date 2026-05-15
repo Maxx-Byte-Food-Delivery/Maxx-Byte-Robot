@@ -28,3 +28,4 @@ robot-delivery-app/backend/config/__pycache__/__init__.cpython-314.pyc
 *.pyc
 frontend/package-lock.json
 frontend/package.json
+backend/db.sqlite3
