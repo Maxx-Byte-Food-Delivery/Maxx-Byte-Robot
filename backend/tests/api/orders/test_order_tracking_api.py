@@ -10,14 +10,13 @@ def test_order_tracking_api_endpoint(api_client, users, create_orders, order_ite
   api_client.force_authenticate(user=users[0])
   create_orders[0].status = "active"
   create_orders[0].save()
-  url = reverse('active_order', args=[create_orders[0].id, users[0].id])
   
-  response = api_client.get(url)
-
+  url = reverse('active_order', kwargs={'order_id': create_orders[0].id})
+  response = api_client.get(url, format='json')
   assert response.status_code == 200
-  assert response.data[0]['status'] == "active"
-  assert response.data[0]['id'] == create_orders[0].id
-  assert float(response.data[0]['total_price']) == float(39.98)
+  assert response.data['status'] == "active"
+  assert response.data['id'] == create_orders[0].id
+  assert float(response.data['total_price']) == float(39.98)
   # assert response.data['eta'] == "10 minutes"
   # assert response.data['destination'] == "2 miles"
 
@@ -26,10 +25,10 @@ def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders, 
   create_orders[0].status = "active"
   create_orders[0].save()
 
-  url = reverse('active_order', args=[create_orders[0].id, users[0].id])
+  url = reverse('active_order', kwargs={'order_id': create_orders[0].id})
   response = api_client.get(url)
   
-  assert response.status_code == 403
+  assert response.status_code == 401
   assert response.data['detail'] == "You must be logged in to track an order"
 
 @pytest.mark.django_db
@@ -38,11 +37,11 @@ def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders, users
   create_orders[0].status = "active"
   create_orders[0].save()
 
-  url = reverse('active_order', args=[users[1].id, create_orders[0].id])
+  url = reverse('active_order', kwargs={'order_id': create_orders[1].id})
   response = api_client.get(url)
 
-  assert response.status_code == 403
-  assert response.data['error'] == "Unauthorized"
+  assert response.status_code == 404
+  assert response.data['error'] == "Active order not found"
 
 @pytest.mark.django_db
 def test_orders_tracking_api_endpoint(api_client, users, create_orders, order_items):
@@ -53,7 +52,7 @@ def test_orders_tracking_api_endpoint(api_client, users, create_orders, order_it
   assert create_orders[3].user.id == users[0].id
   assert create_orders[3].status == "pending"
 
-  url = reverse('active_orders', args=[users[0].id])
+  url = reverse('active_orders')
   
   response = api_client.get(url)
 
@@ -69,29 +68,17 @@ def test_orders_tracking_api_endpoint_unauthenticated(api_client, create_orders,
   create_orders[0].status = "active"
   create_orders[0].save()
 
-  url = reverse('active_orders', args=[users[0].id])
+  url = reverse('active_orders')
   response = api_client.get(url)
   
-  assert response.status_code == 403
-  assert response.data['detail'] == "You must be logged in to track an order"
+  assert response.status_code == 401
+  assert response.data['detail'] == "You must be logged in to track orders"
 
 @pytest.mark.django_db
-def test_orders_tracking_api_endpoint_wrong_user(api_client, create_orders, users):
-  api_client.force_authenticate(user=users[3])
-  create_orders[0].status = "active"
-  create_orders[0].save()
-
-  url = reverse('active_orders', args=[users[1].id])
+def test_orders_tracking_api_endpoint_no_order(api_client, create_orders, admin_users):
+  api_client.force_authenticate(user=admin_users[1])
+  url = reverse('active_orders')
   response = api_client.get(url)
 
-  assert response.status_code == 403
-  assert response.data['error'] == "Unauthorized"
-
-@pytest.mark.django_db
-def test_orders_tracking_api_endpoint_no_order(api_client, create_orders, users):
-  api_client.force_authenticate(user=users[3])
-  url = reverse('active_orders', args=[users[3].id])
-  response = api_client.get(url)
-
-  assert response.status_code == 404
-  assert response.data['error'] == "No orders found"
+  assert response.status_code == 200
+  assert response.data == []
