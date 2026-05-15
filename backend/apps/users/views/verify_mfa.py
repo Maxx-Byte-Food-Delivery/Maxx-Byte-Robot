@@ -1,20 +1,30 @@
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import login
 from django.utils import timezone
-from rest_framework.permissions import IsAuthenticated
 
 from apps.utils.twofa import get_totp
 
 
+
 class VerifyMFAView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def post(self, request):
 
-        code = request.data.get("code")
-        user = request.user
+        
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return Response({
+            "message": "Session expired"
+        }, status=401)
+
+        user = User.objects.get(id=user_id)
         profile = user.profile
+
+        code = request.data.get("code")
 
         if not code:
             return Response({"message": "Code is required"}, status=400)
@@ -64,6 +74,7 @@ class VerifyMFAView(APIView):
         # =========================
         # ✅ FINAL LOGIN
         # =========================
+        request.session.pop("user_id", None)
         login(request, user)
 
         return Response({
