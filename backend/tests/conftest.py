@@ -49,13 +49,13 @@ def student_profiles(db, users):
   # SMS setup
   student_profile2, created = Profile.objects.get_or_create(
     user=user2,
-    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': 555555555}
+    defaults={'role': 'student', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': "+1555555555"}
   )
   if not created:
     student_profile2.role = 'student'
     student_profile2.mfa_method = 'sms'
     student_profile2.mfa_enabled = True
-    student_profile2.phone_number = 5555555555
+    student_profile2.phone_number = "+15555555555"
     student_profile2.save()
   
   return [student_profile, student_profile2]
