@@ -3,9 +3,9 @@ from apps.payments.models.payment import Payment
 from django.db import IntegrityError
 
 @pytest.mark.django_db
-def test_payment_creation(create_payment):
+def test_payment_creation(create_payment, create_orders, order_items):
     assert create_payment.method == 'card'
-    assert create_payment.amount == 100.00
+    assert float(create_payment.amount) == 39.98
     assert create_payment.transaction_id == 'abc123'
     assert create_payment.status == 'pending'
     assert create_payment.created_at is not None

@@ -6,13 +6,24 @@ from django.utils import timezone
 from twilio.rest import Client
 
 from apps.users.models.profile import Profile
+from apps.users.services.mfa import get_mfa_phone
+
 
 
 def send_mfa_code(user):
 
     profile = user.profile
 
+    phone = get_mfa_phone(user)
+
+    print("Phone:", phone)
+
+
+    if not phone:
+        raise ValueError("Phone number not set")
+    
     code = str(random.randint(100000, 999999))
+    #code = "123456"
 
     profile.mfa_code = code
     profile.mfa_expiry = (
@@ -22,7 +33,8 @@ def send_mfa_code(user):
     profile.save()
 
     # TEMP SMS simulation
-    print("MFA CODE:", code)
+    print("SMS CODE:", code)
+    print("PHONE:", phone)
 
     #client = Client(
         #settings.TWILIO_ACCOUNT_SID,
