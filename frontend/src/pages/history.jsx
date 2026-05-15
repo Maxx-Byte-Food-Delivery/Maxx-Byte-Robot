@@ -1,38 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import API from "../api/api";
 
 function OrderHistory() {
   const [orders, setOrders] = useState([]);
-  const [item, setItem] = useState("");
-  const [date, setDate] = useState("");
+  const [item, setItem] = useState('');
+  const [date, setDate] = useState('');
 
-  const userId = localStorage.getItem('user_id');
-  const accessToken = localStorage.getItem('access_token');
-
-  // Fetch orders
+  // Fetch orders securely using your custom interceptor wrapper instance
   const fetchOrders = async () => {
-    let url = `http://127.0.0.1:8000/api/users/${userId}/orders/view_history/`;
+    try {
+      const response = await API.get('/orders/view_history/', {
+        params: {
+          item: item || undefined, // Drops parameter from string query if empty
+          date: date || undefined
+        }
+      });
 
-    const params = new URLSearchParams();
-    if (item) params.append("item", item);
-    if (date) params.append("date", date);
+      const data = response.data;
 
-    if ([...params].length > 0) {
-      url += `?${params.toString()}`;
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        console.error("API did not return a clean data list array:", data);
+        setOrders([]);
+      }
+    } catch (error) {
+      console.error("Failed to load user order records:", error);
+      setOrders([]);
     }
-
-    const res = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    const data = await res.json();
-    setOrders(data);
   };
 
+  // Automatically fetch records when the application page loads
   useEffect(() => {
-    fetchOrders(); // load on page start
+    fetchOrders();
   }, []);
 
   const handleSearch = (e) => {
@@ -41,60 +41,59 @@ function OrderHistory() {
   };
 
   const handleReorder = async (orderId) => {
-    const res = await fetch(`http://127.0.0.1:8000/api/users/${userId}/orders/reorder/${orderId}/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        'Authorization': `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({ order_id: orderId }),
-    });
-
-    const data = await res.json();
-    alert(data.message);
+    try {
+      const response = await API.post(`/orders/reorder/${orderId}/`, {
+        order_id: orderId
+      });
+      alert(response.data.message || "Order re-submitted successfully!");
+    } catch (error) {
+      console.error("Reorder request action failed:", error);
+      alert("Could not process your reorder request.");
+    }
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h1>View Order History</h1>
-
-      <form onSubmit={handleSearch}>
-        <input
-          type="text"
-          placeholder="Search by item name"
-          value={item}
-          onChange={(e) => setItem(e.target.value)}
+      
+      <form onSubmit={handleSearch} style={{ marginBottom: "20px" }}>
+        <input 
+          type="text" 
+          placeholder="Search by item name" 
+          value={item} 
+          onChange={(e) => setItem(e.target.value)} 
+          style={{ marginRight: "10px", padding: "5px" }}
         />
-
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+        <input 
+          type="date" 
+          value={date} 
+          onChange={(e) => setDate(e.target.value)} 
+          style={{ marginRight: "10px", padding: "5px" }}
         />
-
-        <button type="submit">Search</button>
+        <button type="submit" style={{ padding: "5px 15px" }}>Search</button>
       </form>
 
-      <ul>
-        {orders.map((order) => (
-          <li key={order.id}>
-            <div>
-              <strong>Date:</strong>{" "}
-              {new Date(order.created_at).toLocaleString()}
-            </div>
-
-            <button onClick={() => handleReorder(order.id)}>
-              Reorder
-            </button>
-
-            <div>
-              {order.order_items.map((item) => (
-                <div key={item.id}>• {item.product.name}</div>
-              ))}
-            </div>
-          </li>
-        ))}
-      </ul>
+      {orders.length === 0 ? (
+        <p>No orders found matching your search parameters.</p>
+      ) : (
+        <ul style={{ listStyleType: "none", padding: 0 }}>
+          {orders.map((order) => (
+            <li key={order.id} style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "10px", borderRadius: "6px" }}>
+              <div style={{ display: "flex", justifyContent: "between", alignItems: "center", marginBottom: "10px" }}>
+                <div>
+                  <strong>Order ID:</strong> #{order.id} | 
+                  <strong> Status:</strong> {order.status} | 
+                  <strong> Total:</strong> ${order.total_price} | 
+                  <strong> Date:</strong> {new Date(order.created_at).toLocaleDateString()}
+                </div>
+                <button onClick={() => handleReorder(order.id)} style={{ marginLeft: "15px", cursor: "pointer" }}>
+                  Reorder Item Layout
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
