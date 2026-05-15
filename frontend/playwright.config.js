@@ -53,7 +53,6 @@ export default defineConfig({
     {
       // 2. Your Backend Server (Adjust command and port to match your project)
       command: 'cd ../backend && source venv/bin/activate && python manage.py runserver', // e.g., 'node server.js' or 'npm run dev' inside your backend folder
-      url: 'http://localhost:8000',     // Change to the port your backend api listens on
       reuseExistingServer: !process.env.CI,
       timeout: 60 * 1000,
     }
