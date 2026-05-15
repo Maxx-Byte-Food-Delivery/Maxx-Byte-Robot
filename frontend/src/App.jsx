@@ -19,6 +19,57 @@ import SetupSMS from "./pages/SetupSMS";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import { useLocation } from "react-router-dom";
+
+function AppContent({ cart, setCart, clearCart }) {
+  const location = useLocation();
+
+  // Hide navbar only on login page
+  const hideNavbar = location.pathname === "/";
+
+  return (
+    <>
+      {!hideNavbar && <NavigationBar cart={cart} />}
+
+      <Routes>
+
+        <Route path="/" element={<Login />} />
+
+        <Route
+          path="/products"
+          element={<Products cart={cart} setCart={setCart} />}
+        />
+
+        <Route
+          path="/cart"
+          element={<CartPage cart={cart} clearCart={clearCart} />}
+        />
+
+        <Route
+          path="/checkout"
+          element={<CheckoutPage cart={cart} />}
+        />
+
+        <Route path="/orders" element={<OrderHistory />} />
+
+        <Route path="/mfa-options" element={<MFAOptions />} />
+        <Route path="/verify-sms" element={<VerifySMS />} />
+        <Route path="/verify-totp" element={<VerifyTOTP />} />
+        <Route path="/setup-totp" element={<SetupTOTP />} />
+        <Route path="/confirm-totp" element={<ConfirmTOTP />} />
+
+        <Route path="/setup-sms" element={<SetupSMS />} />
+
+        <Route path="/staff" element={<Staff />} />
+        <Route path="/student" element={<Student />} />
+
+        <Route path="/settings" element={<Settings />} />
+
+      </Routes>
+    </>
+  );
+}
+
 function App() {
   const [message, setMessage] = useState("");
 
@@ -54,57 +105,11 @@ function App() {
 
   return (
     <BrowserRouter>
-
-      {/* Navbar appears on all pages */}
-      <NavigationBar cart={cart} />
-
-      <Routes>
-
-        {/* Home / Login */}
-        <Route path="/" element={<Login />} />
-
-        {/* Products */}
-        <Route
-          path="/products"
-          element={<Products cart={cart} setCart={setCart} />}
-        />
-
-        {/* Cart */}
-        <Route
-          path="/cart"
-          element={<CartPage cart={cart} clearCart={clearCart} />}
-        />
-
-        {/* Checkout */}
-        <Route
-          path="/checkout"
-          element={<CheckoutPage cart={cart} />}
-        />
-
-        {/* Orders */}
-        <Route
-          path="/orders"
-          element={<OrderHistory />}
-        />
-
-        {/* MFA */}
-        <Route path="/mfa-options" element={<MFAOptions />} />
-        <Route path="/verify-sms" element={<VerifySMS />} />
-        <Route path="/verify-totp" element={<VerifyTOTP />} />
-        <Route path="/setup-totp" element={<SetupTOTP />} />
-        <Route path="/confirm-totp" element={<ConfirmTOTP />} />
-
-        {/* SMS Setup */}
-        <Route path="/setup-sms" element={<SetupSMS />} />
-
-        {/* Dashboards */}
-        <Route path="/staff" element={<Staff />} />
-        <Route path="/student" element={<Student />} />
-
-        {/* Settings */}
-        <Route path="/settings" element={<Settings />} />
-
-      </Routes>
+      <AppContent
+        cart={cart}
+        setCart={setCart}
+        clearCart={clearCart}
+      />
     </BrowserRouter>
   );
 }

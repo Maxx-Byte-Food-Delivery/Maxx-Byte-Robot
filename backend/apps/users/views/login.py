@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 from apps.utils.send_sms import send_mfa_code
 from apps.utils.twofa import generate_sms_code
+from apps.users.services.mfa import get_mfa_phone
 from rest_framework import status
 
 class LoginView(APIView):
@@ -32,6 +33,12 @@ class LoginView(APIView):
         # 👩‍💼 STAFF (MFA REQUIRED)
         # ======================
         if user.is_staff:
+            phone = get_mfa_phone(user)
+            if not phone:
+                return Response({
+                "error": "No phone number configured for staff MFA"
+                }, status=400)
+
             if profile.mfa_method == "totp":
                 return Response({
                     "requires_2fa": True,
@@ -40,7 +47,6 @@ class LoginView(APIView):
                 })
             if profile.mfa_method == "sms":
                 send_mfa_code(user)
-                request.session['sms_code'] = user.profile.mfa_code
                 return Response({
                     "requires_2fa": True,
                     "method": "sms",
@@ -51,7 +57,7 @@ class LoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        elif profile.role == "student":
+        elif not user.is_staff:
             # ======================
             # 👨‍🎓 STUDENT (2FA OPTIONAL)
             # ======================
