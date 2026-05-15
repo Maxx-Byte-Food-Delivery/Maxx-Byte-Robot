@@ -1,30 +1,48 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, Dev ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main, Dev ]
+    branches: [ main, master ]
+
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
+    - uses: actions/checkout@v4 # Clones the repo. You are now at the repo root.
+
+    # --- BACKEND SETUP ---
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Backend Dependencies
+      run: |
+        cd backend             # Navigates from root into backend
+        python -m venv venv
+        ./venv/bin/pip install -r requirements.txt
+        ./venv/bin/python manage.py migrate
+
+    # --- FRONTEND SETUP ---
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
+
+    - name: Install Frontend Dependencies
+      run: |
+        cd frontend            # Navigates from root into frontend
+        npm ci
+
     - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      run: |
+        cd frontend            # Navigates from root into frontend
+        npx playwright install --with-deps
+
+    # --- RUN THE TESTS ---
     - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      run: |
+        cd frontend            # Playwright must be triggered from the frontend folder
+        npx playwright test
