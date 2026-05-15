@@ -26,6 +26,9 @@ class VerifyMFAView(APIView):
 
         code = request.data.get("code")
 
+        
+
+
         if not code:
             return Response({"message": "Code is required"}, status=400)
 
@@ -44,9 +47,11 @@ class VerifyMFAView(APIView):
         # =========================
         elif profile.mfa_method == "sms":
 
+
             # check existence
             if not profile.mfa_code:
                 return Response({"message": "No MFA code found"}, status=400)
+            
 
             # check expiry
             if profile.mfa_expiry and timezone.now() > profile.mfa_expiry:
@@ -55,10 +60,12 @@ class VerifyMFAView(APIView):
                 profile.save()
 
                 return Response({"message": "Code expired"}, status=400)
-
+            
             # check match
             if str(profile.mfa_code) != str(code):
                 return Response({"message": "Invalid code"}, status=400)
+
+            
 
             # 🔥 IMPORTANT: clear code after success
             profile.mfa_code = None
