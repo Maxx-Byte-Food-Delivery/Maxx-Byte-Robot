@@ -25,4 +25,4 @@ urlpatterns = [
     path('confirm-totp/', ConfirmTOTPView.as_view()),
     path('mfa-trigger/', MFATriggerView.as_view()),
     path("resend-mfa/", ResendMFAView.as_view()),
-]
+    ]
