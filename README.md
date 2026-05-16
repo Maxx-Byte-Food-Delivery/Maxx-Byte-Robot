@@ -294,16 +294,24 @@ npm run dev          #http://localhost:5173/
 
 ---
 <h3>Running test</h3>
-Frontend testing uses Playwright <br>
+Frontend testing uses Pytest-Playwright in the Backend <br>
 To run tests:
 
 run
 
 ```
-cd frontend
-npx playwright test
+cd backend
+pytest tests/e2e
 ```
 
+<h4>Specific Tests</h4>
+To run tests:
+
+run
+
+```
+cd backend
+pytest tests/e2e/[file name]
 
 ## User Roles
 
