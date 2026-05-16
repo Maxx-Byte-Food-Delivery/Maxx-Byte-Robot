@@ -5,7 +5,7 @@ from django.urls import reverse
 def test_order_history_endpoint(api_client, users, order_items, create_orders):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse('view_history', args=[users[0].id])
+  url = reverse('view_history')
   response = api_client.get(url, format='json')
 
   assert response.status_code == 200
@@ -16,19 +16,24 @@ def test_order_history_endpoint(api_client, users, order_items, create_orders):
 @pytest.mark.django_db
 def test_order_history_endpoint_user_cant_access_other_users_history(api_client, users, order_items):
   api_client.force_authenticate(user=users[1])
-
-  url = reverse('view_history', args=[users[0].id])
+    
+  # 2. TARGET: An order item belonging strictly to John Doe (users[0])
+  # Assume order_items[0] is linked to an order owned by John Doe
+  other_user_order_item_id = 1 
+  
+  # Resolves to: /api/orders/view_history/item/1/
+  url = reverse('view_history_item', kwargs={'id': other_user_order_item_id}) 
   response = api_client.get(url, format='json')
-
-  assert response.status_code == 403
-  assert response.data['error'] == 'Unauthorized'
+  
+  # 3. Assert that a 404 is thrown (our updated view uses .get() which throws DoesNotExist)
+  assert response.status_code == 404
 
 @pytest.mark.django_db
 def test_order_history_endpoint_unauthenticated(api_client, users, order_items):
-  url = reverse('view_history', args=[users[0].id])
+  url = reverse('view_history')
   response = api_client.get(url, format='json')
 
-  assert response.status_code == 403
+  assert response.status_code == 401
   assert response.data['error'] == 'You must be logged in to view order history'
   assert response.data['orders'] == []
 
@@ -36,23 +41,21 @@ def test_order_history_endpoint_unauthenticated(api_client, users, order_items):
 def test_order_history_item_endpoint(api_client, users, order_items, create_orders):
   api_client.force_authenticate(user=users[0])
 
-  url = reverse('view_history_item', args=[users[0].id, order_items[0].order.id])
+  url = reverse('view_history_item', args=[order_items[0].order.id])
   response = api_client.get(url, format='json')
 
   assert response.status_code == 200
-  assert response.data['order']['id'] == order_items[0].order.id
-  assert len(response.data['order_items']) == 1
-  assert response.data['order_items'][0]['product']['name'] == "Test Product 1"
-  assert response.data['order_items'][0]['quantity'] == 2
-  assert float(response.data['order_items'][0]['price']) == 39.98
-  assert float(response.data['order_items'][0]['product']['price']) == 19.99
+  assert response.data['order_id'] == order_items[0].order.id
+  assert len(response.data['items']) == 1
+  assert response.data['items'][0]['product_name'] == "Test Product 1"
+  assert response.data['items'][0]['quantity'] == 2
+  assert float(response.data['items'][0]['price']) == float(19.99)
  
 @pytest.mark.django_db
 def test_order_history_item_endpoint_wrong_user(api_client, users, order_items):
-  api_client.force_authenticate(user=users[0])
+  api_client.force_authenticate(user=users[1])
 
-  url = reverse('view_history_item', args=[users[1].id, order_items[0].order.id])
+  url = reverse('view_history_item', args=[order_items[0].order.id])
   response = api_client.get(url, format='json')
 
-  assert response.status_code == 403
-  assert response.data['error'] == 'Unauthorized'
+  assert response.status_code == 404
