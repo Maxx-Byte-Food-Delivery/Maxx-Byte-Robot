@@ -7,6 +7,26 @@ from apps.orders.models.order_item import OrderItem
 from apps.products.models.product import Product
 from apps.users.models.profile import Profile
 from apps.utils.twofa import generate_secret
+import subprocess
+import time
+from asgiref.sync import sync_to_async
+import os
+
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
+@pytest.fixture(scope="session", autouse=True)
+def run_react_frontend():
+  process = subprocess.Popen(
+    ["npm", "run", "dev", "--", "--port", "5173", "--strictPort"],
+    cwd ="../frontend",
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE
+  )
+  time.sleep(3)
+  yield
+  process.terminate
+  process.terminate()
+  process.wait()
 
 #makes multiple users
 @pytest.fixture
@@ -139,3 +159,4 @@ def create_products(db):
 @pytest.fixture
 def api_client():
   return APIClient()
+
