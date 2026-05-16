@@ -3,7 +3,7 @@ from playwright.sync_api import Page, expect
 import pytest
 
 @pytest.mark.django_db(transaction = True)
-def test_login(page: Page, live_server, users, create_orders):
+def test_order_history(page: Page, live_server, users, create_orders):
 
   page.goto("http://localhost:5173/")
   page.get_by_placeholder("Username").fill("johndoe")
@@ -22,3 +22,4 @@ def test_login(page: Page, live_server, users, create_orders):
   formatted_price = int(raw_price) if float(raw_price).is_integer() else raw_price
 
   expect(order_card).to_contain_text(f"Total: ${formatted_price}")
+  expect(order_card).to_contain_text(f"Status: pending")
