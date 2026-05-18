@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './OrderTracker.css'; // Import CSS for styling
-const ORDER_STATUSES = {
+const ORDER_STATUS = {
   PLACED: 'placed',
   PREPARING: 'preparing',
   DISPATCHED: 'dispatched',
@@ -9,28 +9,28 @@ const ORDER_STATUSES = {
 };
 
 const STATUS_CONFIG = {
-  [ORDER_STATUSES.PLACED]: {
+  [ORDER_STATUS.PLACED]: {
     label: 'Order Placed',
     icon: '📦',
     color: '#4CAF50',
     description: 'Your order has been received',
   },
 
-  [ORDER_STATUSES.PREPARING]: {
+  [ORDER_STATUS.PREPARING]: {
     label: 'Preparing',
     icon: '⚙️',
     color: '#2196F3',
     description: 'We are preparing your order',
   },
 
-  [ORDER_STATUSES.DISPATCHED]: {
+  [ORDER_STATUS.DISPATCHED]: {
     label: 'Dispatched',
     icon: '🚚',
     color: '#FF9800',
     description: 'Your order is on the way',
   },
 
-  [ORDER_STATUSES.DELIVERED]: {
+  [ORDER_STATUS.DELIVERED]: {
     label: 'Delivered',
     icon: '✅',
     color: '#8BC34A',
@@ -49,7 +49,7 @@ const OrderTracker = ({
 
   const [statusHistory, setStatusHistory] = useState([
     {
-      status: ORDER_STATUSES.PLACED,
+      status: ORDER_STATUS.PLACED,
       timestamp: new Date(),
     },
   ]);
@@ -83,10 +83,10 @@ const OrderTracker = ({
     if (!isAutoProgressing) return;
 
     const statusSequence = [
-      ORDER_STATUSES.PLACED,
-      ORDER_STATUSES.PREPARING,
-      ORDER_STATUSES.DISPATCHED,
-      ORDER_STATUSES.DELIVERED,
+      ORDER_STATUS.PLACED,
+      ORDER_STATUS.PREPARING,
+      ORDER_STATUS.DISPATCHED,
+      ORDER_STATUS.DELIVERED,
     ];
 
     const currentIndex = statusSequence.indexOf(currentStatus);
@@ -152,25 +152,25 @@ const OrderTracker = ({
       <div className="button-group">
 
         <button onClick={() =>
-          handleManualStatusUpdate(ORDER_STATUSES.PLACED)
+          handleManualStatusUpdate(ORDER_STATUS.PLACED)
         }>
           Placed
         </button>
 
         <button onClick={() =>
-          handleManualStatusUpdate(ORDER_STATUSES.PREPARING)
+          handleManualStatusUpdate(ORDER_STATUS.PREPARING)
         }>
           Preparing
         </button>
 
         <button onClick={() =>
-          handleManualStatusUpdate(ORDER_STATUSES.DISPATCHED)
+          handleManualStatusUpdate(ORDER_STATUS.DISPATCHED)
         }>
           Dispatched
         </button>
 
         <button onClick={() =>
-          handleManualStatusUpdate(ORDER_STATUSES.DELIVERED)
+          handleManualStatusUpdate(ORDER_STATUS.DELIVERED)
         }>
           Delivered
         </button>
