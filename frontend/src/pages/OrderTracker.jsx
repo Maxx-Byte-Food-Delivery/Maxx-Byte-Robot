@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import './OrderTracker.css'; // Import CSS for styling
 const ORDER_STATUSES = {
   PLACED: 'placed',
   PREPARING: 'preparing',
