@@ -16,18 +16,18 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 @pytest.fixture(scope="session", autouse=True)
 def run_react_frontend():
-  process = subprocess.Popen(
-    ["npm", "run", "dev", "--", "--port", "5173", "--strictPort"],
-    cwd ="../frontend",
-    stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE
-  )
-  time.sleep(3)
-  yield
-  process.terminate
-  process.terminate()
-  process.wait()
-
+    process = subprocess.Popen(
+        ["npm", "run", "dev", "--", "--port", "5173", "--strictPort"],
+        cwd="../frontend",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,  # <--- Add this line for Windows compatibility
+    )
+    time.sleep(3)
+    yield
+    process.terminate()
+    process.wait()
+    
 #makes multiple users
 @pytest.fixture
 def users(db):
