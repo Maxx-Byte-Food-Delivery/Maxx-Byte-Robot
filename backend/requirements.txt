@@ -19,3 +19,5 @@ twilio
 pyotp
 qrcode
 python-dotenv
+playwright
+pytest-playwright

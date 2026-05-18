@@ -1,12 +1,16 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from apps.utils.twofa import get_totp
-
+from django.contrib.auth import authenticate, login
 
 class ConfirmTOTPView(APIView):
 
     def post(self, request):
-
+        if not request.user.is_authenticated:
+            return Response(
+                {"message": "Authentication required"},
+                status=401
+            )
         code = request.data.get("code", "").strip()
         user = request.user
         profile = user.profile
