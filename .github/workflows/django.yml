@@ -2,9 +2,9 @@ name: Tests
 
 on:
   push:
-    branches: [ "main", "Dev", "model_test" ]
+    branches: [ "main", "Dev", "model_test", "frontend_testing" ]
   pull_request:
-    branches: [ "main", "Dev", "model_test" ]
+    branches: [ "main", "Dev", "model_test", "frontend_testing" ]
 
 jobs:
   backend-tests:
