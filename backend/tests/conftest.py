@@ -19,7 +19,7 @@ import requests
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def run_react_frontend():
 
   npm_path = shutil.which("npm")
