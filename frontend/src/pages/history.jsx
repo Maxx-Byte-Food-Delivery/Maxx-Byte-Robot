@@ -35,6 +35,8 @@ function OrderHistory() {
     fetchOrders();
   }, []);
 
+  
+
   const handleSearch = (e) => {
     e.preventDefault();
     fetchOrders();
@@ -52,41 +54,88 @@ function OrderHistory() {
     }
   };
 
+   // ✅ PURE JS time ago function
+  function timeAgo(dateString) {
+    if (!dateString) return "Never updated";
+
+    const now = new Date();
+    const past = new Date(dateString);
+
+    const seconds = Math.floor((now - past) / 1000);
+
+    if (seconds < 60) return "Just now";
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) {
+      return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) {
+      return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+    }
+
+    const days = Math.floor(hours / 24);
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
+  }
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>View Order History</h1>
+    <div style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: "#121212", minHeight: "100vh", color: "grey" }}>
+
+      {/* EVERYTHING BELOW IS UNCHANGED UI */}
+      <h1 style={{ marginBottom: "20px", fontSize: "42px", fontWeight: "bold" }}>
+        View Order History
+      </h1>
       
-      <form onSubmit={handleSearch} style={{ marginBottom: "20px" }}>
+      <form onSubmit={handleSearch} style={{ marginBottom: "30px", display: "flex", gap: "10px" }}>
         <input 
           type="text" 
           placeholder="Search by item name" 
           value={item} 
           onChange={(e) => setItem(e.target.value)} 
-          style={{ marginRight: "10px", padding: "5px" }}
+          style={{ padding: "10px", borderRadius: "4px", border: "1px solid #444", backgroundColor: "#222", color: "white" }}
         />
         <input 
           type="date" 
           value={date} 
           onChange={(e) => setDate(e.target.value)} 
-          style={{ marginRight: "10px", padding: "5px" }}
+          style={{padding: "5px" }}
         />
-        <button type="submit" style={{ padding: "5px 15px" }}>Search</button>
+        <button type="submit" style={{ padding: "10px 20px", cursor: "pointer", backgroundColor: "#504c4c", border: "none", fontWeight: "bold" }}>
+          Search
+          </button>
       </form>
 
       {orders.length === 0 ? (
         <p>No orders found matching your search parameters.</p>
       ) : (
+
+        
+
         <ul style={{ listStyleType: "none", padding: 0 }}>
           {orders.map((order) => (
-            <li key={order.id} style={{ border: "1px solid #ccc", padding: "15px", marginBottom: "10px", borderRadius: "6px" }}>
+            <li key={order.id} style={{ border: "1px solid #ccc", padding: "30px", marginBottom: "10px", borderRadius: "6px" }}>
               <div style={{ display: "flex", justifyContent: "between", alignItems: "center", marginBottom: "10px" }}>
                 <div>
-                  <strong>Order ID:</strong> #{order.id} | 
+                  <strong> Items:</strong>{" "}
+
+                  {Array.isArray(order.order_items) && order.order_items.length > 0
+                    ? order.order_items.map((item, index) => (
+                        <span key={index}>
+                          {item.product_name} x{item.quantity}
+                          {index !== order.order_items.length - 1 ? ", " : ""}
+                        </span>
+                      ))
+                    : "No items"} |
+                  <strong> Order ID:</strong> #{order.id} | 
+                  <strong> Address:</strong> {order.address|| " "} |
                   <strong> Status:</strong> {order.status} | 
                   <strong> Total:</strong> ${order.total_price} | 
-                  <strong> Date:</strong> {new Date(order.created_at).toLocaleDateString()}
+                  <strong> Date:</strong> {new Date(order.created_at).toLocaleDateString()} |
+                  <strong> Updated At:</strong>{" "}{order.updated_at ? new Date(order.updated_at).toLocaleString(): "N/A"}
+                  
                 </div>
-                <button onClick={() => handleReorder(order.id)} style={{ marginLeft: "15px", cursor: "pointer" }}>
+                <strong> Action:</strong><button onClick={() => handleReorder(order.id)} style={{ marginLeft: "15px", cursor: "pointer" }}>
                   Reorder Item Layout
                 </button>
               </div>

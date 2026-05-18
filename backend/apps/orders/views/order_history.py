@@ -21,7 +21,7 @@ def View_History(request):
             'orders': []
         }, status=status.HTTP_401_UNAUTHORIZED)
 
-    orders = Order.objects.filter(user=request.user)
+    orders = Order.objects.filter(user=request.user).order_by('updated_at')
     
     if not orders.exists():
         return Response([], status=status.HTTP_200_OK)
@@ -36,7 +36,18 @@ def View_History(request):
         
     orders = orders.distinct()
     
-    order_list = list(orders.values('id', 'total_price', 'status', 'user', 'created_at'))
+    order_list = []
+    for order in orders:
+        order_list.append({
+            "id": order.id,
+            "total_price": str(order.total_price),
+            "status": order.status,
+            "user": order.user.id,
+            "address": order.address,
+            "created_at": order.created_at,
+            "updated_at": order.updated_at,
+        })
+
     return Response(order_list, status=status.HTTP_200_OK)
 
 
@@ -72,6 +83,7 @@ def item(request, id):
         'status': order.status,
         'total_price': str(order.total_price),
         'created_at': order.created_at,
+        'updated_at': order.updated_at,
         'items': order_items
     }, status=status.HTTP_200_OK)
 
@@ -86,7 +98,7 @@ def reorder(request, user_id, id):
     except Order.DoesNotExist:
         return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
     
-    new_Order = Order.objects.create(total_price=old_Order.total_price, user_id=user_id)
+    new_Order = Order.objects.create(total_price=old_Order.total_price, user_id=user_id, status="pending")
 
     for item in old_Order.order_items.all():
         OrderItem.objects.create(order=new_Order, product=item.product, quantity=item.quantity)
