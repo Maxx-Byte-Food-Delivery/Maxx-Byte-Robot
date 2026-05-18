@@ -20,8 +20,7 @@ def run_react_frontend():
     ["npm", "run", "dev", "--", "--port", "5173", "--strictPort"],
     cwd ="../frontend",
     stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE,
-    shell=True,
+    stderr=subprocess.PIPE
   )
   time.sleep(3)
   yield
@@ -159,4 +158,3 @@ def create_products(db):
 @pytest.fixture
 def api_client():
   return APIClient()
-
