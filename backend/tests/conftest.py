@@ -23,8 +23,8 @@ def is_port_open(host: str, port: int) -> bool:
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.settimeout(0.5)
     return s.connect_ex((host, port)) == 0
-    
-@pytest.fixture(scope="session", autouse=True)
+
+@pytest.fixture(scope="session")
 def run_react_frontend():
   host = "127.0.0.1"
   port = 5173
