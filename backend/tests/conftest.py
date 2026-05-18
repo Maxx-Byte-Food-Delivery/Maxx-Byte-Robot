@@ -33,7 +33,7 @@ def run_react_frontend():
     stderr=subprocess.DEVNULL,
   )
 
-  timeout = 10
+  timeout = 30
   start_time = time.time()
   server_ready = False
   
