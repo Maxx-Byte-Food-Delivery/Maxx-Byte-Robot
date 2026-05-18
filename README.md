@@ -291,6 +291,25 @@ npm run dev          #http://localhost:5173/
 ```
 
 ---
+<h3>Running test</h3>
+Frontend testing uses Pytest-Playwright in the Backend <br>
+To run tests:
+
+run
+
+```
+cd backend
+pytest tests/e2e
+```
+
+<h4>Specific Tests</h4>
+To run tests:
+
+run
+
+```
+cd backend
+pytest tests/e2e/[file name]
 
 ## User Roles
 
@@ -306,16 +325,18 @@ npm run dev          #http://localhost:5173/
 
 | POST   | `/api/users/register/` | User registration endpoint <br>
 
-| GET    | `/api/users/<int:user_id>/orders/view_history/` | User order history endpoint <br>
+| GET    | `/api/orders/view_history/` | User order history endpoint <br>
 
-| GET    | `/api/users/<int:user_id>/orders/view_history/item/<int:id>/` | User order history items endpoint <br>
+| GET    | `/api/orders/view_history/item/<int:id>/` | User order history items endpoint <br>
 
-| GET    | `/api/users/<int:user_id>/orders/reorder/<int:id>/` | Reorder from order history endpoint <br>
+| GET    | `/api/orders/reorder/<int:id>/` | Reorder from order history endpoint <br>
+
+| GET    | `api/orders/active-orders` | All of a user's active orders <br>
+
+| GET    | `api/orders/active-orders/<int:order_id>/` | User's specific active order <br>
 
 | GET    | `/api/products/all_products/`  | All products available endpoint <br>
 
 | POST   | `api/payments/checkout/`  | Create checkout session endpoint <br>
 
-| GET    | `api/users/<int:user_id>/active-orders` | All of a user's active orders <br>
 
-| GET    | `api/users/<int:user_id>/active-orders/<int:order_id>/` | User's specific active order <br>

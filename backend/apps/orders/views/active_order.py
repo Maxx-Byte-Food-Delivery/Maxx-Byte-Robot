@@ -5,51 +5,55 @@ from apps.orders.models import Order
 from apps.orders.serializers.active_order import ActiveOrderSerializer
 
 @api_view(['GET'])
-def active_order(request, user_id, order_id):
+def active_order(request, order_id):
+    # 1. Enforce Authentication Context
     if not request.user.is_authenticated:
-        return Response({'detail': 'You must be logged in to track an order', 'orders': []}, status=status.HTTP_403_FORBIDDEN)
-    elif request.user.id != user_id:
-        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'detail': 'You must be logged in to track an order'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    orders = Order.objects.filter(user_id=user_id, status = "active")
-    if not orders.exists():
-        return Response({'error': 'No orders found', 'orders': []}, status=status.HTTP_404_NOT_FOUND)
-    orders = orders.distinct()
+    try:
+        # 2. FIXED: Fetch a single explicit order matching BOTH the user and the ID
+        order = Order.objects.get(id=order_id, user=request.user, status="active")
+    except Order.DoesNotExist:
+        return Response({'error': 'Active order not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    order_list = list(orders.values('id', 'total_price', 'status', 'user', 'created_at'))
+    # 3. Serialize and return the single order object data
+    serializer = ActiveOrderSerializer(order)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
-    serializer = ActiveOrderSerializer(orders, many=True)
-    return Response(serializer.data)
 
 @api_view(['GET'])
-def active_orders(request, user_id):
+def active_orders(request):
+    # 1. Enforce Authentication Context
     if not request.user.is_authenticated:
-        return Response({'detail': 'You must be logged in to track an order', 'orders': []}, status=status.HTTP_403_FORBIDDEN)
-    elif request.user.id != user_id:
-        return Response({'error': 'Unauthorized'}, status=status.HTTP_403_FORBIDDEN)
+        return Response({'detail': 'You must be logged in to track orders'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    orders = Order.objects.filter(user_id=user_id, status="active").distinct()
+    # 2. FIXED: Fetch ALL active orders belonging strictly to the session user
+    orders = Order.objects.filter(user=request.user, status="active").distinct()
+    
     if not orders.exists():
-        return Response({'error': 'No orders found', 'orders': []}, status=status.HTTP_404_NOT_FOUND)
+        return Response([], status=status.HTTP_200_OK) # Return empty list so frontend map works safely
 
+    # 3. Serialize and return the records list array
     serializer = ActiveOrderSerializer(orders, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-def patch(self, request, user_id, order_id):
+@api_view(['PATCH'])
+def patch_order(request, order_id):
+    # 1. Enforce Authentication Context
+    if not request.user.is_authenticated:
+        return Response({'detail': 'You must be logged in to update an order'}, status=status.HTTP_401_UNAUTHORIZED)
+
     try:
-        order = Order.objects.get(
-            id=order_id,
-            user_id=user_id
-        )
-
-        serializer = ActiveOrderSerializer(order, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        # 2. FIXED: Retrieve single target order owned by the session user
+        order = Order.objects.get(id=order_id, user=request.user)
     except Order.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    # 3. Perform partial validation and updates
+    serializer = ActiveOrderSerializer(order, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
