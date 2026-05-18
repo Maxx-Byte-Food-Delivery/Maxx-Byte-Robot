@@ -20,7 +20,8 @@ def run_react_frontend():
     ["npm", "run", "dev", "--", "--port", "5173", "--strictPort"],
     cwd ="../frontend",
     stdout=subprocess.PIPE,
-    stderr=subprocess.PIPE
+    stderr=subprocess.PIPE,
+    shell=True,
   )
   time.sleep(3)
   yield
