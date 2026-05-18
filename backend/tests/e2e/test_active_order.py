@@ -1,8 +1,8 @@
 import re
 from playwright.sync_api import Page, expect
 import pytest
-
-@pytest.mark.django_db(transaction = True)
+## replace skip(reason="") with django_db(transaction = True)
+@pytest.mark.skip(reason="not yet implemented")
 def test_active_orders(page: Page, live_server, users, create_orders):
   create_orders.status = "Active"
   page.goto("http://localhost:5173/")

@@ -43,10 +43,9 @@ def users(db):
 
 @pytest.fixture
 def admin_users(db):
-  admin_user = User.objects.create_superuser(username="admin", email= "admin@email.com", first_name="admin", last_name="user", password="AdminP@ssw0rd!", is_staff=True)
-  admin_user2 = User.objects.create_superuser(username="admin2", email= "admin2@email.com", first_name="admin2", last_name="user2", password="AdminP@ssw0rd!", is_staff=True)
-  admin_user.save()
-  admin_user2.save()
+  admin_user = User.objects.create_superuser(username="admin", email= "admin@email.com", first_name="admin", last_name="user", password="AdminP@ssw0rd!")
+  admin_user2 = User.objects.create_superuser(username="admin2", email= "admin2@email.com", first_name="admin2", last_name="user2", password="AdminP@ssw0rd!")
+
   return [admin_user, admin_user2]
 
 @pytest.fixture
@@ -88,26 +87,26 @@ def admin_profiles(db, admin_users):
   # TOTP setup
   admin_profile, created = Profile.objects.get_or_create(
     user=admin_user, 
-    defaults={'role': 'staff', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret(), 'phone_number': 555555555}
+    defaults={'role': 'staff', 'mfa_method': 'totp', 'mfa_enabled': True, 'mfa_secret': generate_secret(), 'phone_number': "+15555555555"}
   )
   if not created:
     admin_profile.role = 'staff'
     admin_profile.mfa_method = 'totp'
     admin_profile.mfa_enabled = True
     admin_profile.mfa_secret = generate_secret()
-    admin_profile.phone_number = 5555555555
+    admin_profile.phone_number = "+15555555555"
     admin_profile.save()
   
   # SMS setup
   admin_profile2, created = Profile.objects.get_or_create(
     user=admin_user2,
-    defaults={'role': 'staff', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': 555555555}
+    defaults={'role': 'staff', 'mfa_method': 'sms', 'mfa_enabled': True, 'phone_number': "+15555555555"}
   )
   if not created:
     admin_profile2.role = 'staff'
     admin_profile2.mfa_method = 'sms'
     admin_profile2.mfa_enabled = True
-    admin_profile2.phone_number = 5555555555
+    admin_profile2.phone_number = "+15555555555"
     admin_profile2.save()
   
   return [admin_profile, admin_profile2]
