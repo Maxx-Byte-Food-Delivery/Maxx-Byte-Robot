@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import axios from axiso
 import './OrderTracker.css';
-
 const ORDER_STATUSES = {
   PLACED: 'placed',
   PREPARING: 'preparing',
@@ -9,25 +9,25 @@ const ORDER_STATUSES = {
 };
 
 const STATUS_CONFIG = {
-  [ORDER_STATUSES.PLACED]: {
+  [ORDER_STATUS.PLACED]: {
     label: 'Order Placed',
     icon: '📦',
     color: '#4CAF50',
     description: 'Your order has been received',
   },
-  [ORDER_STATUSES.PREPARING]: {
+  [ORDER_STATUS.PREPARING]: {
     label: 'Preparing',
     icon: '⚙️',
     color: '#2196F3',
     description: 'We are preparing your order',
   },
-  [ORDER_STATUSES.DISPATCHED]: {
+  [ORDER_STATUS.DISPATCHED]: {
     label: 'Dispatched',
     icon: '🚚',
     color: '#FF9800',
     description: 'Your order is on the way',
   },
-  [ORDER_STATUSES.DELIVERED]: {
+  [ORDER_STATUS.DELIVERED]: {
     label: 'Delivered',
     icon: '✅',
     color: '#8BC34A',
@@ -50,10 +50,10 @@ const OrderTracker = ({ orderId = 'ORD-2024-001', initialStatus = ORDER_STATUSES
     if (!isAutoProgressing) return;
 
     const statusSequence = [
-      ORDER_STATUSES.PLACED,
-      ORDER_STATUSES.PREPARING,
-      ORDER_STATUSES.DISPATCHED,
-      ORDER_STATUSES.DELIVERED,
+      ORDER_STATUS.PLACED,
+      ORDER_STATUS.PREPARING,
+      ORDER_STATUS.DISPATCHED,
+      ORDER_STATUS.DELIVERED,
     ];
 
     const currentIndex = statusSequence.indexOf(currentStatus);
@@ -104,10 +104,10 @@ const OrderTracker = ({ orderId = 'ORD-2024-001', initialStatus = ORDER_STATUSES
 
   const getStatusIndex = (status) => {
     const sequence = [
-      ORDER_STATUSES.PLACED,
-      ORDER_STATUSES.PREPARING,
-      ORDER_STATUSES.DISPATCHED,
-      ORDER_STATUSES.DELIVERED,
+      ORDER_STATUS.PLACED,
+      ORDER_STATUS.PREPARING,
+      ORDER_STATUS.DISPATCHED,
+      ORDER_STATUS.DELIVERED,
     ];
     return sequence.indexOf(status);
   };
