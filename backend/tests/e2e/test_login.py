@@ -4,7 +4,7 @@ import pytest
 import pyotp
 
 @pytest.mark.django_db
-def test_login_as_user(page: Page, live_server, users):
+def test_login_as_user(page: Page, live_server, users, student_profiles):
 
   page.goto("http://localhost:5173/")
   page.get_by_placeholder("Username").fill("johndoe")
@@ -13,8 +13,72 @@ def test_login_as_user(page: Page, live_server, users):
   
   expect(page).to_have_url(re.compile(r"/student"))
 
+  expect(page.locator("p", has_text="Welcome Student")).to_be_visible()
+
+
 @pytest.mark.django_db(transaction = True)
-def test_login_as_admin(page: Page, live_server, admin_users, admin_profiles):
+def test_login_as_student_totp(page: Page, live_server, users, student_profiles):
+
+  page.goto("http://localhost:5173/")
+
+  page.get_by_placeholder("Username").fill("SomeUser")
+  page.get_by_placeholder("Password").fill("G00dPassw0rd!")
+
+  page.get_by_role("button", name="Login").click()
+  page.wait_for_load_state("networkidle")
+
+  expect(page.get_by_text("Invalid username or password")).not_to_be_visible()
+  
+  expect(page).to_have_url(re.compile(r"/verify-totp"))
+
+  totp = pyotp.TOTP(student_profiles[0].mfa_secret)
+  code = totp.now()
+  print(student_profiles[0].mfa_secret)
+  page.get_by_placeholder("6-digit code").fill(code)
+
+  page.get_by_role("button", name="Verify").click()
+  page.wait_for_load_state("networkidle")
+
+  expect(page).to_have_url(re.compile(r"/student"))
+
+  expect(page.locator("p", has_text="Welcome Student")).to_be_visible()
+
+
+@pytest.mark.django_db(transaction = True)
+def test_login_as_student_sms(page: Page, live_server, users, student_profiles):
+
+  page.goto("http://localhost:5173/")
+
+  page.get_by_placeholder("Username").fill("student")
+  page.get_by_placeholder("Password").fill("StudentP@ssw0rd!")
+
+  page.get_by_role("button", name="Login").click()
+  page.wait_for_load_state("networkidle")
+
+  expect(page.get_by_text("Invalid username or password")).not_to_be_visible()
+
+  expect(page).to_have_url(re.compile(r"/verify-sms"))
+
+  target_user = users[3]
+    
+  target_user.refresh_from_db()
+
+  fresh_sms_code = target_user.profile.mfa_code
+
+  data = {"code": fresh_sms_code}
+  
+  page.get_by_placeholder("6-digit code").fill(data["code"])
+
+  page.get_by_role("button", name="Verify").click()
+  page.wait_for_load_state("networkidle")
+
+  expect(page).to_have_url(re.compile(r"/student"))
+
+  expect(page.locator("p", has_text="Welcome Student")).to_be_visible()
+
+
+@pytest.mark.django_db(transaction = True)
+def test_login_as_admin_totp(page: Page, live_server, admin_users, admin_profiles):
 
   page.goto("http://localhost:5173/")
 
@@ -37,3 +101,39 @@ def test_login_as_admin(page: Page, live_server, admin_users, admin_profiles):
   page.wait_for_load_state("networkidle")
 
   expect(page).to_have_url(re.compile(r"/staff"))
+
+  expect(page.locator("p", has_text="Welcome Student")).not_to_be_visible()
+
+@pytest.mark.django_db(transaction = True)
+def test_login_as_admin_sms(page: Page, live_server, admin_users, admin_profiles):
+
+  page.goto("http://localhost:5173/")
+
+  page.get_by_placeholder("Username").fill("admin2")
+  page.get_by_placeholder("Password").fill("AdminP@ssw0rd!")
+
+  page.get_by_role("button", name="Login").click()
+  page.wait_for_load_state("networkidle")
+
+  expect(page.get_by_text("Invalid username or password")).not_to_be_visible()
+
+  expect(page).to_have_url(re.compile(r"/verify-sms"))
+
+  target_user = admin_users[1]
+    
+  target_user.refresh_from_db()
+
+  fresh_sms_code = target_user.profile.mfa_code
+
+  data = {"code": fresh_sms_code}
+  
+  page.get_by_placeholder("6-digit code").fill(data["code"])
+
+  page.get_by_role("button", name="Verify").click()
+  page.wait_for_load_state("networkidle")
+
+  expect(page).to_have_url(re.compile(r"/staff"))
+  
+  expect(page.locator("p", has_text="Welcome Student")).not_to_be_visible()
+
+
