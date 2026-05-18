@@ -14,48 +14,55 @@ import os
 import shutil
 import subprocess
 import time
-import pytest
 import requests
+import socket
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-@pytest.fixture(scope="session")
+def is_port_open(host: str, port: int) -> bool:
+  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.settimeout(0.5)
+    return s.connect_ex((host, port)) == 0
+    
+@pytest.fixture(scope="session", autouse=True)
 def run_react_frontend():
+  host = "127.0.0.1"
+  port = 5173
+  process = None
+  if not is_port_open(host, port):
+    npm_path = shutil.which("npm")
+    if not npm_path:
+      pytest.fail("NPM executable not found in system PATH.")
 
-  npm_path = shutil.which("npm")
-  if not npm_path:
-    pytest.fail("NPM executable not found in system PATH.")
+    process = subprocess.Popen(
+      [npm_path, "run", "dev", "--", "--port", str(port), "--strictPort"],
+      cwd="../frontend",
+      stdout=subprocess.DEVNULL,
+      stderr=subprocess.DEVNULL,
+    )
 
-  process = subprocess.Popen(
-    [npm_path, "run", "dev", "--", "--port", "5173", "--strictPort"],
-    cwd="../frontend",
-    stdout=subprocess.DEVNULL,
-    stderr=subprocess.DEVNULL,
-  )
+    timeout = 30
+    start_time = time.time()
+    server_ready = False
 
-  timeout = 30
-  start_time = time.time()
-  server_ready = False
-  
-  while time.time() - start_time < timeout:
-    try:
-      # Send a quick request to see if Vite is awake
-      response = requests.get("http://localhost:5173", timeout=1)
-      if response.status_code in [200, 404]:  # Vite home or index fallback
+    while time.time() - start_time < timeout:
+      if is_port_open(host, port):
         server_ready = True
         break
-    except requests.ConnectionError:
       time.sleep(0.5)
 
   if not server_ready:
     process.terminate()
-    pytest.fail("React development server failed to start on http://localhost:5173 within 10 seconds.")
+    process.wait()
+    pytest.fail(f"Vite server failed to spin up on http://{host}:{port} within {timeout}s")
+  yield 
 
-  yield process
-
-  # Clean shutdown
-  process.terminate()
-  process.wait()
+  if process is not None:
+    process.terminate()
+    try:
+      process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+      process.kill()
 
 #makes multiple users
 @pytest.fixture
