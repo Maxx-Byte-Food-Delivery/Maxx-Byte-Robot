@@ -106,7 +106,6 @@ Maxx-Byte-Robot/
 │   └── scripts/
 │       ├── create_users.py
 |       ├── dummy_products.py
-│       ├── setup_auth.py
 │       └── setup_db.py
 │
 ├── frontend/
@@ -229,7 +228,6 @@ cp .env.example .env   # edit DB / Redis credentials
 
 For setting up the database run:
 ```
-python scripts\setup_auth.py
 python scripts\setup_db.py
 python manage.py migrate
 ```
