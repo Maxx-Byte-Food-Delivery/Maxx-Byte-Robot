@@ -13,6 +13,9 @@ def test_login_as_user(page: Page, live_server, users, student_profiles):
   
   expect(page).to_have_url(re.compile(r"/student"))
 
+  expect(page.locator("p", has_text="Welcome Student")).to_be_visible()
+
+
 @pytest.mark.django_db(transaction = True)
 def test_login_as_student_totp(page: Page, live_server, users, student_profiles):
 
@@ -37,6 +40,9 @@ def test_login_as_student_totp(page: Page, live_server, users, student_profiles)
   page.wait_for_load_state("networkidle")
 
   expect(page).to_have_url(re.compile(r"/student"))
+
+  expect(page.locator("p", has_text="Welcome Student")).to_be_visible()
+
 
 @pytest.mark.django_db(transaction = True)
 def test_login_as_student_sms(page: Page, live_server, users, student_profiles):
@@ -68,6 +74,9 @@ def test_login_as_student_sms(page: Page, live_server, users, student_profiles):
 
   expect(page).to_have_url(re.compile(r"/student"))
 
+  expect(page.locator("p", has_text="Welcome Student")).to_be_visible()
+
+
 @pytest.mark.django_db(transaction = True)
 def test_login_as_admin_totp(page: Page, live_server, admin_users, admin_profiles):
 
@@ -92,6 +101,8 @@ def test_login_as_admin_totp(page: Page, live_server, admin_users, admin_profile
   page.wait_for_load_state("networkidle")
 
   expect(page).to_have_url(re.compile(r"/staff"))
+
+  expect(page.locator("p", has_text="Welcome Student")).not_to_be_visible()
 
 @pytest.mark.django_db(transaction = True)
 def test_login_as_admin_sms(page: Page, live_server, admin_users, admin_profiles):
@@ -122,4 +133,7 @@ def test_login_as_admin_sms(page: Page, live_server, admin_users, admin_profiles
   page.wait_for_load_state("networkidle")
 
   expect(page).to_have_url(re.compile(r"/staff"))
+  
+  expect(page.locator("p", has_text="Welcome Student")).not_to_be_visible()
+
 
