@@ -44,8 +44,8 @@ jobs:
           node-version: '20'
 
       - name: Install Frontend Dependencies
-        run: |
-          npm install
+        working-directory: ./frontend 
+        run: npm install
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -64,8 +64,10 @@ jobs:
           playwright install --with-deps chromium
 
       - name: Start Vite Development Server
-        run: npm run dev &
-        
+        working-directory: ./frontend
+        # The disown command ensures the background process persists across steps
+        run: npm run dev & disown
+
       - name: Run Playwright E2E Tests
         working-directory: ./backend
         run: |
