@@ -8,7 +8,7 @@ const OrderDetails = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/orders/${id}/`)
+    fetch(`http://127.0.0.1:8000/api/active-orders/${id}/`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("Failed to fetch order");
