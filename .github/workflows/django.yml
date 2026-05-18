@@ -70,6 +70,8 @@ jobs:
 
       - name: Run Playwright E2E Tests
         working-directory: ./backend
+        env:
+          DJANGO_SETTINGS_MODULE: config.settings
+          DJANGO_LIVE_TEST_SERVER_ADDRESS: localhost:8000
         run: |
-          export DJANGO_SETTINGS_MODULE=config.settings
-          pytest tests/e2e/ --live-server-port=8000
+          pytest tests/e2e/
