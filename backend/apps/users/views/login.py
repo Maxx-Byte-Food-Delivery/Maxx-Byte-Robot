@@ -104,5 +104,3 @@ class LoginView(APIView):
         print("USERNAME:", username)
         print("PASSWORD:", password)
         print("USER:", user)
-
-        

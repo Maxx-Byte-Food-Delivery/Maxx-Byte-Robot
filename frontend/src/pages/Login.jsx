@@ -35,7 +35,6 @@ const Login = () =>{
       });
 
       const data = response.data;
-      
 
       // If MFA required
       if (data.requires_2fa) {
@@ -50,14 +49,11 @@ const Login = () =>{
 
         // No MFA
         if (data.role === "staff") {
-          
-          localStorage.setItem("user_id", data.user.id);
-          localStorage.setItem("access_token", data.access);
+
           navigate("/staff");
 
         } else {
-          localStorage.setItem("user_id", data.user.id);
-          localStorage.setItem("access_token", data.access);
+
           navigate("/student");
 
         }
