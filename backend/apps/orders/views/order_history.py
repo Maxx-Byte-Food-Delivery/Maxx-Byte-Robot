@@ -5,7 +5,8 @@ from django.shortcuts import redirect
 from apps.orders.models.order import Order
 from apps.products.models.product import Product
 from apps.orders.models.order_item import OrderItem
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -13,6 +14,7 @@ from rest_framework import status
 from apps.orders.models import Order  # Adjust this import to match your model location
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def View_History(request):
     # 1. Verify Authentication Context
     if not request.user.is_authenticated:
