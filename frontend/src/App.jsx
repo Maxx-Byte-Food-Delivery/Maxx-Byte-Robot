@@ -36,7 +36,7 @@ function AppContent({ cart, setCart, clearCart }) {
 
         <Route path="/" element={<Login />} />
 
-        <Route path="/activeorders" element={<ActiveOrders/>} />
+        <Route path="/tracker" element={<ActiveOrders/>} />
 
         <Route
           path="/products"
