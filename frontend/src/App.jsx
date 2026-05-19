@@ -16,6 +16,7 @@ import Products from "./pages/Products";
 import NavigationBar from "./components/NavigationBar";
 import OrderHistory from "./pages/history";
 import SetupSMS from "./pages/SetupSMS";
+import ActiveOrders from "./pages/ActiveOrders";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -51,6 +52,7 @@ function AppContent({ cart, setCart, clearCart }) {
         />
 
         <Route path="/orders" element={<OrderHistory />} />
+        <Route path="orders/active" element={<ActiveOrders />} />
 
         <Route path="/mfa-options" element={<MFAOptions />} />
         <Route path="/verify-sms" element={<VerifySMS />} />
