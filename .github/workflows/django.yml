@@ -60,18 +60,13 @@ jobs:
 
       - name: Install Playwright Browsers
         run: |
-          pip install playwright
+          python -m pip install playwright
           playwright install --with-deps chromium
-
-      - name: Start Vite Development Server
-        working-directory: ./frontend
-        # The disown command ensures the background process persists across steps
-        run: npm run dev & disown
 
       - name: Run Playwright E2E Tests
         working-directory: ./backend
         env:
           DJANGO_SETTINGS_MODULE: config.settings
-          DJANGO_LIVE_TEST_SERVER_ADDRESS: localhost:8000
+          DJANGO_LIVE_TEST_SERVER_ADDRESS: 127.0.0.1:8000
         run: |
           pytest tests/e2e/

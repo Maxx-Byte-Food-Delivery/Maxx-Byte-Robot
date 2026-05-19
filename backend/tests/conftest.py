@@ -35,7 +35,7 @@ def run_react_frontend():
       pytest.fail("NPM executable not found in system PATH.")
 
     process = subprocess.Popen(
-      [npm_path, "run", "dev", "--", "--port", str(port), "--strictPort"],
+      [npm_path, "run", "dev", "--", "--port", "--host", host, "--port", str(port), "--strictPort"],
       cwd="../frontend",
       stdout=subprocess.DEVNULL,
       stderr=subprocess.DEVNULL,
