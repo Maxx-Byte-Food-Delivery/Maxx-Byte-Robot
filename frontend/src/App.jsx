@@ -18,10 +18,10 @@ import OrderHistory from "./pages/history";
 import SetupSMS from "./pages/SetupSMS";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import { showToast } from "./utils/toast";
 import { useLocation } from "react-router-dom";
 
-function AppContent({ cart, setCart, clearCart }) {
+function AppContent({ cart, setCart, clearCart, setMsg }) {
   const location = useLocation();
 
   // Hide navbar only on login page
@@ -42,7 +42,7 @@ function AppContent({ cart, setCart, clearCart }) {
 
         <Route
           path="/cart"
-          element={<CartPage cart={cart} clearCart={clearCart} setCart={setCart} />}
+          element={<CartPage cart={cart} clearCart={clearCart} setCart={setCart} setMsg = {setMsg}/>}
         />
 
         <Route
@@ -72,12 +72,17 @@ function AppContent({ cart, setCart, clearCart }) {
 
 function App() {
   const [message, setMessage] = useState("");
-
+  const [msg, setMsg] = useState(null)
   const [cart, setCart] = useState({
     entries: new Map(),
     totalQty: 0,
     totalCost: 0
   });
+
+  useEffect(() => {
+    if(msg)
+      showToast(msg.message, msg.positive);
+  }, [msg]);
 
   // CSRF init
   useEffect(() => {
@@ -109,6 +114,7 @@ function App() {
         cart={cart}
         setCart={setCart}
         clearCart={clearCart}
+        setMsg = {setMsg}
       />
     </BrowserRouter>
   );

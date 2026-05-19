@@ -1,7 +1,10 @@
 import ClearCartButton from "../components/ClearCartButton";
 import { CartEntry } from "../models/CartEntry";
+import { Message } from "../models/Message";
+import {useState, useEffect} from 'react';
+import { showToast } from "../utils/toast";
 
-function CartPage({ cart, clearCart, setCart }) {
+function CartPage({ cart, clearCart, setCart, setMsg}) {
   const entries = Array.from(cart.entries.values());
 
   function removeItemEntirely(product) {
@@ -24,6 +27,7 @@ function CartPage({ cart, clearCart, setCart }) {
       const updated = new Map(prevCart.entries);
       const qty = updated.get(product.name).quantity;
       updated.set(product.name, new CartEntry(product.name, product.price, qty + 1));
+      setMsg(msg => new Message(`One more ${product.name} added to the cart, you now have ${qty + 1}`, true));
       return {
         entries: updated,
         totalQty: prevCart.totalQty + 1,
@@ -41,11 +45,13 @@ function CartPage({ cart, clearCart, setCart }) {
       if(toDecrease > 1){
         removeQty = 1;
         removePrice = updated.get(product.name).price;
+        setMsg(msg => new Message(`One ${product.name} removed from the cart, you now have ${toDecrease - 1}`, false));
         updated.set(product.name, new CartEntry(product.name, product.price, toDecrease - 1));
       }
       else{
         removeQty = updated.get(product.name).quantity;
         removePrice = updated.get(product.name).price * removeQty;
+        setMsg(msg => new Message(`${product.name} was removed entirely from cart.`, false));
         updated.delete(product.name);
       }
       return {

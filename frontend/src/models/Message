@@ -1,0 +1,9 @@
+export class Message{
+    message = "";
+    positive = false;
+
+    constructor(msg, isPositive){
+        this.message = msg;
+        this.positive = isPositive;
+    }
+}
