@@ -5,6 +5,7 @@ function NavigationBar({ cart }) {
   return (
     <nav>
       <Link to="/products">Products</Link>
+      <Link to="/tracker">Track Order</Link>
       <CartComponent cart={cart} />
       <Link to="/checkout">Checkout</Link>
     </nav>
