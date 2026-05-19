@@ -72,9 +72,9 @@ function CheckoutPage({ cart }) {
 
           <tr>
             <td><b>TOTAL</b></td>
-            <td></td>
+            <td>➡️</td>
             <td><b>{cart.totalQty} items</b></td>
-            <td><b>${cart.totalCost}</b></td>
+            <td><b>${Math.trunc(cart.totalCost * 100) / 100}</b></td>
           </tr>
         </tbody>
       </table>

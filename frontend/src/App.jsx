@@ -42,7 +42,7 @@ function AppContent({ cart, setCart, clearCart }) {
 
         <Route
           path="/cart"
-          element={<CartPage cart={cart} clearCart={clearCart} />}
+          element={<CartPage cart={cart} clearCart={clearCart} setCart={setCart} />}
         />
 
         <Route
