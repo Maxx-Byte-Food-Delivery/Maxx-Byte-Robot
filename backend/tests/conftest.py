@@ -11,23 +11,59 @@ import subprocess
 import time
 from asgiref.sync import sync_to_async
 import os
+import shutil
+import subprocess
+import time
+import requests
+import socket
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-@pytest.fixture(scope="session", autouse=True)
+def is_port_open(host: str, port: int) -> bool:
+  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.settimeout(0.5)
+    return s.connect_ex((host, port)) == 0
+
+@pytest.fixture(scope="session")
 def run_react_frontend():
+  host = "127.0.0.1"
+  port = 5173
+  process = None
+  if not is_port_open(host, port):
+    npm_path = shutil.which("npm")
+    if not npm_path:
+      pytest.fail("NPM executable not found in system PATH.")
+
     process = subprocess.Popen(
-        ["npm", "run", "dev", "--", "--port", "5173", "--strictPort"],
-        cwd="../frontend",
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,  # <--- Add this line for Windows compatibility
+      [npm_path, "run", "dev", "--", "--port", str(port), "--strictPort"],
+      cwd="../frontend",
+      stdout=subprocess.DEVNULL,
+      stderr=subprocess.DEVNULL,
     )
-    time.sleep(3)
-    yield
+
+    timeout = 30
+    start_time = time.time()
+    server_ready = False
+
+    while time.time() - start_time < timeout:
+      if is_port_open(host, port):
+        server_ready = True
+        break
+      time.sleep(0.5)
+
+  if not server_ready:
     process.terminate()
     process.wait()
-    
+    pytest.fail(f"Vite server failed to spin up on http://{host}:{port} within {timeout}s")
+  yield 
+
+  if process is not None:
+    process.terminate()
+    try:
+      process.wait(timeout=5)
+    except subprocess.TimeoutExpired:
+      process.kill()
+
 #makes multiple users
 @pytest.fixture
 def users(db):

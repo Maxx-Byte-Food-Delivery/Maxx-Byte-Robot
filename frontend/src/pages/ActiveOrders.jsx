@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from "../api/api";
 
 const ActiveOrders = () => {
 
@@ -14,9 +14,7 @@ const ActiveOrders = () => {
 
         try {
 
-            const response = await axios.get(
-                'http://127.0.0.1:8000/api/active-orders/'
-            );
+            const response = await API.get('/orders/active-orders/') 
 
             setOrders(response.data);
 
@@ -31,8 +29,8 @@ const ActiveOrders = () => {
 
         try {
 
-            await axios.patch(
-                `http://127.0.0.1:8000/api/active-orders/${id}/`,
+            await API.patch(
+                `http://127.0.0.1:8000/api/orders/active-orders/${id}/`,
                 {
                     status: newStatus
                 }
