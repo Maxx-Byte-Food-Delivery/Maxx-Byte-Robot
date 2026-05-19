@@ -13,16 +13,16 @@ from apps.users.views.trigger_mfa import MFATriggerView
 from apps.users.views.resend_mfa_code import ResendMFAView
 
 urlpatterns = [
-    path('users/login/', LoginView.as_view(), name='login'),
+    path('login/', LoginView.as_view(), name='login'),
     path('csrf/', csrf_view, name='csrf_token'),
-    path("users/verify-mfa/", VerifyMFAView.as_view(), name="verify-mfa"),
-    path("users/logout/", logout_view, name="logout"),
-    path('users/verify-2fa/', Verify2FAView.as_view()),
-    path('users/setup-totp/', SetupTOTPView.as_view()),
-    path('users/enable-sms-2fa/', EnableSMS2FAView.as_view()),
-    path('users/disable-2fa/', Disable2FAView.as_view()),
-    path('users/profile/', UserProfileView.as_view()),
-    path('users/confirm-totp/', ConfirmTOTPView.as_view()),
-    path('users/mfa-trigger/', MFATriggerView.as_view()),
-    path("users/resend-mfa/", ResendMFAView.as_view()),
+    path("verify-mfa/", VerifyMFAView.as_view(), name="verify-mfa"),
+    path("logout/", logout_view, name="logout"),
+    path('verify-2fa/', Verify2FAView.as_view()),
+    path('setup-totp/', SetupTOTPView.as_view()),
+    path('enable-sms-2fa/', EnableSMS2FAView.as_view()),
+    path('disable-2fa/', Disable2FAView.as_view()),
+    path('profile/', UserProfileView.as_view()),
+    path('confirm-totp/', ConfirmTOTPView.as_view()),
+    path('mfa-trigger/', MFATriggerView.as_view()),
+    path("resend-mfa/", ResendMFAView.as_view()),
     ]

@@ -1,95 +1,59 @@
 import stripe
-from django.conf import settings
-from django.http import HttpResponse
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from apps.orders.models.order import Order
-from apps.payments.models.payment import Payment
 
-stripe.api_key = settings.STRIPE_API_KEY
-
-
-@api_view(['POST'])
-def create_checkout_session(request, order_id=None, user_id=None):
-    data = request.data if hasattr(request, 'data') else {}
-    order_id = order_id or data.get('order')
-
-    if not order_id:
-        return Response({'error': 'order_id is required'}, status=400)
+@csrf_exempt
+def create_checkout_session(request, order_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Method not allowed"}, status=405)
 
     try:
         order = Order.objects.get(id=order_id)
-        order.total_price = sum(item.price for item in order.order_items.all())
-        order.save() 
-        if not request.user.is_authenticated or order.user_id != request.user.id:
-            return Response({'error': 'Action not allowed'}, status=403)
     except Order.DoesNotExist:
-        return Response({'error': 'Order not found'}, status=404)
+        return JsonResponse({"error": "Order not found"}, status=404)
 
-    amount = data.get('total_price', order.total_price)
-    status = data.get('status', 'pending')
-    method = data.get('method', 'card')
+    line_items = [
+        {
+            "price_data": {
+                "currency": "usd",
+                "product_data": {"name": item.product.name},
+                "unit_amount": int(item.price * 100),
+            },
+            "quantity": item.quantity,
+        }
+        for item in order.order_items.all()
+    ]
 
-    order.total_price = sum(item.price for item in order.order_items.all())
-    order.save()
-    amount = order.total_price 
-
-    if stripe.api_key:
-        stripe.api_key = stripe.api_key
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'usd',
-                    'product_data': {
-                        'name': 'Food Order',
-                    },
-                    'unit_amount': int(order.total_price * 100),
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url='http://localhost:3000/success',
-            cancel_url='http://localhost:3000/cancel',
-            metadata={'order_id': str(order.id)},
-        )
-        transaction_id = session.id
-    else:
-        transaction_id = 'test_session'
-        session = type('T', (), {'id': transaction_id})()
-
-    Payment.objects.create(
-        order=order,
-        method=method,
-        amount=amount,
-        transaction_id=transaction_id,
-        status=status,
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=line_items,
+        mode="payment",
+        success_url=f"http://localhost:5173/order-confirmation/{order.id}/",
+        cancel_url="http://localhost:5173/cancel",
     )
 
-    return Response({'id': session.id})
+    return JsonResponse({"url": session.url})
 
-
+@csrf_exempt
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    endpoint_secret = settings.STRIPE_API_KEY
+    webhook_secret = 'your_stripe_webhook_secret'  # ← move to .env
 
     try:
-        event = stripe.Webhook.construct_event(payload, sig_header, endpoint_secret)
-    except ValueError as e:
-        # Invalid payload
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        # Invalid signature
-        return HttpResponse(status=400)
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except (ValueError, stripe.error.SignatureVerificationError):
+        return JsonResponse({"error": "Invalid signature"}, status=400)
 
     if event['type'] == 'checkout.session.completed':
-
         session = event['data']['object']
-        order_id = session['metadata']['order_id']
+        order_id = session['success_url'].split('/')[-2]
+        try:
+            order = Order.objects.get(id=order_id)
+            order.status = 'confirmed'
+            order.save()
+        except Order.DoesNotExist:
+            pass
 
-        order = Order.objects.get(id=order_id)
-        order.status = 'confirmed'
-        order.save()
-
-    return HttpResponse(status=200)
+    return JsonResponse({"status": "ok"})

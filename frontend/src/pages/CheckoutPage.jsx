@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 const states = [
-  "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA",
-  "HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
-  "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ",
-  "NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
-  "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
+  "AL","AK","AR","AZ","CA","CO","CT","DE","FL","GA",
+  "HI","IA","ID","IL","IN","KS","KY","LA","MA","MD",
+  "ME","MI","MN","MO","MS","MT","NC","ND","NE","NH",
+  "NJ","NM","NV","NY","OH","OK","OR","PA","RI","SC",
+  "SD","TN","TX","UT","VA","VT","WA","WI","WV","WY"
 ];
 
 const emptyAddress = {
@@ -26,28 +26,53 @@ function CheckoutPage({ cart }) {
   const clearAddress = () => setInputAddress(emptyAddress);
 
   const handleCheckout = async () => {
-    try {
-      const cartItems = Array.from(cart.entries.values()).map(item => ({
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity
-      }));
+    // ✅ FIX 1: Read the token before making any requests
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      console.error("User is not logged in.");
+      // Optionally redirect: window.location.href = "/login";
+      return;
+    }
 
-      const response = await fetch("http://localhost:8000/api/payments/create-checkout-session/", {
+    // ✅ FIX 2: Reusable auth headers object
+    const authHeaders = {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,  // Use "Token" instead if using DRF TokenAuth
+    };
+
+    try {
+      // Step 1: Create order from server-side cart
+      const orderResponse = await fetch("http://localhost:8000/api/orders/create/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart: cartItems })
+        headers: authHeaders,             // ✅ was missing Authorization
+        body: JSON.stringify({ shipping_address: inputAddress })
       });
 
-      const data = await response.json();
-
-      // ✅ Proper error handling
-      if (!data.url) {
-        console.error("Stripe session error:", data);
+      // ✅ FIX 3: Check HTTP status before parsing JSON
+      if (!orderResponse.ok) {
+        const errData = await orderResponse.json();
+        console.error("Order creation failed:", errData);
         return;
       }
 
-      // ✅ Correct modern Stripe flow
+      const orderData = await orderResponse.json();
+
+      // Step 2: Create Stripe session
+      const response = await fetch(
+        `http://localhost:8000/api/payments/create-checkout-session/${orderData.order_id}/`,
+        {
+          method: "POST",
+          headers: authHeaders,           // ✅ was missing Authorization
+        }
+      );
+
+      if (!response.ok) {
+        const errData = await response.json();
+        console.error("Stripe session error:", errData);
+        return;
+      }
+
+      const data = await response.json();
       window.location.href = data.url;
 
     } catch (err) {
@@ -58,7 +83,6 @@ function CheckoutPage({ cart }) {
   return (
     <div>
       <h1>Checkout</h1>
-
       <table>
         <tbody>
           {Array.from(cart.entries.values()).map((item, index) => (
@@ -69,7 +93,6 @@ function CheckoutPage({ cart }) {
               <td>${item.price * item.quantity}</td>
             </tr>
           ))}
-
           <tr>
             <td><b>TOTAL</b></td>
             <td></td>
@@ -85,26 +108,19 @@ function CheckoutPage({ cart }) {
         value={inputAddress.addressLine1}
         onChange={onChange("addressLine1")}
       />
-
       <input placeholder="Address 2"
         value={inputAddress.addressLine2}
         onChange={onChange("addressLine2")}
       />
-
       <input placeholder="City"
         value={inputAddress.city}
         onChange={onChange("city")}
       />
-
-      <select
-        value={inputAddress.state}
-        onChange={onChange("state")}
-      >
+      <select value={inputAddress.state} onChange={onChange("state")}>
         {states.map(s => (
           <option key={s} value={s}>{s}</option>
         ))}
       </select>
-
       <input
         placeholder="Zip"
         maxLength="5"
@@ -112,10 +128,7 @@ function CheckoutPage({ cart }) {
         onChange={onChange("zipCode")}
       />
 
-      <button onClick={clearAddress}>
-        ❌ Clear Address
-      </button>
-
+      <button onClick={clearAddress}>❌ Clear Address</button>
       <button
         type="button"
         onClick={handleCheckout}

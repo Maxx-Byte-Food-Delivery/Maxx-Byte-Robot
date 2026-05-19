@@ -16,6 +16,7 @@ import Products from "./pages/Products";
 import NavigationBar from "./components/NavigationBar";
 import OrderHistory from "./pages/history";
 import SetupSMS from "./pages/SetupSMS";
+import ActiveOrders from "./pages/ActiveOrders";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -34,6 +35,8 @@ function AppContent({ cart, setCart, clearCart }) {
       <Routes>
 
         <Route path="/" element={<Login />} />
+
+        <Route path="/activeorders" element={<ActiveOrders/>} />
 
         <Route
           path="/products"

@@ -6,7 +6,7 @@ def setup_database():
         conn = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='Ultra101',
+            password='Tootincowgirl',
             database='maxxbyte_db'
         )
         cursor = conn.cursor()

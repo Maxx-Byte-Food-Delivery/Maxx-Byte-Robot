@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-from .product import Product
+from apps.products.models import Product
 
 
 class Cart(models.Model):
