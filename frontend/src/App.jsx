@@ -35,9 +35,10 @@ function AppContent({ cart, setCart, clearCart, setMsg }) {
 
         <Route path="/" element={<Login />} />
 
+        {/*Plug in the setMsg state changer into Products and CartPage to allow for toast state updates during cart actions.*/}
         <Route
           path="/products"
-          element={<Products cart={cart} setCart={setCart} />}
+          element={<Products cart={cart} setCart={setCart} setMsg = {setMsg} />}
         />
 
         <Route
@@ -72,13 +73,14 @@ function AppContent({ cart, setCart, clearCart, setMsg }) {
 
 function App() {
   const [message, setMessage] = useState("");
-  const [msg, setMsg] = useState(null)
+  const [msg, setMsg] = useState(null) //Essential statehook for toast broadcasting in response to cart actions.
   const [cart, setCart] = useState({
     entries: new Map(),
     totalQty: 0,
     totalCost: 0
   });
 
+  //Broadcast the new toast content every time the toast content is changed..
   useEffect(() => {
     if(msg)
       showToast(msg.message, msg.positive);

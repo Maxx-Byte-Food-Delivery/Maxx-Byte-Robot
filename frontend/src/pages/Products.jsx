@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { showToast } from "../utils/toast";
 import { CartEntry } from "../models/CartEntry";
+import { Message } from "../models/Message";
 
-function Products({ cart, setCart }) {
+function Products({ cart, setCart , setMsg}) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,8 +31,12 @@ function Products({ cart, setCart }) {
       if (updated.has(product.name)) {
         const qty = updated.get(product.name).quantity;
         updated.set(product.name, new CartEntry(product.name, product.price, qty + 1));
+        //Set up the toast announcing that you've added one more of an item in the cart.
+        setMsg(msg => new Message(`${product.name} added to the cart, you now have ${qty + 1}.`, true));
       } else {
         updated.set(product.name, new CartEntry(product.name, product.price, 1));
+        //Set up the toast announcing that you've added an item in the cart when there was none before.
+        setMsg(msg => new Message(`${product.name} added to the cart, you now have 1.`, true));
       }
 
       return {

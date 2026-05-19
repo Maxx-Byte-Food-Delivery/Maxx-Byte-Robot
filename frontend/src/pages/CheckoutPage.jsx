@@ -66,7 +66,8 @@ function CheckoutPage({ cart }) {
               <td>{item.name}</td>
               <td>${item.price}</td>
               <td>{item.quantity}</td>
-              <td>${item.price * item.quantity}</td>
+              {/*Use toFixed(2) to ensure proper display of money amounts.*/}
+              <td>${(item.price * item.quantity).toFixed(2)}</td>
             </tr>
           ))}
 
@@ -74,7 +75,7 @@ function CheckoutPage({ cart }) {
             <td><b>TOTAL</b></td>
             <td>➡️</td>
             <td><b>{cart.totalQty} items</b></td>
-            <td><b>${Math.trunc(cart.totalCost * 100) / 100}</b></td>
+            <td><b>${(cart.totalCost.toFixed(2))}</b></td>
           </tr>
         </tbody>
       </table>
