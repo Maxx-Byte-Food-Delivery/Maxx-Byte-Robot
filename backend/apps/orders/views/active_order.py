@@ -1,37 +1,36 @@
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from apps.orders.models import Order
 from apps.orders.serializers.active_order import ActiveOrderSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def active_order(request, order_id):
-    # 1. Enforce Authentication Context
     if not request.user.is_authenticated:
         return Response({'detail': 'You must be logged in to track an order'}, status=status.HTTP_401_UNAUTHORIZED)
 
     try:
-        # 2. FIXED: Fetch a single explicit order matching BOTH the user and the ID
         order = Order.objects.get(id=order_id, user=request.user, status="active")
     except Order.DoesNotExist:
         return Response({'error': 'Active order not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    # 3. Serialize and return the single order object data
     serializer = ActiveOrderSerializer(order)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def active_orders(request):
     # 1. Enforce Authentication Context
     if not request.user.is_authenticated:
         return Response({'detail': 'You must be logged in to track orders'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    # 2. FIXED: Fetch ALL active orders belonging strictly to the session user
     orders = Order.objects.filter(user=request.user, status="active").distinct()
     
     if not orders.exists():
-        return Response([], status=status.HTTP_200_OK) # Return empty list so frontend map works safely
+        return Response({'message': "No Active Orders"}, status=status.HTTP_200_OK)
 
     # 3. Serialize and return the records list array
     serializer = ActiveOrderSerializer(orders, many=True)

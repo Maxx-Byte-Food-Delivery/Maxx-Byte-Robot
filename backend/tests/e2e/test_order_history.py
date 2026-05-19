@@ -3,7 +3,7 @@ from playwright.sync_api import Page, expect
 import pytest
 
 @pytest.mark.django_db(transaction = True)
-def test_order_history(page: Page, live_server, users, create_orders):
+def test_order_history(page: Page, live_server, users, create_orders, run_react_frontend):
 
   page.goto("http://localhost:5173/")
   page.get_by_placeholder("Username").fill("johndoe")

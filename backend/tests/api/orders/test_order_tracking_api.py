@@ -28,8 +28,8 @@ def test_order_tracking_api_endpoint_unauthenticated(api_client, create_orders, 
   url = reverse('active_order', kwargs={'order_id': create_orders[0].id})
   response = api_client.get(url)
   
-  assert response.status_code == 401
-  assert response.data['detail'] == "You must be logged in to track an order"
+  assert response.status_code == 403
+  assert response.data['detail'] == "Authentication credentials were not provided."
 
 @pytest.mark.django_db
 def test_order_tracking_api_endpoint_wrong_user(api_client, create_orders, users):
@@ -71,8 +71,8 @@ def test_orders_tracking_api_endpoint_unauthenticated(api_client, create_orders,
   url = reverse('active_orders')
   response = api_client.get(url)
   
-  assert response.status_code == 401
-  assert response.data['detail'] == "You must be logged in to track orders"
+  assert response.status_code == 403
+  assert response.data['detail'] == "Authentication credentials were not provided."
 
 @pytest.mark.django_db
 def test_orders_tracking_api_endpoint_no_order(api_client, create_orders, admin_users):
@@ -81,4 +81,4 @@ def test_orders_tracking_api_endpoint_no_order(api_client, create_orders, admin_
   response = api_client.get(url)
 
   assert response.status_code == 200
-  assert response.data == []
+  assert response.json()['message'] == "No Active Orders"

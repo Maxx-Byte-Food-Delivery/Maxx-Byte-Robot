@@ -23,10 +23,10 @@ if len(users) < 4 or len(products) < 4:
 
 # Create and save orders
 order_list = [
-    Order(user=users[0]),
-    Order(user=users[1]),
-    Order(user=users[2]),
-    Order(user=users[3])
+    Order(user=users[0], status="active"),
+    Order(user=users[1], status="active"),
+    Order(user=users[2], status="active"),
+    Order(user=users[3], status="active")
 ]
 for order in order_list:
     order.save()
