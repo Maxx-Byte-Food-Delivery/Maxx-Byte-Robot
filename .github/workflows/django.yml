@@ -62,12 +62,7 @@ jobs:
         run: |
           pip install playwright
           playwright install --with-deps chromium
-
-      - name: Start Vite Development Server
-        working-directory: ./frontend
-        # The disown command ensures the background process persists across steps
-        run: npm run dev & disown
-
+          
       - name: Run Playwright E2E Tests
         working-directory: ./backend
         env:
