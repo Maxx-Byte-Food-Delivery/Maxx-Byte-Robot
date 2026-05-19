@@ -3,7 +3,7 @@ from playwright.sync_api import Page, expect
 import pytest
 
 @pytest.mark.django_db(transaction = True)
-def test_add_products_to_cart(page: Page, live_server, users, create_products):
+def test_add_products_to_cart(page: Page, live_server, users, create_products, run_react_frontend):
   page.goto("http://localhost:5173/")
   page.get_by_placeholder("Username").fill("johndoe")
   page.get_by_placeholder("Password").fill("VeryG00d!Password")
@@ -23,7 +23,7 @@ def test_add_products_to_cart(page: Page, live_server, users, create_products):
   expect(page.locator("p", has_text=f"{create_products[0].name} x1")).to_be_visible()
 
 @pytest.mark.skip(reason="remove from cart not implemented")
-def test_add_and_remove_products_from_cart(page: Page, live_server, users, create_products):
+def test_add_and_remove_products_from_cart(page: Page, live_server, users, create_products, run_react_frontend):
   page.goto("http://localhost:5173/")
   page.get_by_placeholder("Username").fill("johndoe")
   page.get_by_placeholder("Password").fill("VeryG00d!Password")
@@ -53,7 +53,7 @@ def test_add_and_remove_products_from_cart(page: Page, live_server, users, creat
   expect(page.locator("p", has_text="Your cart is empty")).to_be_visible()
 
 @pytest.mark.django_db(transaction = True)
-def test_empty_cart(page: Page, live_server, users, create_products):
+def test_empty_cart(page: Page, live_server, users, create_products, run_react_frontend):
   page.goto("http://localhost:5173/")
   page.get_by_placeholder("Username").fill("johndoe")
   page.get_by_placeholder("Password").fill("VeryG00d!Password")

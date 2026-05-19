@@ -4,7 +4,7 @@ import pytest
 import pyotp
 
 @pytest.mark.django_db
-def test_login_as_user(page: Page, live_server, users, student_profiles):
+def test_login_as_user(page: Page, live_server, users, student_profiles, run_react_frontend):
 
   page.goto("http://localhost:5173/")
   page.get_by_placeholder("Username").fill("johndoe")
@@ -17,7 +17,7 @@ def test_login_as_user(page: Page, live_server, users, student_profiles):
 
 
 @pytest.mark.django_db(transaction = True)
-def test_login_as_student_totp(page: Page, live_server, users, student_profiles):
+def test_login_as_student_totp(page: Page, live_server, users, student_profiles, run_react_frontend):
 
   page.goto("http://localhost:5173/")
 
@@ -45,7 +45,7 @@ def test_login_as_student_totp(page: Page, live_server, users, student_profiles)
 
 
 @pytest.mark.django_db(transaction = True)
-def test_login_as_student_sms(page: Page, live_server, users, student_profiles):
+def test_login_as_student_sms(page: Page, live_server, users, student_profiles, run_react_frontend):
 
   page.goto("http://localhost:5173/")
 
@@ -78,7 +78,7 @@ def test_login_as_student_sms(page: Page, live_server, users, student_profiles):
 
 
 @pytest.mark.django_db(transaction = True)
-def test_login_as_admin_totp(page: Page, live_server, admin_users, admin_profiles):
+def test_login_as_admin_totp(page: Page, live_server, admin_users, admin_profiles, run_react_frontend):
 
   page.goto("http://localhost:5173/")
 
@@ -105,7 +105,7 @@ def test_login_as_admin_totp(page: Page, live_server, admin_users, admin_profile
   expect(page.locator("p", has_text="Welcome Student")).not_to_be_visible()
 
 @pytest.mark.django_db(transaction = True)
-def test_login_as_admin_sms(page: Page, live_server, admin_users, admin_profiles):
+def test_login_as_admin_sms(page: Page, live_server, admin_users, admin_profiles, run_react_frontend):
 
   page.goto("http://localhost:5173/")
 
